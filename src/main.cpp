@@ -50,7 +50,7 @@ void myMessageOutput(QtMsgType type, const char *msg)
 int main(int argc, char *argv[])
 {
     QTime currentTime = QTime::currentTime();
-    qsrand(currentTime.minute()*60000 + currentTime.second()*1000 + currentTime.msec());
+    qsrand( currentTime.minute()*60000 + currentTime.second()*1000 + currentTime.msec() );
     qInstallMsgHandler(myMessageOutput);
     QApplication app(argc, argv);
 
