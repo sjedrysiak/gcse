@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/icons/about" >
+        <file>icons/information.png</file>
+    </qresource>
+    <qresource prefix="/icons/close" >
+        <file>icons/cross.png</file>
+    </qresource>
+    <qresource prefix="/icons/copy" >
+        <file>icons/page_copy.png</file>
+    </qresource>
+    <qresource prefix="/icons/cut" >
+        <file>icons/cut.png</file>
+    </qresource>
+    <qresource prefix="/icons/new" >
+        <file>icons/page.png</file>
+    </qresource>
+    <qresource prefix="/icons/open" >
+        <file>icons/folder_page.png</file>
+    </qresource>
+    <qresource prefix="/icons/paste" >
+        <file>icons/paste_plain.png</file>
+    </qresource>
+    <qresource prefix="/icons/redo" >
+        <file>icons/arrow_turn_right.png</file>
+    </qresource>
+    <qresource prefix="/icons/save" >
+        <file>icons/disk.png</file>
+    </qresource>
+    <qresource prefix="/icons/undo" >
+        <file>icons/arrow_turn_left.png</file>
+    </qresource>
+</RCC>
