@@ -21,6 +21,10 @@
 #ifndef GA_H_
 #define GA_H_
 
+#include "classifier.h"
+
+class Grammar;
+
 class GA
 {
 public:
@@ -41,15 +45,24 @@ private:
     //genetic operators
     static void crossover(NClassifier& first, NClassifier& second);
     static void inversion(NClassifier& cl);
-    static void mutation(NClassifier& cl);
+    static void mutation(NClassifier& cl, const Grammar& g);
 
     //parameters
+    //allow to run ga
+    static bool fGA;
+    //selection type for first classifier
     static SelectionType selectionCl1;
+    //selection type for second classifier
     static SelectionType selectionCl2;
+    //crossover probability
     static float pCrossover;
+    //crossover probability
     static float pMutation;
+    //crossover probability
     static float pInversion;
+    //size of elite population
     static int eliteSize;
+    //size of tournament population
     static int tournamentSize;
 };
 

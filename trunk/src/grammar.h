@@ -22,11 +22,8 @@
 #define GRAMMAR_H_
 
 #include <QSet>
-#include <QVector>
 #include "symbol.h"
 #include "classifier.h"
-
-typedef QVector<QVector<QSet<NSymbol> > > CYKTable;
 
 class Grammar
 {
@@ -36,20 +33,14 @@ public:
 
     Grammar(const NSymbol& start = "Start", const NSymbol& universal = "Univ");
     void generateGrammar();
-    bool parse(const QString& sentence, const QString& separator);
-    ~Grammar();
-private:
-    //for CYK
-    QList<NSymbol> getMatchingClassifiers(const NProdAction& condition) const;
-    QList<NSymbol> getMatchingClassifiers(const TProdAction& condition) const;
-    QList<NProdAction> getConditionsForCykCell(const CYKTable& cykTable, int row, int col) const;
-
-    //covering operators
-    NSymbol coveringTerminal(const TSymbol& term);
-    void coveringUniversal(const TSymbol& term);
-    void coveringStart(const TSymbol& term);
-    void coveringFull(const NProdAction& cond);
-    NSymbol coveringAggressive(const NProdAction& cond);
+    const QSet<NSymbol>& NSet() const;
+    const QSet<TSymbol>& TSet() const;
+    const QSet<NClassifier>& PNSet() const;
+    const QSet<TClassifier>& PTSet() const;
+    void setN(const QSet<NSymbol>& source);
+    void setT(const QSet<TSymbol>& source);
+    void setPN(const QSet<NClassifier>& source);
+    void setPT(const QSet<TClassifier>& source);
 
     //adding methods
     void addSymbol(const NSymbol& s);
@@ -58,19 +49,9 @@ private:
     void addClNormal(const TClassifier& cl);
     void addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set);
     void addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set);
-    //void addWithCrowdingElite(const NClassifier& cl);
 
-    //AG part
-    //selection
-    NClassifier selectionRoulette() const;
-    NClassifier selectionTournament() const;
-    NClassifier selectionRandom() const;
-    //operators
-    void gaCrossover(NClassifier& first, NClassifier& second) const;
-    void gaInversion(NClassifier& cl) const;
-    void gaMutation(NClassifier& cl) const;
-    void ga();
-
+    ~Grammar();
+private:
     QSet<NSymbol> N;
     QSet<TSymbol> T;
     QSet<NClassifier> PN;

@@ -20,6 +20,8 @@
 
 #include "sentence.h"
 
+QString Sentence::mWordSeparator = "";
+
 Sentence::Sentence(const char* str, bool isPositive) :
     QString(str), mIsPositive(isPositive)
 {
@@ -38,6 +40,16 @@ bool Sentence::isPositive() const
 void Sentence::setPositive(bool isPositive)
 {
     this->mIsPositive = isPositive;
+}
+
+const QString& Sentence::wordSeparator()
+{
+    return Sentence::mWordSeparator; 
+}
+
+void Sentence::setWordSeparator(const QString& str)
+{
+    Sentence::mWordSeparator = str;
 }
 
 Sentence::~Sentence()
