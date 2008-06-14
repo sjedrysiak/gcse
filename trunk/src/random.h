@@ -26,8 +26,8 @@ class Random
 public:
     //returns random integer from 0 to n-1
     static int rand(unsigned int n);
-    //return random double from [0,1) or [0,1] if with1 is true
-    static double rand(bool with1 = false);
+    //returns random double from [0,1)
+    static double rand();
 };
 
 #endif /*RANDOM_H_*/

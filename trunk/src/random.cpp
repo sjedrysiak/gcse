@@ -28,11 +28,8 @@ int Random::rand(unsigned int n)
     return Random::rand() * n;
 }
 
-//return random double from [0,1) or [0,1] if with1 is true
-double Random::rand(bool with1)
+//returns random double from [0,1)
+double Random::rand()
 {
-    double divisor = RAND_MAX;
-    if (with1)
-        divisor += 1.0;
-    return qrand() / divisor;
+    return qrand() / (RAND_MAX + 1.0);
 }
