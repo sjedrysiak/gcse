@@ -22,14 +22,17 @@
 #include <QtGlobal>
 #include <cstdlib>
 
-//returns random integer from 0 to max-1
-int Random::rand(unsigned int max)
+//returns random integer from 0 to n-1
+int Random::rand(unsigned int n)
 {
-    return static_cast<int>( Random::rand() * max );
+    return Random::rand() * n;
 }
 
-//return random double from [0,1)
-double Random::rand()
+//return random double from [0,1) or [0,1] if with1 is true
+double Random::rand(bool with1)
 {
-    return static_cast<double>(qrand()) / RAND_MAX;
+    double divisor = RAND_MAX;
+    if (with1)
+        divisor += 1.0;
+    return qrand() / divisor;
 }
