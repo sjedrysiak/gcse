@@ -21,22 +21,35 @@
 #ifndef CYK_H_
 #define CYK_H_
 
-#include <QString>
-#include <QVector>
-#include <QSet>
-#include "nsymbol.h"
-#include "nprodaction.h"
-
+#include "symbol.h"
+#include "prodaction.h"
 class Grammar;
+class Sentence;
+
+typedef QVector<QVector<QSet<NSymbol> > > CYKTable;
 
 class CYK
 {
 public:
-	CYK();
-	static bool parse(const Grammar& grammar, const QString& sentence, const QString& separator = "");
-	~CYK();
+	static bool parse(const Sentence& sentence, Grammar& g);
 private:
-    static QList<NProdAction> getNActionsForCell(const QVector<QVector<QSet<NSymbol> > >& cykTable, int row, int col);
+    static QList<NSymbol> getMatchingClassifiers(const NProdAction& condition, const Grammar& g);
+    static QList<NSymbol> getMatchingClassifiers(const TProdAction& condition, const Grammar& g);
+    static QList<NProdAction> getConditionsForCykCell(const CYKTable& cykTable, int row, int col);
+
+    //covering operators
+    static NSymbol coveringTerminal(const TSymbol& term, Grammar& g);
+    static void coveringUniversal(const TSymbol& term, Grammar& g);
+    static void coveringStart(const TSymbol& term, Grammar& g);
+    static void coveringFull(const NProdAction& cond, Grammar& g);
+    static NSymbol coveringAggressive(const NProdAction& cond, Grammar& g);
+    
+    //parameters
+    static bool fCorrection;
+    static bool fCoveringStart;
+    static bool fCoveringFull;
+    static bool fCoveringUniversal;
+    static float pCoveringAggressive;
 };
 
 #endif /*CYK_H_*/

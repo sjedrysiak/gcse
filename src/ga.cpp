@@ -20,8 +20,10 @@
 
 #include "ga.h"
 #include "grammar.h"
+#include "random.h"
 
 //static fields initialization
+bool GA::fGA = true;
 GA::SelectionType GA::selectionCl1 = GA::RANDOM;
 GA::SelectionType GA::selectionCl2 = GA::RANDOM;
 float GA::pCrossover = 0.0;
@@ -76,8 +78,8 @@ void GA::evolve(Grammar& g)
     }
 
     //Mutation
-    mutation(cl1);
-    mutation(cl2);
+    mutation(cl1, g);
+    mutation(cl2, g);
 
     //Inversion
     if (Random::rand() < pInversion)

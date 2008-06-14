@@ -30,9 +30,12 @@ public:
 	Sentence(const QString& str, bool isPositive = true);
 	bool isPositive() const;
 	void setPositive(bool isPositive);
+	static const QString& wordSeparator();
+	static void setWordSeparator(const QString& str);
 	virtual ~Sentence();
 private:
     bool mIsPositive;
+    static QString mWordSeparator;
 };
 
 #endif /*SENTENCE_H_*/

@@ -19,65 +19,149 @@
  ***************************************************************************/
 
 #include "cyk.h"
+#include "sentence.h"
 #include <QString>
 #include <QStringList>
 
-#include "tsymbol.h"
-#include "grammar.h"
-#include "tprodaction.h"
-//#include "log.h"
+bool CYK::fCorrection = true;
+bool CYK::fCoveringFull = false;
+bool CYK::fCoveringStart = true;
+bool CYK::fCoveringUniversal = false;
+float CYK::pCoveringAggressive = 0.0;
 
-CYK::CYK()
+bool CYK::parse(const Sentence& sentence, Grammar& g)
 {
-}
-
-bool CYK::parse(const Grammar& grammar, const QString& sentence, const QString& separator)
-{
-    QStringList words(sentence.split(separator, QString::SkipEmptyParts));
-    QVector<TSymbol> terminals;
-    foreach(QString str, words)
+    QStringList words(sentence.split(Sentence::wordSeparator(), QString::SkipEmptyParts));
+    QList<TSymbol> terminals;
+    foreach (QString str, words)
     {
         terminals << TSymbol(str);
     }
     int size = terminals.size();
-    QVector<QVector<QSet<NSymbol> > > cykTable(size);
+    CYKTable cykTable(size);
     for (int row = 0; row < size; row++) //set rows' sizes
     {
         cykTable[row].resize(size - row);
     }
+    QList<NSymbol> M;//list of matched classifiers' conditions
     for (int col = 0; col < size; col++) //set first row
     {
-        cykTable[0][col] = grammar.getConditionsForAction( TProdAction( TSymbol(terminals[col]) ) ).toSet();
+        M = getMatchingClassifiers(TProdAction(terminals[col]), g);
+        if (M.size() == 0)//there is no terminal prod for current word
+        {
+            M << coveringTerminal(terminals[col], g);
+            if (fCoveringUniversal)
+            {
+                M << g.Su;
+            }
+            if (fCoveringStart && size == 1 && sentence.isPositive())
+            {
+                coveringStart(terminals[col], g);
+                M << g.S;
+            }
+        }
+        cykTable[0][col] = M.toSet();
     }
+
     for (int row = 1; row < size; row++)
     {
         for (int col = 0; col < size - row; col++)
         {
-            foreach (NProdAction action, getNActionsForCell(cykTable, row, col) )
+            QList<NProdAction> D = getConditionsForCykCell(cykTable, row, col);
+            foreach (NProdAction condition, D)
             {
-                cykTable[row][col] += grammar.getConditionsForAction(action).toSet();
+                M = getMatchingClassifiers(condition, g);
+                if (M.size() == 0 && sentence.isPositive())
+                {
+                    if (Random::rand() < pCoveringAggressive)
+                    {
+                        M << coveringAggressive(condition, g);
+                    }
+                    if (fCoveringFull && row == size-1 && col == 0)
+                    {
+                        coveringFull(condition, g);
+                        M << g.S;
+                    }
+                }
+                cykTable[row][col] += M.toSet();
             }
         }
     }
-    return cykTable[size-1][0].contains(grammar.S);
+    return cykTable[size-1][0].contains(g.S);
 }
 
-QList<NProdAction> CYK::getNActionsForCell(const QVector<QVector<QSet<NSymbol> > >& cykTable, int row, int col)
+QList<NSymbol> CYK::getMatchingClassifiers(const NProdAction& condition, const Grammar& g)
 {
-    QList<NProdAction> actions;
+    QList<NSymbol> list;
+    foreach (NClassifier cl, g.PNSet())
+    {
+        if (cl.condition() == condition)
+        {
+            list.append( cl.action().symbol() );
+        }
+    }
+    return list;
+}
+
+QList<NSymbol> CYK::getMatchingClassifiers(const TProdAction& condition, const Grammar& g)
+{
+    QList<NSymbol> list;
+    foreach (TClassifier cl, g.PTSet())
+    {
+        if (cl.condition() == condition)
+        {
+            list.append( cl.action().symbol() );
+        }
+    }
+    return list;
+}
+
+QList<NProdAction> CYK::getConditionsForCykCell(const CYKTable& cykTable, int row, int col)
+{
+    QList<NProdAction> list;
     for (int r = 0; r < row; r++)
     {
         foreach (NSymbol s1, cykTable[r][col])
         {
             foreach (NSymbol s2, cykTable[row-1-r][col+1+r])
             {
-                actions.append( NProdAction(s1, s2) );
+                list.append( NProdAction(s1, s2) );
             }
         }
     }
-    return actions;
+    return list;
 }
 
-CYK::~CYK()
+//covering operators
+NSymbol CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
+    NSymbol newSymbol = NSymbol::generateNew();
+    g.addClNormal(TClassifier(TProdRule(ProdCondition(newSymbol), TProdAction(term))));
+    if (fCoveringUniversal)
+    {
+        coveringUniversal(term, g);
+    }
+    return newSymbol;
+}
+
+void CYK::coveringUniversal(const TSymbol& term, Grammar& g)
+{
+    g.addClNormal(TClassifier(TProdRule(ProdCondition(g.Su), TProdAction(term))));
+}
+
+void CYK::coveringStart(const TSymbol& term, Grammar& g)
+{
+    g.addClWithCrowding(TClassifier(TProdRule(ProdCondition(g.S), TProdAction(term))), g.PTSet());
+}
+
+void CYK::coveringFull(const NProdAction& cond, Grammar& g)
+{
+    g.addClWithCrowding(NClassifier(NProdRule(ProdCondition(g.S), NProdAction(cond))), g.PNSet());
+}
+
+NSymbol CYK::coveringAggressive(const NProdAction& cond, Grammar& g)
+{
+    NSymbol newSymbol = NSymbol::generateNew();
+    g.addClWithCrowding(NClassifier(NProdRule(ProdCondition(newSymbol), NProdAction(cond))), g.PNSet());
+    return newSymbol;
 }
