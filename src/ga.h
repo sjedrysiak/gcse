@@ -45,25 +45,27 @@ private:
     //genetic operators
     static void crossover(NClassifier& first, NClassifier& second);
     static void inversion(NClassifier& cl);
-    static void mutation(NClassifier& cl, const Grammar& g);
+    static void mutation(NClassifier& cl, const QList<NSymbol>& symbols);
 
     //parameters
     //allow to run ga
-    static bool fGA;
+    static bool mAllowGA;
     //selection type for first classifier
-    static SelectionType selectionCl1;
+    static SelectionType mSelectionCl1;
     //selection type for second classifier
-    static SelectionType selectionCl2;
+    static SelectionType mSelectionCl2;
     //crossover probability
-    static float pCrossover;
+    static float mProbCrossover;
     //crossover probability
-    static float pMutation;
+    static float mProbMutation;
     //crossover probability
-    static float pInversion;
-    //size of elite population
-    static int eliteSize;
-    //size of tournament population
-    static int tournamentSize;
+    static float mProbInversion;
+    //elite population size [1,30]
+    //TODO ograniczyc przedzial wartosci
+    static int mEliteSize;
+    //tournament population size [1,30]
+    //TODO ograniczyc przedzial wartosci
+    static int mTournamentSize;
 };
 
 #endif /*GA_H_*/
