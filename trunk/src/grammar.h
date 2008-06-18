@@ -47,8 +47,8 @@ public:
     void addSymbol(const TSymbol& s);
     void addClNormal(const NClassifier& cl);
     void addClNormal(const TClassifier& cl);
-    void addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set);
-    void addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set);
+    static void addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set);
+    static void addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set);
 
     ~Grammar();
 private:
@@ -56,6 +56,25 @@ private:
     QSet<TSymbol> T;
     QSet<NClassifier> PN;
     QSet<TClassifier> PT;
+    
+    //crowding factor [1,30]
+    static int mCrowdFactor;
+    //crowding population size [1,30]
+    static int mCrowdSize;
+    
+    //TODO parametr kwota bazowa ba [0,15]
+    //TODO parametr wspolczynnik zmniejszania kwoty bazowej raf [0,15]
+    //TODO parametr rozmiar populacji klasyfikatorow
+    //TODO parametr liczba poczatkowych produkcji nieterminalnych [1,30]
+    //TODO parametr liczba symboli nieterminalnych [1,30]
+    //TODO parametr liczba symboli terminalnych
+    //TODO parametr liczba iteracji 10, 50
+    //TODO parametr maksymalna liczba krokow ewolucyjnych [1,50 000]
+    //TODO parametr waga rozbioru zdania poprawnego [1,20]
+    //TODO parametr waga rozbioru zdania nipoprawnego [1,20]
+    //TODO parametr waga funkcji klasycznej klasyfikatora [1,20]
+    //TODO parametr waga funkcji plodnosci klasyfikatora [1,15]
+    //TODO parametr miara uzytecznosci klasyfikatora niebioracego udzialu w parsowaniu [1,10]
 };
 
 #endif /*GRAMMAR_H_*/

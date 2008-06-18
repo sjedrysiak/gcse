@@ -23,6 +23,9 @@
 #include <QStringList>
 #include <QList>
 
+int Grammar::mCrowdFactor = 5;
+int Grammar::mCrowdSize = 5;
+
 Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
     S(start), Su(universal)
 {
@@ -123,12 +126,12 @@ void Grammar::addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set
     QList<NClassifier> vect(set.toList());
 
     QSet<NClassifier> K;
-    for (int i = 0; i < 5; i++)//TODO zmienna rozmiar populacji z najgorszymi do �cisku
+    for (int i = 0; i < mCrowdFactor; i++)
     {
         NClassifier worst = vect[Random::rand(vect.size())];
         QSet<NClassifier> W;
         W << worst;
-        while (W.size() < 5)//TODO zmienna rozmiar populacji scisku
+        while (W.size() < mCrowdSize)
         {
             NClassifier temp = vect[Random::rand(vect.size())];
             W << temp;
@@ -157,12 +160,12 @@ void Grammar::addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set
     QList<TClassifier> vect(set.toList());
 
     QSet<TClassifier> K;
-    for (int i = 0; i < 5; i++)//TODO zmienna rozmiar populacji z najgorszymi do �cisku
+    for (int i = 0; i < mCrowdFactor; i++)
     {
         TClassifier worst = vect[Random::rand(vect.size())];
         QSet<TClassifier> W;
         W << worst;
-        while (W.size() < 5)//TODO zmienna rozmiar populacji scisku
+        while (W.size() < mCrowdSize)
         {
             TClassifier temp = vect[Random::rand(vect.size())];
             W << temp;

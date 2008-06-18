@@ -23,11 +23,11 @@
 #include <QString>
 #include <QStringList>
 
-bool CYK::fCorrection = true;
-bool CYK::fCoveringFull = false;
-bool CYK::fCoveringStart = true;
-bool CYK::fCoveringUniversal = false;
-float CYK::pCoveringAggressive = 0.0;
+bool CYK::mAllowCorrection = true;
+bool CYK::mAllowCoveringFull = false;
+bool CYK::mAllowCoveringStart = true;
+bool CYK::mAllowCoveringUniversal = false;
+float CYK::mProbCoveringAggressive = 0.0;
 
 bool CYK::parse(const Sentence& sentence, Grammar& g)
 {
@@ -50,11 +50,11 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
         if (M.size() == 0)//there is no terminal prod for current word
         {
             M << coveringTerminal(terminals[col], g);
-            if (fCoveringUniversal)
+            if (mAllowCoveringUniversal)
             {
                 M << g.Su;
             }
-            if (fCoveringStart && size == 1 && sentence.isPositive())
+            if (mAllowCoveringStart && size == 1 && sentence.isPositive())
             {
                 coveringStart(terminals[col], g);
                 M << g.S;
@@ -73,11 +73,11 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
                 M = getMatchingClassifiers(condition, g);
                 if (M.size() == 0 && sentence.isPositive())
                 {
-                    if (Random::rand() < pCoveringAggressive)
+                    if (Random::rand() < mProbCoveringAggressive)
                     {
                         M << coveringAggressive(condition, g);
                     }
-                    if (fCoveringFull && row == size-1 && col == 0)
+                    if (mAllowCoveringFull && row == size-1 && col == 0)
                     {
                         coveringFull(condition, g);
                         M << g.S;
@@ -137,7 +137,7 @@ NSymbol CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
     NSymbol newSymbol = NSymbol::generateNew();
     g.addClNormal(TClassifier(TProdRule(ProdCondition(newSymbol), TProdAction(term))));
-    if (fCoveringUniversal)
+    if (mAllowCoveringUniversal)
     {
         coveringUniversal(term, g);
     }

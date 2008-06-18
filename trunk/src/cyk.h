@@ -22,7 +22,8 @@
 #define CYK_H_
 
 #include "symbol.h"
-#include "prodaction.h"
+class NProdAction;
+class TProdAction;
 class Grammar;
 class Sentence;
 
@@ -45,11 +46,11 @@ private:
     static NSymbol coveringAggressive(const NProdAction& cond, Grammar& g);
     
     //parameters
-    static bool fCorrection;
-    static bool fCoveringStart;
-    static bool fCoveringFull;
-    static bool fCoveringUniversal;
-    static float pCoveringAggressive;
+    static bool mAllowCorrection;
+    static bool mAllowCoveringStart;
+    static bool mAllowCoveringFull;
+    static bool mAllowCoveringUniversal;
+    static float mProbCoveringAggressive;
 };
 
 #endif /*CYK_H_*/
