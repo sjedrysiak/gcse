@@ -25,13 +25,13 @@
 
 void GA::evolve(Grammar& g)
 {
-    if (g.PNSet().isEmpty() || g.PNSet().size() <= mEliteSize)
+    if (g.PNSet().isEmpty() || g.PNSet().size() <= Params::eliteSize())
     {
         return;
     }
 
     NClassifier cl1, cl2;
-    switch (Params::mSelectionCl1)
+    switch (Params::selectionCl1())
     {
         case RANDOM:
             cl1 = selectionRandom(g);
@@ -46,7 +46,7 @@ void GA::evolve(Grammar& g)
             cl1 = selectionRoulette(g);
             break;
     }
-    switch (Params::mSelectionCl2)
+    switch (Params::selectionCl2())
     {
         case RANDOM:
             cl2 = selectionRandom(g);
@@ -63,7 +63,7 @@ void GA::evolve(Grammar& g)
     }
 
     //Crossover
-    if (Random::rand() < Params::mCrossoverProb)
+    if (Random::rand() < Params::crossoverProb())
     {
         crossover(cl1, cl2);
     }
@@ -74,11 +74,11 @@ void GA::evolve(Grammar& g)
     mutation(cl2, symbols);
 
     //Inversion
-    if (Random::rand() < Params::mInversionProb)
+    if (Random::rand() < Params::inversionProb())
     {
         inversion(cl1);
     }
-    if (Random::rand() < Params::mInversionProb)
+    if (Random::rand() < Params::inversionProb())
     {
         inversion(cl2);
     }
@@ -86,9 +86,9 @@ void GA::evolve(Grammar& g)
     //Elite population
     QList<NClassifier> elite = g.PNSet().toList();
     QSet<NClassifier> temp;
-    temp.reserve(elite.size() - Params::mEliteSize);
+    temp.reserve(elite.size() - Params::eliteSize());
     qSort(elite);
-    for (int i = elite.size() - Params::mEliteSize; i > 0; i--)
+    for (int i = elite.size() - Params::eliteSize(); i > 0; i--)
     {
         temp += elite.takeFirst();
     }
@@ -128,7 +128,7 @@ NClassifier GA::selectionTournament(const Grammar& g)
     QList<NClassifier> PNList(g.PNSet().toList() );
     int PNSize = PNList.size();
 
-    if (Params::mTournamentSize >= PNSize)
+    if (Params::tournamentSize() >= PNSize)
     {
         bestCl = PNList[0];
         foreach (NClassifier cl, PNList)
@@ -146,7 +146,7 @@ NClassifier GA::selectionTournament(const Grammar& g)
         tournamentSet << bestCl;
 
         NClassifier cl;
-        while (tournamentSet.size() < Params::mTournamentSize)
+        while (tournamentSet.size() < Params::tournamentSize())
         {
             cl = PNList[Random::rand(PNSize)];
             tournamentSet << cl;
@@ -190,19 +190,19 @@ void GA::inversion(NClassifier& cl)
 void GA::mutation(NClassifier& cl, const QList<NSymbol>& symbols)
 {
     //mutation of the left side
-    if (Random::rand() < Params::mMutationProb)
+    if (Random::rand() < Params::mutationProb())
     {
         int i = Random::rand(symbols.size());
         cl.setProdCondition(ProdCondition(symbols[i]));
     }
     //mutation of first right symbol
-    if (Random::rand() < Params::mMutationProb)
+    if (Random::rand() < Params::mutationProb())
     {
         int i = Random::rand(symbols.size());
         cl.setProdAction(NProdAction(symbols[i], cl.prodAction().secondSymbol()));
     }
     //mutation of second right symbol
-    if (Random::rand() < Params::mMutationProb)
+    if (Random::rand() < Params::mutationProb())
     {
         int i = Random::rand(symbols.size());
         cl.setProdAction(NProdAction(cl.prodAction().firstSymbol(), symbols[i]));
