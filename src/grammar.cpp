@@ -129,12 +129,12 @@ void Grammar::addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set
     QList<NClassifier> vect(set.toList());
 
     QSet<NClassifier> K;
-    for (int i = 0; i < Params::mCrowdFactor; i++)
+    for (int i = 0; i < Params::crowdFactor(); i++)
     {
         NClassifier worst = vect[Random::rand(vect.size())];
         QSet<NClassifier> W;
         W << worst;
-        while (W.size() < Params::mCrowdSize)
+        while (W.size() < Params::crowdSize())
         {
             NClassifier temp = vect[Random::rand(vect.size())];
             W << temp;
@@ -168,12 +168,12 @@ void Grammar::addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set
     QList<TClassifier> classifierList(set.toList());
 
     QSet<TClassifier> K;
-    for (int i = 0; i < Params::mCrowdFactor; i++)
+    for (int i = 0; i < Params::crowdFactor(); i++)
     {
         TClassifier worst = classifierList[Random::rand(classifierList.size())];
         QSet<TClassifier> W;
         W << worst;
-        while (W.size() < Params::mCrowdSize)
+        while (W.size() < Params::crowdSize())
         {
             TClassifier temp = classifierList[Random::rand(classifierList.size())];
             W << temp;

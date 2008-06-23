@@ -21,6 +21,8 @@
 #ifndef PARAMS_H_
 #define PARAMS_H_
 
+#include "ga.h"
+
 class Params
 {
 public:
@@ -63,13 +65,13 @@ public:
     static int startNonterminalProdsAmount();
     static void setStartNonterminalProdsAmount(int amount);
     static int nonterminalSymbolsAmount();
-    static void setNonterminalSymbolsAmount(int count);
+    static void setNonterminalSymbolsAmount(int amount);
     static int terminalSymbolsAmount();
-    static void setTerminalSymbolsAmount(int count);
+    static void setTerminalSymbolsAmount(int amount);
     static int iterations();
-    static void setIterations(int count);
+    static void setIterations(int amount);
     static int maxEvolutionSteps();
-    static void setMaxEvolutionSteps(int count);
+    static void setMaxEvolutionSteps(int steps);
     static int positiveSentenceWeight();
     static void setPositiveSentenceWeight(int weight);
     static int negativeSentenceWeight();
