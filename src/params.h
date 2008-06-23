@@ -1,5 +1,25 @@
-#ifndef SETTINGS_H_
-#define SETTINGS_H_
+/***************************************************************************
+ *   Copyright (C) 2008 by Sylwester Jędrysiak                             *
+ *   sylwester.jedrysiak@gmail.com                                         *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#ifndef PARAMS_H_
+#define PARAMS_H_
 
 class Params
 {
@@ -12,20 +32,20 @@ public:
     static void setAllowCoveringFull(bool allow);
     static bool allowCoveringUniversal();
     static void setAllowCoveringUniversal(bool allow);
-    static float probCoveringAggressive();
-    static void probCoveringAggressive(float probability);
+    static float coveringAggressiveProb();
+    static void setCoveringAggressiveProb(float probability);
     static bool allowGA();
     static void setAllowGA(bool allow);
     static GA::SelectionType selectionCl1();
     static void setSelectionCl1(GA::SelectionType selection);
     static GA::SelectionType selectionCl2();
     static void setSelectionCl2(GA::SelectionType selection);
-    static float probCrossover();
-    static void setProbCrossover(float probability);
-    static float probMutation();
-    static void setProbMutation(float probability);
-    static float probInversion();
-    static void setProbInversion(float probability);
+    static float crossoverProb();
+    static void setCrossoverProb(float probability);
+    static float mutationProb();
+    static void setMutationProb(float probability);
+    static float inversionProb();
+    static void setInversionProb(float probability);
     static int eliteSize();
     static void setEliteSize(int size);
     static int tournamentSize();
@@ -36,16 +56,16 @@ public:
     static void setCrowdSize(int size);
     static int baseAmount();
     static void setBaseAmount(int amount);
-    static int rateAmountFactor();
-    static void setRateAmountFactor(int rate);
+    static int renouncedAmountFactor();
+    static void setRenouncedAmountFactor(int factor);
     static int populationSize();
     static void setPopulationSize(int size);
-    static int nonterminalProdsStartCount();
-    static void setNonterminalProdsStartCount(int count);
-    static int nonterminalSymbolsCount();
-    static void setNonterminalSymbolsCount(int count);
-    static int terminalSymbolsCount();
-    static void setTerminalSymbolsCount(int count);
+    static int startNonterminalProdsAmount();
+    static void setStartNonterminalProdsAmount(int amount);
+    static int nonterminalSymbolsAmount();
+    static void setNonterminalSymbolsAmount(int count);
+    static int terminalSymbolsAmount();
+    static void setTerminalSymbolsAmount(int count);
     static int iterations();
     static void setIterations(int count);
     static int maxEvolutionSteps();
@@ -72,7 +92,7 @@ private:
     //allow to run universal covering
     static bool mAllowCoveringUniversal;
     //aggressive covering probability
-    static float mProbCoveringAggressive;
+    static float mCoveringAggressiveProb;
 
     //parameters for ga
     //allow to run ga
@@ -82,47 +102,48 @@ private:
     //selection type for second classifier
     static GA::SelectionType mSelectionCl2;
     //crossover probability
-    static float mProbCrossover;
+    static float mCrossoverProb;
     //mutation probability
-    static float mProbMutation;
+    static float mMutationProb;
     //inversion probability
-    static float mProbInversion;
+    static float mInversionProb;
+
     //elite population size [1,30]
-    //TODO ograniczyc przedzial wartosci
     static int mEliteSize;
     //tournament population size [1,30]
-    //TODO ograniczyc przedzial wartosci
     static int mTournamentSize;
     //crowding factor [1,30]
     static int mCrowdFactor;
     //crowding population size [1,30]
     static int mCrowdSize;
-    //TODO parametr kwota bazowa ba [0,15]
+
+    //parsing parameters
+    //classifier base amount [0,15]
     static int mBaseAmount;
-    //TODO parametr wspolczynnik zmniejszania kwoty bazowej raf [0,15]
-    static int mRateAmountFactor;
-    //TODO parametr rozmiar populacji klasyfikatorow
+    //renounced amount factor [0,15]
+    static int mRenouncedAmountFactor;
+    //classifiers population size ( = mStartNonterminalProdsAmount + PT.size())
     static int mPopulationSize;
-    //TODO parametr liczba poczatkowych produkcji nieterminalnych [1,30]
-    static int mNonterminalProdsStartCount;
-    //TODO parametr liczba symboli nieterminalnych [1,30]
-    static int mNonterminalSymbolsCount;
-    //TODO parametr liczba symboli terminalnych
-    static int mTerminalSymbolsCount;
-    //TODO parametr liczba iteracji 10, 50
+    //start nonterminal classifiers amount [1,30]
+    static int mStartNonterminalProdsAmount;
+    //nonterminal symbols amount [1,30]
+    static int mNonterminalSymbolsAmount;
+    //terminal symbols amount
+    static int mTerminalSymbolsAmount;
+    //number of iterations 10, 50
     static int mIterations;
-    //TODO parametr maksymalna liczba krokow ewolucyjnych [1,50 000]
+    //max evolution steps [1,50 000]
     static int mMaxEvolutionSteps;
-    //TODO parametr waga rozbioru zdania poprawnego [1,20]
+    //positive sentence weight [1,20]
     static int mPositiveSentenceWeight;
-    //TODO parametr waga rozbioru zdania niepoprawnego [1,20]
+    //negative sentence weight [1,20]
     static int mNegativeSentenceWeight;
-    //TODO parametr waga funkcji klasycznej klasyfikatora [1,20]
+    //classic function weight [1,20]
     static int mClassicFunWeight;
-    //TODO parametr waga funkcji plodnosci klasyfikatora [1,15]
+    //fertility function weight [1,15]
     static int mFertilityFunWeight;
-    //TODO parametr miara uzytecznosci klasyfikatora niebioracego udzialu w parsowaniu [1,10]
+    //unused classifier fitness [1,10]
     static double mUnusedClassifierFitness;
 };
 
-#endif /*SETTINGS_H_*/
+#endif /*PARAMS_H_*/

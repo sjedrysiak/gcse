@@ -68,7 +68,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
                 M = getMatchingClassifiers(condition, g);
                 if (M.size() == 0 && sentence.isPositive())
                 {
-                    if (Random::rand() < Params::mProbCoveringAggressive)
+                    if (Random::rand() < Params::mCoveringAggressiveProb)
                     {
                         M << Params::coveringAggressive(condition, g);
                     }

@@ -63,7 +63,7 @@ void GA::evolve(Grammar& g)
     }
 
     //Crossover
-    if (Random::rand() < Params::mProbCrossover)
+    if (Random::rand() < Params::mCrossoverProb)
     {
         crossover(cl1, cl2);
     }
@@ -74,11 +74,11 @@ void GA::evolve(Grammar& g)
     mutation(cl2, symbols);
 
     //Inversion
-    if (Random::rand() < Params::mProbInversion)
+    if (Random::rand() < Params::mInversionProb)
     {
         inversion(cl1);
     }
-    if (Random::rand() < Params::mProbInversion)
+    if (Random::rand() < Params::mInversionProb)
     {
         inversion(cl2);
     }
@@ -190,19 +190,19 @@ void GA::inversion(NClassifier& cl)
 void GA::mutation(NClassifier& cl, const QList<NSymbol>& symbols)
 {
     //mutation of the left side
-    if (Random::rand() < Params::mProbMutation)
+    if (Random::rand() < Params::mMutationProb)
     {
         int i = Random::rand(symbols.size());
         cl.setProdCondition(ProdCondition(symbols[i]));
     }
     //mutation of first right symbol
-    if (Random::rand() < Params::mProbMutation)
+    if (Random::rand() < Params::mMutationProb)
     {
         int i = Random::rand(symbols.size());
         cl.setProdAction(NProdAction(symbols[i], cl.prodAction().secondSymbol()));
     }
     //mutation of second right symbol
-    if (Random::rand() < Params::mProbMutation)
+    if (Random::rand() < Params::mMutationProb)
     {
         int i = Random::rand(symbols.size());
         cl.setProdAction(NProdAction(cl.prodAction().firstSymbol(), symbols[i]));
