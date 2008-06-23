@@ -2,7 +2,10 @@ TEMPLATE = app
 TARGET = gcse
 QT += core \
     gui
-HEADERS += src/log.h \
+HEADERS += src/params.h \
+    src/sentence.h \
+    src/ga.h \
+    src/log.h \
     src/classifier.h \
     src/grammar.h \
     src/prodcondition.h \
@@ -12,7 +15,10 @@ HEADERS += src/log.h \
     src/mainwindow.h \
     src/grammareditor.h \
     src/random.h
-SOURCES += src/log.cpp \
+SOURCES += src/params.cpp \
+    src/sentence.cpp \
+    src/ga.cpp \
+    src/log.cpp \
     src/classifier.cpp \
     src/grammar.cpp \
     src/prodcondition.cpp \
@@ -24,5 +30,6 @@ SOURCES += src/log.cpp \
     src/grammareditor.cpp \
     src/random.cpp
 FORMS += gui/mainwindow.ui \
-	gui/grammareditor.ui
+    gui/grammareditor.ui
 RESOURCES += gui/icons.qrc
+CONFIG += debug_and_release
