@@ -46,26 +46,6 @@ private:
     static void crossover(NClassifier& first, NClassifier& second);
     static void inversion(NClassifier& cl);
     static void mutation(NClassifier& cl, const QList<NSymbol>& symbols);
-
-    //parameters
-    //allow to run ga
-    static bool mAllowGA;
-    //selection type for first classifier
-    static SelectionType mSelectionCl1;
-    //selection type for second classifier
-    static SelectionType mSelectionCl2;
-    //crossover probability
-    static float mProbCrossover;
-    //crossover probability
-    static float mProbMutation;
-    //crossover probability
-    static float mProbInversion;
-    //elite population size [1,30]
-    //TODO ograniczyc przedzial wartosci
-    static int mEliteSize;
-    //tournament population size [1,30]
-    //TODO ograniczyc przedzial wartosci
-    static int mTournamentSize;
 };
 
 #endif /*GA_H_*/

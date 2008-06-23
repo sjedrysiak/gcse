@@ -44,13 +44,6 @@ private:
     static void coveringStart(const TSymbol& term, Grammar& g);
     static void coveringFull(const NProdAction& cond, Grammar& g);
     static NSymbol coveringAggressive(const NProdAction& cond, Grammar& g);
-    
-    //parameters
-    static bool mAllowCorrection;
-    static bool mAllowCoveringStart;
-    static bool mAllowCoveringFull;
-    static bool mAllowCoveringUniversal;
-    static float mProbCoveringAggressive;
 };
 
 #endif /*CYK_H_*/
