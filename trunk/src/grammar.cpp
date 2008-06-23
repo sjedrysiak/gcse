@@ -20,11 +20,9 @@
 
 #include "grammar.h"
 #include "random.h"
+#include "params.h"
 #include <QStringList>
 #include <QList>
-
-int Grammar::mCrowdFactor = 5;
-int Grammar::mCrowdSize = 5;
 
 Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
     S(start), Su(universal)
@@ -123,15 +121,20 @@ void Grammar::addClNormal(const TClassifier& cl)
 
 void Grammar::addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set)
 {
+    if (set.contains(newCl))
+    {
+        return;
+    }
+
     QList<NClassifier> vect(set.toList());
 
     QSet<NClassifier> K;
-    for (int i = 0; i < mCrowdFactor; i++)
+    for (int i = 0; i < Params::mCrowdFactor; i++)
     {
         NClassifier worst = vect[Random::rand(vect.size())];
         QSet<NClassifier> W;
         W << worst;
-        while (W.size() < mCrowdSize)
+        while (W.size() < Params::mCrowdSize)
         {
             NClassifier temp = vect[Random::rand(vect.size())];
             W << temp;
@@ -157,17 +160,22 @@ void Grammar::addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set
 
 void Grammar::addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set)
 {
-    QList<TClassifier> vect(set.toList());
+    if (set.contains(newCl))
+    {
+        return;
+    }
+
+    QList<TClassifier> classifierList(set.toList());
 
     QSet<TClassifier> K;
-    for (int i = 0; i < mCrowdFactor; i++)
+    for (int i = 0; i < Params::mCrowdFactor; i++)
     {
-        TClassifier worst = vect[Random::rand(vect.size())];
+        TClassifier worst = classifierList[Random::rand(classifierList.size())];
         QSet<TClassifier> W;
         W << worst;
-        while (W.size() < mCrowdSize)
+        while (W.size() < Params::mCrowdSize)
         {
-            TClassifier temp = vect[Random::rand(vect.size())];
+            TClassifier temp = classifierList[Random::rand(classifierList.size())];
             W << temp;
             if (temp.fitness() < worst.fitness())
             {

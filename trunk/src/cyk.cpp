@@ -20,14 +20,9 @@
 
 #include "cyk.h"
 #include "sentence.h"
+#include "params.h"
 #include <QString>
 #include <QStringList>
-
-bool CYK::mAllowCorrection = true;
-bool CYK::mAllowCoveringFull = false;
-bool CYK::mAllowCoveringStart = true;
-bool CYK::mAllowCoveringUniversal = false;
-float CYK::mProbCoveringAggressive = 0.0;
 
 bool CYK::parse(const Sentence& sentence, Grammar& g)
 {
@@ -50,11 +45,11 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
         if (M.size() == 0)//there is no terminal prod for current word
         {
             M << coveringTerminal(terminals[col], g);
-            if (mAllowCoveringUniversal)
+            if (Params::mAllowCoveringUniversal)
             {
                 M << g.Su;
             }
-            if (mAllowCoveringStart && size == 1 && sentence.isPositive())
+            if (Params::mAllowCoveringStart && size == 1 && sentence.isPositive())
             {
                 coveringStart(terminals[col], g);
                 M << g.S;
@@ -73,11 +68,11 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
                 M = getMatchingClassifiers(condition, g);
                 if (M.size() == 0 && sentence.isPositive())
                 {
-                    if (Random::rand() < mProbCoveringAggressive)
+                    if (Random::rand() < Params::mProbCoveringAggressive)
                     {
-                        M << coveringAggressive(condition, g);
+                        M << Params::coveringAggressive(condition, g);
                     }
-                    if (mAllowCoveringFull && row == size-1 && col == 0)
+                    if (Params::mAllowCoveringFull && row == size-1 && col == 0)
                     {
                         coveringFull(condition, g);
                         M << g.S;
@@ -137,7 +132,7 @@ NSymbol CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
     NSymbol newSymbol = NSymbol::generateNew();
     g.addClNormal(TClassifier(TProdRule(ProdCondition(newSymbol), TProdAction(term))));
-    if (mAllowCoveringUniversal)
+    if (Params::mAllowCoveringUniversal)
     {
         coveringUniversal(term, g);
     }
