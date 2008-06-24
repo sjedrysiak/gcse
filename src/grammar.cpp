@@ -29,10 +29,10 @@ Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
 {
     this->N << this->S;
     this->N << this->Su;
-    this->generateGrammar();
+    this->initGrammar();
 }
 
-void Grammar::generateGrammar()
+void Grammar::initGrammar()
 {
     NSymbol A("A"), B("B"), C("C"), D("D");
     TSymbol a("a"), b("b"), c("c");
@@ -51,6 +51,11 @@ void Grammar::generateGrammar()
     this->PT << TClassifier( TProdRule( ProdCondition(C), TProdAction(a) ) ); // C -> a
     this->PT << TClassifier( TProdRule( ProdCondition(B), TProdAction(b) ) ); // B -> b
     this->PT << TClassifier( TProdRule( ProdCondition(A), TProdAction(a) ) ); // A -> a
+}
+
+void Grammar::induct()
+{
+    //
 }
 
 const QSet<NSymbol>& Grammar::NSet() const
