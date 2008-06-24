@@ -32,7 +32,8 @@ public:
     const NSymbol Su;
 
     Grammar(const NSymbol& start = "Start", const NSymbol& universal = "Univ");
-    void generateGrammar();
+    void initGrammar();
+    void induct();
     const QSet<NSymbol>& NSet() const;
     const QSet<TSymbol>& TSet() const;
     const QSet<NClassifier>& PNSet() const;

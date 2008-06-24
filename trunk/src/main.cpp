@@ -19,12 +19,12 @@
  ***************************************************************************/
 
 //#include <QtCore>
-//#include <QtGui>
+#include <QtGui>
 #include <QApplication>
 #include <QTextCodec>
 #include <QTime> //for qsrand(currentTime)
-#include "mainwindow.h"
-#include "grammareditor.h"
+//#include "mainwindow.h"
+//#include "grammareditor.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -57,11 +57,13 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
-    MainWindow mainWindow;
-    Grammar g;
-    GrammarEditor* grammarEditor = new GrammarEditor(&g);
-    mainWindow.setCentralWidget(grammarEditor);
-    mainWindow.show();
+    QLabel label("testaaaaaaaaaaaaaaaaa");
+    label.show();
+//    MainWindow mainWindow;
+//    Grammar g;
+//    GrammarEditor* grammarEditor = new GrammarEditor(&g);
+//    mainWindow.setCentralWidget(grammarEditor);
+//    mainWindow.show();
 
     return app.exec();
 }
