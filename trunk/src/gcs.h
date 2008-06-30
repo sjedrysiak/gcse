@@ -4,9 +4,11 @@
 class GCS
 {
 public:
-	GCS();
-	void run();
-	virtual ~GCS();
+    GCS();
+    void run();
+    virtual ~GCS();
+private:
+    Grammar mGrammar;
 };
 
 #endif /*GCS_H_*/

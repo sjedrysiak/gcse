@@ -53,9 +53,30 @@ void Grammar::initGrammar()
     this->PT << TClassifier( TProdRule( ProdCondition(A), TProdAction(a) ) ); // A -> a
 }
 
-void Grammar::induct()
+void Grammar::induct(const QList<Sentence>& sentences)
 {
-    //
+    //init parametry produkcji
+    Grammar corrected(*this);
+    //copy parametry produkcji do G*
+    if (Params::allowCorrection())
+    {
+        //corrected = this->correction();
+    }
+    foreach (Sentence sentence, sentences)
+    {
+        bool result = CYK::parse(sentence, corrected);
+        //aktualizacja parametrów produkcji
+    }
+    //copy parametry produkcji z G* do G
+    foreach (NClassifier cl, this->PNSet())
+    {
+        //oblicz fitness dla kazdego cl w G
+    }
+}
+
+Grammar Grammar::correction()
+{
+    return NULL;
 }
 
 const QSet<NSymbol>& Grammar::NSet() const

@@ -33,7 +33,8 @@ public:
 
     Grammar(const NSymbol& start = "Start", const NSymbol& universal = "Univ");
     void initGrammar();
-    void induct();
+    void induct(const QList<Sentence>& sentences);
+    Grammar correction();
     const QSet<NSymbol>& NSet() const;
     const QSet<TSymbol>& TSet() const;
     const QSet<NClassifier>& PNSet() const;

@@ -2,20 +2,20 @@
 
 GCS::GCS()
 {
+    //wczytaj zdania do R
+    //ustaw parametry modelu
 }
 
 void GCS::run()
 {
-    //wczytaj zdania do R
-    //ustaw parametry modelu
-    //initGrammar
-    while(Params::iterations())
+    this->mGrammar.initGrammar();
+    while (Params::iterations())
     {
-        //indukuj gramatyke
+        this->mGrammar.induct(sentences);
         //oblicz fitness dla G
         if (Params::allowGA())
         {
-            GA::evolve(Grammar());
+            GA::evolve(this->mGrammar);
         }
     }
 }
