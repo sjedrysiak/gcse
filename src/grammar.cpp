@@ -30,6 +30,10 @@ Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
     this->N << this->S;
     this->N << this->Su;
     this->initGrammar();
+    this->mFitness = 0.0;
+    this->mNumberOfSentences = 0;
+    this->mParsedPositive = 0;
+    this->mNotParsedNegative = 0;
 }
 
 void Grammar::initGrammar()
@@ -55,17 +59,26 @@ void Grammar::initGrammar()
 
 void Grammar::induct(const QList<Sentence>& sentences)
 {
+    this->mNumberOfSentences = sentences.size();
     //init parametry produkcji
-    Grammar corrected(*this);
+    Grammar operatingGrammar(*this);
     //copy parametry produkcji do G*
     if (Params::allowCorrection())
     {
-        //corrected = this->correction();
+        operatingGrammar->correction();
     }
     foreach (Sentence sentence, sentences)
     {
-        bool result = CYK::parse(sentence, corrected);
-        //aktualizacja parametrów produkcji
+        bool result = CYK::parse(sentence, operatingGrammar);
+        if (result == true && sentence.isPositive())
+        {
+            this->mParsedPositive++;
+        }
+        else if (result == false && !sentence.isPositive())
+        {
+            this->mNotParsedNegative++;
+        }
+        //aktualizacja parametrów produkcji (przenieść do parse())
     }
     //copy parametry produkcji z G* do G
     foreach (NClassifier cl, this->PNSet())
@@ -74,9 +87,19 @@ void Grammar::induct(const QList<Sentence>& sentences)
     }
 }
 
-Grammar Grammar::correction()
+void Grammar::correction()
 {
-    return NULL;
+}
+
+float Grammar::computeFitness()
+{
+    this->mFitness = (float)this->mParsedPositive + this->mNotParsedNegative / this->mNumberOfSentences;
+    return this->mFitness;
+}
+
+float Grammar::fintess() const
+{
+    return this->mFitness;
 }
 
 const QSet<NSymbol>& Grammar::NSet() const

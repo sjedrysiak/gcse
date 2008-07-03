@@ -9,10 +9,11 @@ GCS::GCS()
 void GCS::run()
 {
     this->mGrammar.initGrammar();
-    while (Params::iterations())
+    int step = 0;
+    while (step < Params::maxEvolutionSteps() && this->mGrammar.fintess() < 1.0)
     {
         this->mGrammar.induct(sentences);
-        //oblicz fitness dla G
+        this->mGrammar.computeFitness();
         if (Params::allowGA())
         {
             GA::evolve(this->mGrammar);

@@ -31,10 +31,12 @@ public:
     const NSymbol S;
     const NSymbol Su;
 
-    Grammar(const NSymbol& start = "Start", const NSymbol& universal = "Univ");
+    Grammar(const NSymbol& start = "_start_", const NSymbol& universal = "_univ_");
     void initGrammar();
     void induct(const QList<Sentence>& sentences);
-    Grammar correction();
+    void correction();
+    float computeFitness();
+    float fintess() const;
     const QSet<NSymbol>& NSet() const;
     const QSet<TSymbol>& TSet() const;
     const QSet<NClassifier>& PNSet() const;
@@ -58,6 +60,11 @@ private:
     QSet<TSymbol> T;
     QSet<NClassifier> PN;
     QSet<TClassifier> PT;
+    //for fitness computing
+    float mFitness;
+    int mNumberOfSentences;
+    int mParsedPositive;
+    int mNotParsedNegative;
 };
 
 #endif /*GRAMMAR_H_*/
