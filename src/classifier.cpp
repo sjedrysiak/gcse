@@ -24,23 +24,50 @@
 //class Classifier (only for inheritence)
 ///////////////////////////////////////////////////
 
+int Classifier::mffmax = 0;
+int Classifier::mffmin = 0;
+
 Classifier::Classifier()
+{
+    this->resetParams();
+}
+
+float Classifier::fitness() const
+{
+    return this->mFitness;
+}
+
+float Classifier::computeFitness()
+{
+    float classicFun = 0.0;
+    if (this->mup > 0 || this->mun > 0)//classifier used at least once
+    {
+        classicFun = (float)(Params::positiveSentenceWeight() * this->mup) / (Params::negativeSentenceWeight() * this->mun + Params::positiveSentenceWeight() * this->mup);
+    }
+    else//classifier not used
+    {
+        classicFun = Params::unusedClassifierFitness();
+    }
+
+    float fertilityFun = 0.0;
+    fertilityFun = (float)(this->mp - this->md - mffmin)/(mffmax - mffmin);
+
+    this->mFitness = (Params::classicFunWeight() * classicFun + Params::fertilityFunWeight() * fertilityFun)/(Params::classicFunWeight() + Params::fertilityFunWeight());
+    return this->mFitness;
+}
+
+void Classifier::setFitness(float f)
+{
+    this->mFitness = f;
+}
+
+void Classifier::resetParams()
 {
     this->mFitness = 0.0;
     this->mup = 0;
     this->mun = 0;
     this->mp = 0;
     this->md = 0;
-}
-
-double Classifier::fitness() const
-{
-    return this->mFitness;
-}
-
-void Classifier::setFitness(double f)
-{
-    this->mFitness = f;
 }
 
 bool Classifier::operator <(const Classifier& other) const

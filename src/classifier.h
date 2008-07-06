@@ -26,17 +26,21 @@
 class Classifier
 {
 public:
-    double fitness() const;
-    void setFitness(double f);
+    float fitness() const;
+    float computeFitness();
+    void setFitness(float f);
+    void resetParams();
     bool operator <(const Classifier& other) const;
 protected:
     Classifier();
     //metody do operacji na parametrach...
-    double mFitness;
-    int mup;
-    int mun;
-    int mp;
-    int md;
+    float mFitness;
+    unsigned int mup;
+    unsigned int mun;
+    unsigned int mp;
+    unsigned int md;
+    static int mffmax;
+    static int mffmin;
 };
 
 class NClassifier : public Classifier, public NProdRule
