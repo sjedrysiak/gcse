@@ -21,6 +21,7 @@
 #include "cyk.h"
 #include "sentence.h"
 #include "params.h"
+#include "grammar.h"
 #include <QString>
 #include <QStringList>
 

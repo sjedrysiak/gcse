@@ -1,4 +1,5 @@
 #include "gcs.h"
+#include "params.h"
 
 GCS::GCS()
 {
@@ -12,7 +13,7 @@ void GCS::run()
     int step = 0;
     while (step < Params::maxEvolutionSteps() && this->mGrammar.fintess() < 1.0)
     {
-        this->mGrammar.induct(sentences);
+        this->mGrammar.induct(this->mSentences);
         this->mGrammar.computeFitness();
         if (Params::allowGA())
         {

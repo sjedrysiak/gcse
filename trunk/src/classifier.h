@@ -22,15 +22,17 @@
 #define CLASSIFIER_H_
 
 #include "prodrule.h"
+class Grammar;
 
 class Classifier
 {
 public:
     float fitness() const;
-    float computeFitness();
+    float computeFitness(const Grammar& g);
     void setFitness(float f);
     void resetParams();
     bool operator <(const Classifier& other) const;
+    int pointsDifference() const;
 protected:
     Classifier();
     //metody do operacji na parametrach...
@@ -39,8 +41,8 @@ protected:
     unsigned int mun;
     unsigned int mp;
     unsigned int md;
-    static int mffmax;
-    static int mffmin;
+    static int mMaxPointsDifference;
+    static int mMinPointsDifference;
 };
 
 class NClassifier : public Classifier, public NProdRule

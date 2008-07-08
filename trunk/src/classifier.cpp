@@ -19,13 +19,15 @@
  ***************************************************************************/
 
 #include "classifier.h"
+#include "params.h"
+#include "grammar.h"
 
 ///////////////////////////////////////////////////
 //class Classifier (only for inheritence)
 ///////////////////////////////////////////////////
 
-int Classifier::mffmax = 0;
-int Classifier::mffmin = 0;
+int Classifier::mMaxPointsDifference = 0;
+int Classifier::mMinPointsDifference = 0;
 
 Classifier::Classifier()
 {
@@ -37,7 +39,7 @@ float Classifier::fitness() const
     return this->mFitness;
 }
 
-float Classifier::computeFitness()
+float Classifier::computeFitness(const Grammar& g)
 {
     float classicFun = 0.0;
     if (this->mup > 0 || this->mun > 0)//classifier used at least once
@@ -50,7 +52,7 @@ float Classifier::computeFitness()
     }
 
     float fertilityFun = 0.0;
-    fertilityFun = (float)(this->mp - this->md - mffmin)/(mffmax - mffmin);
+    fertilityFun = (float)(this->mp - this->md - g.minClPointsDifference())/(g.maxClPointsDifference() - g.minClPointsDifference());
 
     this->mFitness = (Params::classicFunWeight() * classicFun + Params::fertilityFunWeight() * fertilityFun)/(Params::classicFunWeight() + Params::fertilityFunWeight());
     return this->mFitness;
@@ -73,6 +75,11 @@ void Classifier::resetParams()
 bool Classifier::operator <(const Classifier& other) const
 {
     return this->fitness() < other.fitness();
+}
+
+int Classifier::pointsDifference() const
+{
+    return this->mp - this->md;
 }
 
 ///////////////////////////////////////////////////
