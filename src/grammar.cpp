@@ -21,6 +21,8 @@
 #include "grammar.h"
 #include "random.h"
 #include "params.h"
+#include "cyk.h"
+#include "sentence.h"
 #include <QStringList>
 #include <QList>
 
@@ -34,6 +36,8 @@ Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
     this->mNumberOfSentences = 0;
     this->mParsedPositive = 0;
     this->mNotParsedNegative = 0;
+    this->mMinClPointsDifference = 0;
+    this->mMaxClPointsDifference = 0;
 }
 
 void Grammar::initGrammar()
@@ -65,7 +69,7 @@ void Grammar::induct(const QList<Sentence>& sentences)
     //copy parametry produkcji do G*
     if (Params::allowCorrection())
     {
-        operatingGrammar->correction();
+        operatingGrammar.correction();
     }
     foreach (Sentence sentence, sentences)
     {
@@ -83,7 +87,7 @@ void Grammar::induct(const QList<Sentence>& sentences)
     //copy parametry produkcji z G* do G
     foreach (NClassifier cl, this->PNSet())
     {
-        //oblicz fitness dla kazdego cl w G
+        cl.computeFitness(*this);
     }
 }
 
@@ -93,7 +97,7 @@ void Grammar::correction()
 
 float Grammar::computeFitness()
 {
-    this->mFitness = (float)this->mParsedPositive + this->mNotParsedNegative / this->mNumberOfSentences;
+    this->mFitness = (float)(this->mParsedPositive + this->mNotParsedNegative) / this->mNumberOfSentences;
     return this->mFitness;
 }
 
@@ -244,6 +248,26 @@ void Grammar::addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set
     }
     set.remove(mostSimilar);
     set << newCl;
+}
+
+int Grammar::maxClPointsDifference() const
+{
+    return this->mMaxClPointsDifference;
+}
+
+void Grammar::setMaxClPointsDifference(int value)
+{
+    this->mMaxClPointsDifference = value;
+}
+
+int Grammar::minClPointsDifference() const
+{
+    return this->mMinClPointsDifference;
+}
+
+void Grammar::setMinClPointsDifference(int value)
+{
+    this->mMinClPointsDifference = value;
 }
 
 Grammar::~Grammar()

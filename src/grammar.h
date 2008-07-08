@@ -24,6 +24,7 @@
 #include <QSet>
 #include "symbol.h"
 #include "classifier.h"
+#include "sentence.h"
 
 class Grammar
 {
@@ -54,6 +55,11 @@ public:
     static void addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set);
     static void addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set);
 
+    int maxClPointsDifference() const;
+    void setMaxClPointsDifference(int value);
+    int minClPointsDifference() const;
+    void setMinClPointsDifference(int value);
+
     ~Grammar();
 private:
     QSet<NSymbol> N;
@@ -65,6 +71,8 @@ private:
     int mNumberOfSentences;
     int mParsedPositive;
     int mNotParsedNegative;
+    int mMinClPointsDifference;
+    int mMaxClPointsDifference;
 };
 
 #endif /*GRAMMAR_H_*/
