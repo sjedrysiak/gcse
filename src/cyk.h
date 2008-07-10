@@ -22,6 +22,8 @@
 #define CYK_H_
 
 #include "symbol.h"
+#include "QVector"
+#include "QSet"
 class NProdAction;
 class TProdAction;
 class Grammar;
