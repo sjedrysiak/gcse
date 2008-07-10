@@ -22,6 +22,7 @@
 #include "sentence.h"
 #include "params.h"
 #include "grammar.h"
+#include "random.h"
 #include <QString>
 #include <QStringList>
 
@@ -46,11 +47,11 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
         if (M.size() == 0)//there is no terminal prod for current word
         {
             M << coveringTerminal(terminals[col], g);
-            if (Params::mAllowCoveringUniversal)
+            if (Params::allowCoveringUniversal())
             {
                 M << g.Su;
             }
-            if (Params::mAllowCoveringStart && size == 1 && sentence.isPositive())
+            if (Params::allowCoveringStart() && size == 1 && sentence.isPositive())
             {
                 coveringStart(terminals[col], g);
                 M << g.S;
@@ -69,11 +70,11 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
                 M = getMatchingClassifiers(condition, g);
                 if (M.size() == 0 && sentence.isPositive())
                 {
-                    if (Random::rand() < Params::mCoveringAggressiveProb)
+                    if (Random::rand() < Params::coveringAggressiveProb())
                     {
-                        M << Params::coveringAggressive(condition, g);
+                        M << coveringAggressive(condition, g);
                     }
-                    if (Params::mAllowCoveringFull && row == size-1 && col == 0)
+                    if (Params::allowCoveringFull() && row == size-1 && col == 0)
                     {
                         coveringFull(condition, g);
                         M << g.S;
@@ -133,7 +134,7 @@ NSymbol CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
     NSymbol newSymbol = NSymbol::generateNew();
     g.addClNormal(TClassifier(TProdRule(ProdCondition(newSymbol), TProdAction(term))));
-    if (Params::mAllowCoveringUniversal)
+    if (Params::allowCoveringUniversal())
     {
         coveringUniversal(term, g);
     }
@@ -147,17 +148,23 @@ void CYK::coveringUniversal(const TSymbol& term, Grammar& g)
 
 void CYK::coveringStart(const TSymbol& term, Grammar& g)
 {
-    g.addClWithCrowding(TClassifier(TProdRule(ProdCondition(g.S), TProdAction(term))), g.PTSet());
+    QSet<TClassifier> set = g.PTSet();
+    Grammar::addClWithCrowding(TClassifier(TProdRule(ProdCondition(g.S), TProdAction(term))), set);
+    g.setPT(set);
 }
 
 void CYK::coveringFull(const NProdAction& cond, Grammar& g)
 {
-    g.addClWithCrowding(NClassifier(NProdRule(ProdCondition(g.S), NProdAction(cond))), g.PNSet());
+    QSet<NClassifier> set = g.PNSet();
+    Grammar::addClWithCrowding(NClassifier(NProdRule(ProdCondition(g.S), NProdAction(cond))), set);
+    g.setPN(set);
 }
 
 NSymbol CYK::coveringAggressive(const NProdAction& cond, Grammar& g)
 {
     NSymbol newSymbol = NSymbol::generateNew();
-    g.addClWithCrowding(NClassifier(NProdRule(ProdCondition(newSymbol), NProdAction(cond))), g.PNSet());
+    QSet<NClassifier> set = g.PNSet();
+    Grammar::addClWithCrowding(NClassifier(NProdRule(ProdCondition(newSymbol), NProdAction(cond))), set);
+    g.setPN(set);
     return newSymbol;
 }
