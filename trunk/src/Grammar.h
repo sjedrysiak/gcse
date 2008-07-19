@@ -21,58 +21,60 @@
 #ifndef GRAMMAR_H_
 #define GRAMMAR_H_
 
-#include <QSet>
-#include "symbol.h"
-#include "classifier.h"
-#include "sentence.h"
+#include <QList>
+#include "Symbol.h"
+#include "Classifier.h"
+#include "Sentence.h"
 
 class Grammar
 {
 public:
-    const NSymbol S;
-    const NSymbol Su;
+	const NSymbol S;
+	const NSymbol Su;
 
-    Grammar(const NSymbol& start = "_start_", const NSymbol& universal = "_univ_");
-    void initGrammar();
-    void induct(const QList<Sentence>& sentences);
-    void correction();
-    float computeFitness();
-    float fintess() const;
-    const QSet<NSymbol>& NSet() const;
-    const QSet<TSymbol>& TSet() const;
-    const QSet<NClassifier>& PNSet() const;
-    const QSet<TClassifier>& PTSet() const;
-    void setN(const QSet<NSymbol>& source);
-    void setT(const QSet<TSymbol>& source);
-    void setPN(const QSet<NClassifier>& source);
-    void setPT(const QSet<TClassifier>& source);
+	Grammar(const NSymbol& start = "_S_", const NSymbol& universal = "_U_");
+	void initGrammar();
+	void induct(const QList<Sentence>& sentences);
+	void initClParams();
+	void correction();
+	float computeFitness();
+	float fitness() const;
+	void copyClParameters(const Grammar& other);
+	const QList<NSymbol>& NSet() const;
+	const QList<TSymbol>& TSet() const;
+	const QList<NClassifier>& PNSet() const;
+	const QList<TClassifier>& PTSet() const;
+	void setN(const QList<NSymbol>& source);
+	void setT(const QList<TSymbol>& source);
+	void setPN(const QList<NClassifier>& source);
+	void setPT(const QList<TClassifier>& source);
 
-    //adding methods
-    void addSymbol(const NSymbol& s);
-    void addSymbol(const TSymbol& s);
-    void addClNormal(const NClassifier& cl);
-    void addClNormal(const TClassifier& cl);
-    static void addClWithCrowding(const NClassifier& newCl, QSet<NClassifier>& set);
-    static void addClWithCrowding(const TClassifier& newCl, QSet<TClassifier>& set);
+	//adding methods
+	void addSymbol(const NSymbol& s);
+	void addSymbol(const TSymbol& s);
+	void addClNormal(const NClassifier& cl);
+	void addClNormal(const TClassifier& cl);
+	static void addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set);
+	static void addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set);
 
-    int maxClPointsDifference() const;
-    void setMaxClPointsDifference(int value);
-    int minClPointsDifference() const;
-    void setMinClPointsDifference(int value);
+	int maxClPointsDifference() const;
+	int computeMaxClPointsDifference();
+	int minClPointsDifference() const;
+	int computeMinClPointsDifference();
 
-    ~Grammar();
+	~Grammar();
 private:
-    QSet<NSymbol> N;
-    QSet<TSymbol> T;
-    QSet<NClassifier> PN;
-    QSet<TClassifier> PT;
-    //for fitness computing
-    float mFitness;
-    int mNumberOfSentences;
-    int mParsedPositive;
-    int mNotParsedNegative;
-    int mMinClPointsDifference;
-    int mMaxClPointsDifference;
+	QList<NSymbol> N;
+	QList<TSymbol> T;
+	QList<NClassifier> PN;
+	QList<TClassifier> PT;
+	//for fitness computing
+	float mFitness;
+	int mNumberOfSentences;
+	int mParsedPositive;
+	int mNotParsedNegative;
+	int mMinClPointsDifference;
+	int mMaxClPointsDifference;
 };
 
 #endif /*GRAMMAR_H_*/

@@ -24,10 +24,14 @@
 class Random
 {
 public:
-    //returns random integer from 0 to n-1
-    static int rand(unsigned int n);
-    //returns random double from [0,1)
-    static double rand();
+	/**
+	 * returns random integer from 0 to n-1
+	 */
+	static int rand(unsigned int n);
+	/**
+	 * returns random double from [0,1)
+	 */
+	static double rand();
 };
 
 #endif /*RANDOM_H_*/

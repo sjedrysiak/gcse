@@ -18,53 +18,32 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef PRODACTION_H_
-#define PRODACTION_H_
+#include "Action.h"
 
-#include "symbol.h"
-
-//class ProdAction
-//{
-//public:
-//    virtual ProdAction* clone() const = 0;
-//    virtual bool isTerminal() const = 0;
-//    virtual operator QString() const = 0;
-//    virtual ~ProdAction();
-//};
-
-class NProdAction// : public ProdAction
+Action::Action(const NSymbol& s) :
+	mSymbol(s)
 {
-public:
-    NProdAction();
-    NProdAction(const NSymbol& first, const NSymbol& second);
-    const NSymbol& firstSymbol() const;
-    void setFirstSymbol(const NSymbol& s);
-    const NSymbol& secondSymbol() const;
-    void setSecondSymbol(const NSymbol& s);
-    bool operator ==(const NProdAction& other) const;
-    //ProdAction* clone() const;
-    //bool isTerminal() const;
-    operator QString() const;
-    ~NProdAction();
-private:
-    NSymbol mFirstSymbol;
-    NSymbol mSecondSymbol;
-};
+}
 
-class TProdAction// : public ProdAction
+const NSymbol& Action::symbol() const
 {
-public:
-    TProdAction();
-    TProdAction(const TSymbol& s);
-    const TSymbol& symbol() const;
-    void setSymbol(const TSymbol& s);
-    bool operator ==(const TProdAction& other) const;
-    //ProdAction* clone() const;
-    //bool isTerminal() const;
-    operator QString() const;
-    ~TProdAction();
-private:
-    TSymbol mSymbol;
-};
+    return this->mSymbol;
+}
 
-#endif /*PRODACTION_H_*/
+void Action::setSymbol(const NSymbol& s)
+{
+    this->mSymbol = s;
+}
+
+bool Action::operator ==(const Action& other) const
+{
+    return this->mSymbol == other.mSymbol;
+}
+
+Action::operator QString() const
+{
+    return this->mSymbol;
+}
+
+Action::~Action()
+{}

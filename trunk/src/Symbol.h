@@ -18,44 +18,33 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef PRODRULE_H_
-#define PRODRULE_H_
+#ifndef SYMBOL_H_
+#define SYMBOL_H_
 
-#include "prodcondition.h"
-#include "prodaction.h"
+#include <QString>
 
-class NProdRule
+///////////////////////////////////////////////////
+//class NSymbol
+///////////////////////////////////////////////////
+
+class NSymbol: public QString
 {
 public:
-    NProdRule();
-    NProdRule(const ProdCondition& cond, const NProdAction& act);
-    const ProdCondition& condition() const;
-    void setCondition(const ProdCondition& cond);
-    const NProdAction& action() const;
-    void setAction(const NProdAction& act);
-    bool operator ==(const NProdRule& other) const;
-    operator QString() const;
-    ~NProdRule();
+	NSymbol();
 protected:
-    ProdCondition mCondition;
-    NProdAction mAction;
+	static QString generateNew();
+	static QString lastUsed;
 };
 
-class TProdRule
+///////////////////////////////////////////////////
+//class TSymbol
+///////////////////////////////////////////////////
+
+class TSymbol: public QString
 {
 public:
-    TProdRule();
-    TProdRule(const ProdCondition& cond, const TProdAction& act);
-    const ProdCondition& condition() const;
-    void setCondition(const ProdCondition& cond);
-    const TProdAction& action() const;
-    void setAction(const TProdAction& act);
-    bool operator ==(const TProdRule& other) const;
-    operator QString() const;
-    ~TProdRule();
-protected:
-    ProdCondition mCondition;
-    TProdAction mAction;
+	TSymbol(const QString& str);
+	TSymbol(const char* str);
 };
 
-#endif /*PRODRULE_H_*/
+#endif /*SYMBOL_H_*/

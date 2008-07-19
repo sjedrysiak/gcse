@@ -18,34 +18,22 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef CYK_H_
-#define CYK_H_
+#ifndef ACTION_H_
+#define ACTION_H_
 
-#include "symbol.h"
-#include "QVector"
-#include "QSet"
-class NProdAction;
-class TProdAction;
-class Grammar;
-class Sentence;
+#include "Symbol.h"
 
-typedef QVector<QVector<QSet<NSymbol> > > CYKTable;
-
-class CYK
+class Action
 {
 public:
-	static bool parse(const Sentence& sentence, Grammar& g);
+	Action(const NSymbol& s);
+	const NSymbol& symbol() const;
+	void setSymbol(const NSymbol& s);
+	bool operator ==(const Action& other) const;
+	operator QString() const;
+	~Action();
 private:
-    static QList<NSymbol> getMatchingClassifiers(const NProdAction& condition, const Grammar& g);
-    static QList<NSymbol> getMatchingClassifiers(const TProdAction& condition, const Grammar& g);
-    static QList<NProdAction> getConditionsForCykCell(const CYKTable& cykTable, int row, int col);
-
-    //covering operators
-    static NSymbol coveringTerminal(const TSymbol& term, Grammar& g);
-    static void coveringUniversal(const TSymbol& term, Grammar& g);
-    static void coveringStart(const TSymbol& term, Grammar& g);
-    static void coveringFull(const NProdAction& cond, Grammar& g);
-    static NSymbol coveringAggressive(const NProdAction& cond, Grammar& g);
+	NSymbol mSymbol;
 };
 
-#endif /*CYK_H_*/
+#endif /*ACTION_H_*/

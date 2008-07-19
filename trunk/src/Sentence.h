@@ -18,40 +18,28 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "mainwindow.h"
+#ifndef SENTENCE_H_
+#define SENTENCE_H_
 
-#include <QMessageBox>
-//#include "grammar.h"
-//#include "cyk.h"
+#include <QString>
+#include <QList>
+#include "Symbol.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent)
+class Sentence : public QList<TSymbol>
 {
-    this->setupUi(this);
-    this->setupActions();
-}
+public:
+	Sentence(const QString& str = "", bool isPositive = true);
+	Sentence(const char* str, bool isPositive = true);
+	bool isPositive() const;
+	void setPositive(bool isPositive);
+	static const QString& wordSeparator();
+	static void setWordSeparator(const QString& str);
+	operator QString() const;
+	virtual ~Sentence();
+protected:
+	void split(QString str);
+    bool mIsPositive;
+    static QString mWordSeparator;
+};
 
-void MainWindow::setupActions()
-{
-    connect(action_close, SIGNAL(triggered(bool)), qApp, SLOT(quit()));
-    connect(action_about, SIGNAL(triggered(bool)), this, SLOT(about()));
-}
-
-void MainWindow::about()
-{
-    QString system = tr("Unknown");
-#ifdef Q_WS_X11
-    system = tr("Linux");
-#endif
-
-#ifdef Q_WS_WIN
-    system = tr("Windows");
-#endif
-    QMessageBox::about(this, tr("About SGCS"), tr("SGCS 1.0\nA Qt application example.\n"
-            "Program working on platform %1.\n"
-            "© 2008 Sylwester Jędrysiak").arg(system));
-}
-
-MainWindow::~MainWindow()
-{
-}
+#endif /*SENTENCE_H_*/

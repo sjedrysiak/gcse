@@ -272,10 +272,12 @@ void Params::setRenouncedAmountFactor(int factor)
 int Params::populationSize()
 {
     //TODO czy to jest w ogóle potrzebne?
+	return 0;
 }
 
 void Params::setPopulationSize(int size)
 {
+	size = 0;
     //TODO czy to jest w ogóle potrzebne?
 }
 
@@ -312,10 +314,12 @@ void Params::setNonterminalSymbolsAmount(int amount)
 int Params::terminalSymbolsAmount()
 {
     //TODO czy to jest w ogóle potrzebne?
+	return 0;
 }
 
 void Params::setTerminalSymbolsAmount(int count)
 {
+	count = 0;
     //TODO czy to jest w ogóle potrzebne?
 }
 
@@ -346,7 +350,7 @@ void Params::setMaxEvolutionSteps(int steps)
         //TODO exception argument out of range
         return;
     }
-    mMaxEvolutionSteps = steps; 
+    mMaxEvolutionSteps = steps;
 }
 
 int Params::positiveSentenceWeight()

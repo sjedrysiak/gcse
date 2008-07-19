@@ -18,33 +18,65 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "prodcondition.h"
+#include "Sentence.h"
+#include <QStringList>
 
-ProdCondition::ProdCondition()
+QString Sentence::mWordSeparator = " ";
+
+Sentence::Sentence(const QString& str, bool isPositive) :
+	QList<TSymbol> (), mIsPositive(isPositive)
 {
+	this->split(str);
 }
 
-ProdCondition::ProdCondition(const NSymbol& s)
+Sentence::Sentence(const char* str, bool isPositive) :
+	QList<TSymbol> (), mIsPositive(isPositive)
 {
-    this->mSymbol = s;
+	this->split(str);
 }
 
-const NSymbol& ProdCondition::symbol() const
+bool Sentence::isPositive() const
 {
-    return this->mSymbol;
+	return this->mIsPositive;
 }
 
-void ProdCondition::setSymbol(const NSymbol& s)
+void Sentence::setPositive(bool isPositive)
 {
-    this->mSymbol = s;
+	this->mIsPositive = isPositive;
 }
 
-bool ProdCondition::operator ==(const ProdCondition& other) const
+const QString& Sentence::wordSeparator()
 {
-    return this->mSymbol == other.mSymbol;
+	return Sentence::mWordSeparator;
 }
 
-ProdCondition::operator QString() const
+void Sentence::setWordSeparator(const QString& str)
 {
-    return this->mSymbol;
+	Sentence::mWordSeparator = str;
+}
+
+Sentence::operator QString() const
+{
+	QString ret;
+	for (int i = 0; i < this->size(); i++)
+	{
+		ret += (*this)[i];
+		if (i < this->size()-1)
+		{
+			ret += Sentence::wordSeparator();
+		}
+	}
+	return ret;
+}
+
+void Sentence::split(QString str)
+{
+	QStringList list = str.split(Sentence::wordSeparator(), QString::SkipEmptyParts);
+	foreach (QString s, list){
+	this->append(TSymbol(s));
+}
+}
+
+Sentence::~Sentence()
+{
 }

@@ -18,22 +18,41 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef PRODCONDITION_H_
-#define PRODCONDITION_H_
+#ifndef CONDITION_H_
+#define CONDITION_H_
 
-#include "symbol.h"
+#include "Symbol.h"
 
-class ProdCondition
+/**
+ * classifier condition
+ */
+class NCondition
 {
 public:
-    ProdCondition();
-    ProdCondition(const NSymbol& s);
-    const NSymbol& symbol() const;
-    void setSymbol(const NSymbol& s);
-    bool operator ==(const ProdCondition& other) const;
-    operator QString() const;
-private:
-    NSymbol mSymbol;
+	NCondition(const NSymbol& first, const NSymbol& second);
+	const NSymbol& firstSymbol() const;
+	void setFirstSymbol(const NSymbol& s);
+	const NSymbol& secondSymbol() const;
+	void setSecondSymbol(const NSymbol& s);
+	bool operator ==(const NCondition& other) const;
+	operator QString() const;
+	virtual ~NCondition();
+protected:
+	NSymbol mFirstSymbol;
+	NSymbol mSecondSymbol;
 };
 
-#endif /*PRODCONDITION_H_*/
+class TCondition
+{
+public:
+	TCondition(const TSymbol& s);
+	const TSymbol& symbol() const;
+	void setSymbol(const TSymbol& s);
+	bool operator ==(const TCondition& other) const;
+	operator QString() const;
+	virtual ~TCondition();
+protected:
+	TSymbol mSymbol;
+};
+
+#endif /*CONDITION_H_*/

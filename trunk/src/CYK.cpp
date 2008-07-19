@@ -18,11 +18,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "cyk.h"
-#include "sentence.h"
-#include "params.h"
-#include "grammar.h"
-#include "random.h"
+#include "CYK.h"
+#include "Sentence.h"
+#include "Params.h"
+#include "Grammar.h"
+#include "Random.h"
 #include <QString>
 #include <QStringList>
 
@@ -43,7 +43,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
     QList<NSymbol> M;//list of matched classifiers' conditions
     for (int col = 0; col < size; col++) //set first row
     {
-        M = getMatchingClassifiers(TProdAction(terminals[col]), g);
+//        M = getMatchingClassifiers(TProdAction(terminals[col]), g);
         if (M.size() == 0)//there is no terminal prod for current word
         {
             M << coveringTerminal(terminals[col], g);
@@ -67,7 +67,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
             QList<NProdAction> D = getConditionsForCykCell(cykTable, row, col);
             foreach (NProdAction condition, D)
             {
-                M = getMatchingClassifiers(condition, g);
+//                M = getMatchingClassifiers(condition, g);
                 if (M.size() == 0 && sentence.isPositive())
                 {
                     if (Random::rand() < Params::coveringAggressiveProb())
@@ -87,27 +87,27 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
     return cykTable[size-1][0].contains(g.S);
 }
 
-QList<NSymbol> CYK::getMatchingClassifiers(const NProdAction& condition, const Grammar& g)
+QList<NClassifier> CYK::getMatchingClassifiers(const NProdAction& condition, const Grammar& g)
 {
-    QList<NSymbol> list;
+    QList<NClassifier> list;
     foreach (NClassifier cl, g.PNSet())
     {
         if (cl.condition() == condition)
         {
-            list.append( cl.action().symbol() );
+            list.append(cl);
         }
     }
     return list;
 }
 
-QList<NSymbol> CYK::getMatchingClassifiers(const TProdAction& condition, const Grammar& g)
+QList<TClassifier> CYK::getMatchingClassifiers(const TProdAction& condition, const Grammar& g)
 {
-    QList<NSymbol> list;
+    QList<TClassifier> list;
     foreach (TClassifier cl, g.PTSet())
     {
         if (cl.condition() == condition)
         {
-            list.append( cl.action().symbol() );
+            list.append(cl);
         }
     }
     return list;
@@ -133,7 +133,7 @@ QList<NProdAction> CYK::getConditionsForCykCell(const CYKTable& cykTable, int ro
 NSymbol CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
     NSymbol newSymbol = NSymbol::generateNew();
-    g.addClNormal(TClassifier(TProdRule(ProdCondition(newSymbol), TProdAction(term))));
+    g.addClNormal(TClassifier(TProdRule(Condition(newSymbol), TProdAction(term))));
     if (Params::allowCoveringUniversal())
     {
         coveringUniversal(term, g);
@@ -143,28 +143,28 @@ NSymbol CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 
 void CYK::coveringUniversal(const TSymbol& term, Grammar& g)
 {
-    g.addClNormal(TClassifier(TProdRule(ProdCondition(g.Su), TProdAction(term))));
+    g.addClNormal(TClassifier(TProdRule(Condition(g.Su), TProdAction(term))));
 }
 
 void CYK::coveringStart(const TSymbol& term, Grammar& g)
 {
-    QSet<TClassifier> set = g.PTSet();
-    Grammar::addClWithCrowding(TClassifier(TProdRule(ProdCondition(g.S), TProdAction(term))), set);
+    QList<TClassifier> set = g.PTSet();
+    Grammar::addClWithCrowding(TClassifier(TProdRule(Condition(g.S), TProdAction(term))), set);
     g.setPT(set);
 }
 
 void CYK::coveringFull(const NProdAction& cond, Grammar& g)
 {
-    QSet<NClassifier> set = g.PNSet();
-    Grammar::addClWithCrowding(NClassifier(NProdRule(ProdCondition(g.S), NProdAction(cond))), set);
+	QList<NClassifier> set = g.PNSet();
+    Grammar::addClWithCrowding(NClassifier(NProdRule(Condition(g.S), NProdAction(cond))), set);
     g.setPN(set);
 }
 
 NSymbol CYK::coveringAggressive(const NProdAction& cond, Grammar& g)
 {
     NSymbol newSymbol = NSymbol::generateNew();
-    QSet<NClassifier> set = g.PNSet();
-    Grammar::addClWithCrowding(NClassifier(NProdRule(ProdCondition(newSymbol), NProdAction(cond))), set);
+    QList<NClassifier> set = g.PNSet();
+    Grammar::addClWithCrowding(NClassifier(NProdRule(Condition(newSymbol), NProdAction(cond))), set);
     g.setPN(set);
     return newSymbol;
 }
