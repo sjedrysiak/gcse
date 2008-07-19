@@ -22,6 +22,7 @@
 #include "grammar.h"
 #include "random.h"
 #include "params.h"
+#include <QSet>
 
 void GA::evolve(Grammar& g)
 {
@@ -69,7 +70,7 @@ void GA::evolve(Grammar& g)
     }
 
     //Mutation
-    QList<NSymbol> symbols(g.NSet().toList());
+    QList<NSymbol> symbols(g.NSet());
     mutation(cl1, symbols);
     mutation(cl2, symbols);
 
@@ -84,18 +85,18 @@ void GA::evolve(Grammar& g)
     }
 
     //Elite population
-    QList<NClassifier> elite = g.PNSet().toList();
-    QSet<NClassifier> temp;
-    temp.reserve(elite.size() - Params::eliteSize());
+    QList<NClassifier> elite = g.PNSet();
+    QList<NClassifier> temp;
+//    temp.reserve(elite.size() - Params::eliteSize());
     qSort(elite);
     for (int i = elite.size() - Params::eliteSize(); i > 0; i--)
     {
-        temp += elite.takeFirst();
+        temp << elite.takeFirst();
     }
 
     g.addClWithCrowding(cl1, temp);
     g.addClWithCrowding(cl2, temp);
-    g.setPN(elite.toSet() + temp);
+    g.setPN(elite + temp);
 }
 
 //selection operators
@@ -125,7 +126,7 @@ NClassifier GA::selectionTournament(const Grammar& g)
 {
     NClassifier bestCl;
 
-    QList<NClassifier> PNList(g.PNSet().toList() );
+    QList<NClassifier> PNList(g.PNSet());
     int PNSize = PNList.size();
 
     if (Params::tournamentSize() >= PNSize)
@@ -161,7 +162,7 @@ NClassifier GA::selectionTournament(const Grammar& g)
 
 NClassifier GA::selectionRandom(const Grammar& g)
 {
-    return g.PNSet().toList()[Random::rand(g.PNSet().size())];
+    return g.PNSet()[Random::rand(g.PNSet().size())];
 }
 
 //genetic operators
@@ -178,8 +179,8 @@ void GA::crossover(NClassifier& first, NClassifier& second)
         first.setProdAction(NProdAction(first.prodAction().firstSymbol(), second.prodAction().secondSymbol()));
         second.setProdAction(NProdAction(second.prodAction().firstSymbol(), copyFirst.prodAction().secondSymbol()));
     }
-    first.setProdCondition(ProdCondition(second.prodCondition().symbol()));
-    second.setProdCondition(ProdCondition(copyFirst.prodCondition().symbol()));
+    first.setProdCondition(Condition(second.prodCondition().symbol()));
+    second.setProdCondition(Condition(copyFirst.prodCondition().symbol()));
 }
 
 void GA::inversion(NClassifier& cl)
@@ -193,7 +194,7 @@ void GA::mutation(NClassifier& cl, const QList<NSymbol>& symbols)
     if (Random::rand() < Params::mutationProb())
     {
         int i = Random::rand(symbols.size());
-        cl.setProdCondition(ProdCondition(symbols[i]));
+        cl.setProdCondition(Condition(symbols[i]));
     }
     //mutation of first right symbol
     if (Random::rand() < Params::mutationProb())

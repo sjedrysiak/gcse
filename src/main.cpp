@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-//#include <QtCore>
+#include <QtCore>
 #include <QtGui>
 #include <QApplication>
 #include <QTextCodec>
@@ -47,15 +47,24 @@ void myMessageOutput(QtMsgType type, const char *msg)
     }
 }
 
-int xmain(int argc, char *argv[])
+#include "Classifier.h"
+
+int main(/*int argc, char *argv[]*/)
 {
 //    QTime currentTime = QTime::currentTime();
 //    qsrand( currentTime.minute()*60000 + currentTime.second()*1000 + currentTime.msec() );
 //    qInstallMsgHandler(myMessageOutput);
-    QApplication app(argc, argv);
+//    QApplication app(argc, argv);
 
 //    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 //    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
-    return app.exec();
+//    return app.exec();
+
+	NSymbol a,b,c,d,e,f,g,h,i,j;
+	NCondition cond(a, b);
+	Action act(c);
+	NClassifier cl(cond, act);
+	qDebug() << cl;
+	return 0;
 }

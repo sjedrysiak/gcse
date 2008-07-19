@@ -18,17 +18,35 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "log.h"
-#include <QFile>
-#include <QTextStream>
+#ifndef CYK_H_
+#define CYK_H_
 
-void Log::log(const QString& str, const QString& path)
+#include "Symbol.h"
+#include "Classifier.h"
+#include "QVector"
+#include "QSet"
+class NProdAction;
+class TProdAction;
+class Grammar;
+class Sentence;
+
+typedef QVector<QVector<QSet<NSymbol> > > CYKTable;
+
+class CYK
 {
-    QFile file(path);
-    if (!file.open(QIODevice::Append | QIODevice::Text))
-        return;
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << str;
-    file.close();
-}
+public:
+	static bool parse(const Sentence& sentence, Grammar& g);
+private:
+    static QList<NClassifier> getMatchingClassifiers(const NProdAction& condition, const Grammar& g);
+    static QList<TClassifier> getMatchingClassifiers(const TProdAction& condition, const Grammar& g);
+    static QList<NProdAction> getConditionsForCykCell(const CYKTable& cykTable, int row, int col);
+
+    //covering operators
+    static NSymbol coveringTerminal(const TSymbol& term, Grammar& g);
+    static void coveringUniversal(const TSymbol& term, Grammar& g);
+    static void coveringStart(const TSymbol& term, Grammar& g);
+    static void coveringFull(const NProdAction& cond, Grammar& g);
+    static NSymbol coveringAggressive(const NProdAction& cond, Grammar& g);
+};
+
+#endif /*CYK_H_*/

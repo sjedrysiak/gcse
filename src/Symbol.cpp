@@ -18,44 +18,58 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-//#include <QtCore>
-#include <QtGui>
-#include <QApplication>
-#include <QTextCodec>
-#include <QTime> //for qsrand(currentTime)
-//#include "mainwindow.h"
-//#include "grammareditor.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "Symbol.h"
 
-void myMessageOutput(QtMsgType type, const char *msg)
+///////////////////////////////////////////////////
+//class NSymbol
+///////////////////////////////////////////////////
+
+QString NSymbol::lastUsed = "";
+
+NSymbol::NSymbol() :
+	QString(generateNew())
 {
-    switch (type)
-    {
-    case QtDebugMsg:
-        fprintf(stderr, "Debug: %s\n", msg);
-        break;
-    case QtWarningMsg:
-        fprintf(stderr, "Warning: %s\n", msg);
-        break;
-    case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s\n", msg);
-        break;
-    case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s\n", msg);
-        abort();
-    }
 }
 
-int xmain(int argc, char *argv[])
+QString NSymbol::generateNew()
 {
-//    QTime currentTime = QTime::currentTime();
-//    qsrand( currentTime.minute()*60000 + currentTime.second()*1000 + currentTime.msec() );
-//    qInstallMsgHandler(myMessageOutput);
-    QApplication app(argc, argv);
+	if (lastUsed.size() == 0)
+	{
+		lastUsed = "A";
+	}
+	else
+	{
+		int i;
+		for (i = lastUsed.size() - 1; i >= 0; i--)
+		{
+			if (lastUsed[i] == 'Z')
+			{
+				lastUsed[i] = 'A';
+			}
+			else //current char != 'Z', just increment char
+			{
+				lastUsed[i] = lastUsed[i].toAscii() + 1;
+				break;
+			}
+		}
+		if (i == -1) //all chars == 'Z'
+		{
+			lastUsed.append('A');
+		}
+	}
+	return lastUsed;
+}
 
-//    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-//    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+///////////////////////////////////////////////////
+//class TSymbol
+///////////////////////////////////////////////////
 
-    return app.exec();
+TSymbol::TSymbol(const QString& str) :
+	QString(str)
+{
+}
+
+TSymbol::TSymbol(const char* str) :
+	QString(str)
+{
 }

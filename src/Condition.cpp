@@ -18,27 +18,72 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef GRAMMAREDITOR_H
-#define GRAMMAREDITOR_H
+#include "Condition.h"
 
-#include <QtGui/QWidget>
-#include "ui_grammareditor.h"
-#include "grammar.h"
-
-class GrammarEditor : public QWidget, private Ui::GrammarEditor
+NCondition::NCondition(const NSymbol& first, const NSymbol& second) :
+	mFirstSymbol(first), mSecondSymbol(second)
 {
-    Q_OBJECT
+}
 
-public:
-    GrammarEditor(Grammar* grammar, QWidget *parent = 0);
-    void setupActions();
-    ~GrammarEditor();
-protected:
-    GrammarEditor(const GrammarEditor& other);
-protected slots:
-    void addProdRule();
-private:
-    Grammar* g;
-};
+const NSymbol& NCondition::firstSymbol() const
+{
+	return this->mFirstSymbol;
+}
 
-#endif // GRAMMAREDITOR_H
+void NCondition::setFirstSymbol(const NSymbol& s)
+{
+	this->mFirstSymbol = s;
+}
+
+const NSymbol& NCondition::secondSymbol() const
+{
+	return this->mSecondSymbol;
+}
+
+void NCondition::setSecondSymbol(const NSymbol& s)
+{
+	this->mSecondSymbol = s;
+}
+
+bool NCondition::operator ==(const NCondition& other) const
+{
+	return this->mFirstSymbol == other.mFirstSymbol && this->mSecondSymbol == other.mSecondSymbol;
+}
+
+NCondition::operator QString() const
+{
+	return this->mFirstSymbol + "|" + this->mSecondSymbol;
+}
+
+NCondition::~NCondition()
+{
+}
+
+TCondition::TCondition(const TSymbol& s) :
+	mSymbol(s)
+{
+}
+
+const TSymbol& TCondition::symbol() const
+{
+	return this->mSymbol;
+}
+
+void TCondition::setSymbol(const TSymbol& s)
+{
+	this->mSymbol = s;
+}
+
+bool TCondition::operator ==(const TCondition& other) const
+{
+	return this->mSymbol == other.mSymbol;
+}
+
+TCondition::operator QString() const
+{
+	return this->mSymbol;
+}
+
+TCondition::~TCondition()
+{
+}
