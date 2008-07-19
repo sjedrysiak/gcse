@@ -47,23 +47,15 @@ void myMessageOutput(QtMsgType type, const char *msg)
     }
 }
 
-int main(int argc, char *argv[])
+int xmain(int argc, char *argv[])
 {
-    QTime currentTime = QTime::currentTime();
-    qsrand( currentTime.minute()*60000 + currentTime.second()*1000 + currentTime.msec() );
-    qInstallMsgHandler(myMessageOutput);
+//    QTime currentTime = QTime::currentTime();
+//    qsrand( currentTime.minute()*60000 + currentTime.second()*1000 + currentTime.msec() );
+//    qInstallMsgHandler(myMessageOutput);
     QApplication app(argc, argv);
 
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-
-    QLabel label("testaaaaaaaaaaaaaaaaa");
-    label.show();
-//    MainWindow mainWindow;
-//    Grammar g;
-//    GrammarEditor* grammarEditor = new GrammarEditor(&g);
-//    mainWindow.setCentralWidget(grammarEditor);
-//    mainWindow.show();
+//    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+//    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
     return app.exec();
 }
