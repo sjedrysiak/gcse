@@ -23,30 +23,29 @@
 
 #include "Symbol.h"
 #include "Classifier.h"
-#include "QVector"
-#include "QSet"
-class NProdAction;
-class TProdAction;
-class Grammar;
-class Sentence;
+#include <QVector>
+#include <QList>
 
-typedef QVector<QVector<QSet<NSymbol> > > CYKTable;
+class Sentence;
+class Grammar;
+
+typedef QVector<QVector<QList<NSymbol> > > CYKTable;
 
 class CYK
 {
 public:
 	static bool parse(const Sentence& sentence, Grammar& g);
 private:
-    static QList<NClassifier> getMatchingClassifiers(const NProdAction& condition, const Grammar& g);
-    static QList<TClassifier> getMatchingClassifiers(const TProdAction& condition, const Grammar& g);
-    static QList<NProdAction> getConditionsForCykCell(const CYKTable& cykTable, int row, int col);
+    static QList<NSymbol> getMatchingClassifiers(const NCondition& condition, const Grammar& g);
+    static QList<NSymbol> getMatchingClassifiers(const TCondition& condition, const Grammar& g);
+    static QList<NCondition> getConditionsForCykCell(const CYKTable& cykTable, int row, int col);
 
     //covering operators
     static NSymbol coveringTerminal(const TSymbol& term, Grammar& g);
     static void coveringUniversal(const TSymbol& term, Grammar& g);
     static void coveringStart(const TSymbol& term, Grammar& g);
-    static void coveringFull(const NProdAction& cond, Grammar& g);
-    static NSymbol coveringAggressive(const NProdAction& cond, Grammar& g);
+    static void coveringFull(const NCondition& cond, Grammar& g);
+    static NSymbol coveringAggressive(const NCondition& cond, Grammar& g);
 };
 
 #endif /*CYK_H_*/
