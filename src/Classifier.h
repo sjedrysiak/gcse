@@ -23,13 +23,14 @@
 
 #include "Condition.h"
 #include "Action.h"
+
 class Grammar;
 
 class Classifier
 {
 public:
 	float fitness() const;
-	float computeFitness(/*const Grammar& g*/);
+	float computeFitness(const Grammar& g);
 	void resetParams();
 	bool operator <(const Classifier& other) const;
 	int pointsDifference() const;

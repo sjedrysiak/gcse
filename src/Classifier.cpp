@@ -19,8 +19,8 @@
  ***************************************************************************/
 
 #include "Classifier.h"
-//#include "Params.h"
-//#include "Grammar.h"
+#include "Params.h"
+#include "Grammar.h"
 
 ///////////////////////////////////////////////////
 //class Classifier (only for inheritence)
@@ -37,22 +37,22 @@ float Classifier::fitness() const
 	return this->mFitness;
 }
 
-float Classifier::computeFitness(/*const Grammar& g*/)
+float Classifier::computeFitness(const Grammar& g)
 {
-//	float classicFun = 0.0;
-//	if (this->mup > 0 || this->mun > 0)//classifier used at least once
-//	{
-//		classicFun = (float) (Params::positiveSentenceWeight() * this->mup) / (Params::negativeSentenceWeight() * this->mun + Params::positiveSentenceWeight() * this->mup);
-//	}
-//	else//classifier not used
-//	{
-//		classicFun = Params::unusedClassifierFitness();
-//	}
-//
-//	float fertilityFun = 0.0;
-//	fertilityFun = (float) (this->mp - this->md - g.minClPointsDifference()) / (g.maxClPointsDifference() - g.minClPointsDifference());
-//
-//	this->mFitness = (Params::classicFunWeight() * classicFun + Params::fertilityFunWeight() * fertilityFun) / (Params::classicFunWeight() + Params::fertilityFunWeight());
+	float classicFun = 0.0;
+	if (this->mup > 0 || this->mun > 0)//classifier used at least once
+	{
+		classicFun = (float) (Params::positiveSentenceWeight() * this->mup) / (Params::negativeSentenceWeight() * this->mun + Params::positiveSentenceWeight() * this->mup);
+	}
+	else//classifier not used
+	{
+		classicFun = Params::unusedClassifierFitness();
+	}
+
+	float fertilityFun = 0.0;
+	fertilityFun = (float) (this->mp - this->md - g.minClPointsDifference()) / (g.maxClPointsDifference() - g.minClPointsDifference());
+
+	this->mFitness = (Params::classicFunWeight() * classicFun + Params::fertilityFunWeight() * fertilityFun) / (Params::classicFunWeight() + Params::fertilityFunWeight());
 	return this->mFitness;
 }
 

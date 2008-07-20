@@ -1,7 +1,9 @@
 #ifndef GCS_H_
 #define GCS_H_
 
-#include "grammar.h"
+#include "Grammar.h"
+#include <QList>
+#include "Sentence.h"
 
 class GCS
 {
@@ -9,7 +11,7 @@ public:
     GCS();
     void run();
     virtual ~GCS();
-private:
+protected:
     Grammar mGrammar;
     QList<Sentence> mSentences;
 };

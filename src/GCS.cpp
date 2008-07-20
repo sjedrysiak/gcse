@@ -1,5 +1,5 @@
-#include "gcs.h"
-#include "params.h"
+#include "GCS.h"
+#include "Params.h"
 
 GCS::GCS()
 {

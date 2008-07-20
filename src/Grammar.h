@@ -21,13 +21,18 @@
 #ifndef GRAMMAR_H_
 #define GRAMMAR_H_
 
-#include <QList>
 #include "Symbol.h"
 #include "Classifier.h"
-#include "Sentence.h"
+#include <QList>
+
+class Sentence;
+class CYK;
+class GA;
 
 class Grammar
 {
+	friend class CYK;
+	friend class GA;
 public:
 	const NSymbol S;
 	const NSymbol Su;
@@ -35,7 +40,7 @@ public:
 	Grammar(const NSymbol& start = "_S_", const NSymbol& universal = "_U_");
 	void initGrammar();
 	void induct(const QList<Sentence>& sentences);
-	void initClParams();
+	void resetClParams();
 	void correction();
 	float computeFitness();
 	float fitness() const;

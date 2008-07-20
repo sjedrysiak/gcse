@@ -31,6 +31,8 @@ class NSymbol: public QString
 {
 public:
 	NSymbol();
+	NSymbol(const QString& str);
+	NSymbol(const char* str);
 protected:
 	static QString generateNew();
 	static QString lastUsed;

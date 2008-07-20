@@ -28,8 +28,15 @@ QString NSymbol::lastUsed = "";
 
 NSymbol::NSymbol() :
 	QString(generateNew())
-{
-}
+{}
+
+NSymbol::NSymbol(const QString& str) :
+	QString(str)
+{}
+
+NSymbol::NSymbol(const char* str) :
+	QString(str)
+{}
 
 QString NSymbol::generateNew()
 {
