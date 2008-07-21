@@ -22,49 +22,42 @@
 #include <QtGui>
 #include <QApplication>
 #include <QTextCodec>
-#include <QTime> //for qsrand(currentTime)
+#include <cstdio>
+#include <cstdlib>
 //#include "mainwindow.h"
 //#include "grammareditor.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "GCS.h"
+#include "Random.h"
 
-void myMessageOutput(QtMsgType type, const char *msg)
+//void myMessageOutput(QtMsgType type, const char *msg)
+//{
+//	switch (type)
+//	{
+//		case QtDebugMsg:
+//			fprintf(stderr, "Debug: %s\n", msg);
+//			break;
+//		case QtWarningMsg:
+//			fprintf(stderr, "Warning: %s\n", msg);
+//			break;
+//		case QtCriticalMsg:
+//			fprintf(stderr, "Critical: %s\n", msg);
+//			break;
+//		case QtFatalMsg:
+//			fprintf(stderr, "Fatal: %s\n", msg);
+//			abort();
+//	}
+//}
+
+int main(int argc, char *argv[])
 {
-    switch (type)
-    {
-    case QtDebugMsg:
-        fprintf(stderr, "Debug: %s\n", msg);
-        break;
-    case QtWarningMsg:
-        fprintf(stderr, "Warning: %s\n", msg);
-        break;
-    case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s\n", msg);
-        break;
-    case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s\n", msg);
-        abort();
-    }
-}
+	Random::init();
+//	qInstallMsgHandler(myMessageOutput);
+	QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
-#include "Classifier.h"
-
-int main(/*int argc, char *argv[]*/)
-{
-//    QTime currentTime = QTime::currentTime();
-//    qsrand( currentTime.minute()*60000 + currentTime.second()*1000 + currentTime.msec() );
-//    qInstallMsgHandler(myMessageOutput);
-//    QApplication app(argc, argv);
-
-//    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-//    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-
-//    return app.exec();
-
-	NSymbol a,b,c,d,e,f,g,h,i,j;
-	NCondition cond(a, b);
-	Action act(c);
-	NClassifier cl(cond, act);
-	qDebug() << cl;
-	return 0;
+	QApplication app(argc, argv);
+	QLabel label("test");
+	label.show();
+	//TODO show main window
+	return app.exec();
 }

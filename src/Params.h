@@ -22,6 +22,7 @@
 #define PARAMS_H_
 
 #include "GA.h"
+#include <QString>
 
 class Params
 {
@@ -82,6 +83,8 @@ public:
 	static void setFertilityFunWeight(int weight);
 	static double unusedClassifierFitness();
 	static void setUnusedClassifierFitness(double fitness);
+	static QString sentencesFilePath();
+	static void setSentencesFilePath(const QString& path);
 private:
 	//allow to run grammar correction
 	static bool mAllowCorrection;
@@ -146,6 +149,8 @@ private:
 	static int mFertilityFunWeight;
 	//unused classifier fitness [1,10]
 	static double mUnusedClassifierFitness;
+
+	static QString mSentencesFilePath;
 };
 
 #endif /*PARAMS_H_*/

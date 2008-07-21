@@ -20,6 +20,7 @@
 
 #include "Random.h"
 #include <QtGlobal>
+#include <QTime>
 #include <cstdlib>
 
 //returns random integer from 0 to n-1
@@ -32,4 +33,10 @@ int Random::rand(unsigned int n)
 double Random::rand()
 {
 	return qrand() / (RAND_MAX + 1.0);
+}
+
+void Random::init()
+{
+	QTime currentTime = QTime::currentTime();
+	qsrand(currentTime.minute() * 60000 + currentTime.second() * 1000 + currentTime.msec());
 }

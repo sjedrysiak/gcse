@@ -54,6 +54,7 @@ void Tests::sentence()
 	Sentence s;
 	QVERIFY((QString)s == "" && s.isPositive());
 	s = "test 1";
+	//TODO sprawdzić czy operator przypisania zmienia isPositive
 	s.setPositive(false);
 	QVERIFY((QString)s == "test 1" && s.isPositive() == false);
 	QString str("test 3");

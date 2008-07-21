@@ -36,8 +36,8 @@ class CYK
 public:
 	static bool parse(const Sentence& sentence, Grammar& g);
 private:
-    static QList<NSymbol> getMatchingClassifiers(const NCondition& condition, const Grammar& g);
-    static QList<NSymbol> getMatchingClassifiers(const TCondition& condition, const Grammar& g);
+    static QList<NSymbol> getMatchingClassifiers(const NCondition& condition, Grammar& g, bool isPositive);
+    static QList<NSymbol> getMatchingClassifiers(const TCondition& condition, Grammar& g, bool isPositive);
     static QList<NCondition> getConditionsForCykCell(const CYKTable& cykTable, int row, int col);
 
     //covering operators

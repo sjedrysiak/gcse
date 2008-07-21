@@ -32,6 +32,10 @@ public:
 	 * returns random double from [0,1)
 	 */
 	static double rand();
+	/**
+	 * initialize random generator by calling srand()
+	 */
+	static void init();
 };
 
 #endif /*RANDOM_H_*/
