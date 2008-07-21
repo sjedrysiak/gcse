@@ -48,6 +48,7 @@ int Params::mNegativeSentenceWeight = 0;
 int Params::mClassicFunWeight = 0;
 int Params::mFertilityFunWeight = 0;
 double Params::mUnusedClassifierFitness = 0.0;
+QString Params::mSentencesFilePath = "";
 
 bool Params::allowCorrection()
 {
@@ -272,13 +273,13 @@ void Params::setRenouncedAmountFactor(int factor)
 int Params::populationSize()
 {
 	//TODO czy to jest w ogóle potrzebne?
-	return 0;
+	return mPopulationSize;
 }
 
 void Params::setPopulationSize(int size)
 {
-	size = 0;
 	//TODO czy to jest w ogóle potrzebne?
+	mPopulationSize = size;
 }
 
 int Params::startNonterminalProdsAmount()
@@ -314,13 +315,13 @@ void Params::setNonterminalSymbolsAmount(int amount)
 int Params::terminalSymbolsAmount()
 {
 	//TODO czy to jest w ogóle potrzebne?
-	return 0;
+	return mTerminalSymbolsAmount;
 }
 
-void Params::setTerminalSymbolsAmount(int count)
+void Params::setTerminalSymbolsAmount(int amount)
 {
-	count = 0;
 	//TODO czy to jest w ogóle potrzebne?
+	mTerminalSymbolsAmount = amount;
 }
 
 int Params::iterations()
@@ -426,4 +427,14 @@ void Params::setUnusedClassifierFitness(double fitness)
 		return;
 	}
 	mUnusedClassifierFitness = fitness;
+}
+
+QString Params::sentencesFilePath()
+{
+	return mSentencesFilePath;
+}
+
+void Params::setSentencesFilePath(const QString& path)
+{
+	mSentencesFilePath = path;
 }

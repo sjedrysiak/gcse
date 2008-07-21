@@ -82,7 +82,6 @@ void Grammar::induct(const QList<Sentence>& sentences)
 		{
 			this->mNotParsedNegative++;
 		}
-		//TODO aktualizacja parametrów produkcji
 	}
 	this->copyClParameters(operatingGrammar);
 	for (int i = 0; i < this->PN.size(); i++)
@@ -93,7 +92,6 @@ void Grammar::induct(const QList<Sentence>& sentences)
 	{
 		this->PT[i].computeFitness(*this);
 	}
-	//TODO sprawdzić czy trzeba dla PT
 }
 
 void Grammar::resetClParams()
@@ -110,7 +108,7 @@ void Grammar::resetClParams()
 
 void Grammar::correction()
 {
-	//TODO implementation of correction
+	//TODO brak implementacji
 }
 
 float Grammar::computeFitness()
