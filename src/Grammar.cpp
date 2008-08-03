@@ -28,7 +28,7 @@
 #include <QSet>
 
 Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
-	S(start), Su(universal)
+	Start(start), Universal(universal)
 {
 	this->initGrammar();
 }
@@ -41,8 +41,8 @@ void Grammar::initGrammar()
 	this->mNotParsedNegative = 0;
 	this->mMinClPointsDifference = 0;
 	this->mMaxClPointsDifference = 0;
-	this->N << this->S;
-	this->N << this->Su;
+	this->N << this->Start;
+	this->N << this->Universal;
 	NSymbol A, B, C, D;
 	TSymbol a("a"), b("b"), c("c");
 	this->N << A;
@@ -53,9 +53,9 @@ void Grammar::initGrammar()
 	this->T << b;
 	this->T << c;
 
-	this->PN << NClassifier(NCondition(A, B), Action(this->S)); // S -> AB
-	this->PN << NClassifier(NCondition(A, C), Action(this->S)); // S -> AC
-	this->PN << NClassifier(NCondition(this->S, B), Action(C)); // C -> SB
+	this->PN << NClassifier(NCondition(A, B), Action(this->Start)); // S -> AB
+	this->PN << NClassifier(NCondition(A, C), Action(this->Start)); // S -> AC
+	this->PN << NClassifier(NCondition(this->Start, B), Action(C)); // C -> SB
 	this->PN << NClassifier(NCondition(B, B), Action(B)); // B -> BB
 	this->PT << TClassifier(TCondition(a), Action(C)); // C -> a
 	this->PT << TClassifier(TCondition(b), Action(B)); // B -> b

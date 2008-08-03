@@ -61,8 +61,8 @@ void Classifier::resetParams()
 	this->mFitness = 0.0;
 	this->mup = 0;
 	this->mun = 0;
-	this->mp = 0;
-	this->md = 0;
+	this->mp = Params::baseAmount();//TODO czy to może być tutaj?
+	this->md = Params::baseAmount();
 }
 
 bool Classifier::operator <(const Classifier& other) const

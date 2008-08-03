@@ -33,7 +33,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 	{
 		cykTable[row].resize(size - row);
 	}
-	QList<NSymbol> M;
+	QList<Classifier*> M;
 	for (int col = 0; col < size; col++) //set first row
 	{
 		M = getMatchingClassifiers(TCondition(sentence[col]), g, sentence.isPositive());
@@ -42,12 +42,11 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 			M << coveringTerminal(sentence[col], g);
 			if (Params::allowCoveringUniversal())
 			{
-				M << g.Su;
+				M << coveringUniversal(sentence[col], g);
 			}
-			if (Params::allowCoveringStart() && size == 1 && sentence.isPositive())
+			if (size == 1 && sentence.isPositive() && Params::allowCoveringStart())
 			{
-				coveringStart(sentence[col], g);
-				M << g.S;
+				M << coveringStart(sentence[col], g);
 			}
 		}
 		cykTable[0][col] = M;
@@ -69,40 +68,47 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 					}
 					if (Params::allowCoveringFull() && row == size - 1 && col == 0)
 					{
-						coveringFull(D[i], g);
-						M << g.S;
+						M << coveringFull(D[i], g);
 					}
 				}
 			}
 			cykTable[row][col] += M;
 		}
 	}
-	//TODO aktualizacja parametrów użytych produkcji
-	return cykTable[size - 1][0].contains(g.S);
+	for (int i = 0; i < cykTable[size - 1][0].size(); i++)
+	{
+		if (cykTable[size - 1][0][i]->action().symbol() == g.Start)
+		{
+			//TODO czy update parametrów za każdym razem czy tyklo jeśli się uda sparsować zdanie?
+			updateClParams(cykTable, sentence.isPositive());
+			return true;
+		}
+	}
+	return false;
 }
 
-QList<NSymbol> CYK::getMatchingClassifiers(const NCondition& condition, Grammar& g, bool isPositive)
+QList<Classifier*> CYK::getMatchingClassifiers(const NCondition& condition, Grammar& g, bool isPositive)
 {
-	QSet<NSymbol> set;
+	QSet<Classifier*> set;
 	for (int i = 0; i < g.PN.size(); i++)
 	{
 		if (g.PN[i].condition() == condition)
 		{
-			set << g.PN[i].action().symbol();
+			set << &(g.PN[i]);
 			g.PN[i].used(isPositive);//TODO temporary
 		}
 	}
 	return set.toList();
 }
 
-QList<NSymbol> CYK::getMatchingClassifiers(const TCondition& condition, Grammar& g, bool isPositive)
+QList<Classifier*> CYK::getMatchingClassifiers(const TCondition& condition, Grammar& g, bool isPositive)
 {
-	QSet<NSymbol> set;
+	QSet<Classifier*> set;
 	for (int i = 0; i < g.PT.size(); i++)
 	{
 		if (g.PT[i].condition() == condition)
 		{
-			set << g.PT[i].action().symbol();
+			set << &(g.PT[i]);
 			g.PN[i].used(isPositive);//TODO temporary
 		}
 	}
@@ -116,11 +122,11 @@ QList<NCondition> CYK::getConditionsForCykCell(const CYKTable& cykTable, int row
 	{
 		for (int i = 0; i < cykTable[r][col].size(); i++)
 		{
-			Action act1 = cykTable[r][col][i];
+			Classifier* cl1 = cykTable[r][col][i];
 			for (int j = 0; j < cykTable[row - 1 - r][col + 1 + r].size(); j++)
 			{
-				Action act2 = cykTable[row - 1 - r][col + 1 + r][j];
-				set << NCondition(act1.symbol(), act2.symbol());
+				Classifier* cl2 = cykTable[row - 1 - r][col + 1 + r][j];
+				set << NCondition(cl1->action().symbol(), cl2->action().symbol());
 			}
 		}
 	}
@@ -128,7 +134,7 @@ QList<NCondition> CYK::getConditionsForCykCell(const CYKTable& cykTable, int row
 }
 
 //covering operators
-NSymbol CYK::coveringTerminal(const TSymbol& term, Grammar& g)
+Classifier* CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
 	NSymbol newSymbol;
 	//TODO sprawdzić czy ma być nowy symbol czy pobrany losowo z g.N
@@ -137,40 +143,116 @@ NSymbol CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 	TClassifier cl(cond, act);
 	cl.used(true);
 	g.addClNormal(cl);
-	if (Params::allowCoveringUniversal())
-	{
-		coveringUniversal(term, g);
-	}
-	return newSymbol;
+
+	///////////
+	int idx = g.PT.indexOf(cl);
+	return &(g.PT[idx]);
 }
 
-void CYK::coveringUniversal(const TSymbol& term, Grammar& g)
+Classifier* CYK::coveringUniversal(const TSymbol& term, Grammar& g)
 {
-	TClassifier cl(TCondition(term), Action(g.Su));
+	TClassifier cl(TCondition(term), Action(g.Universal));
 	cl.used(true);
 	g.addClNormal(cl);
+
+	///////////
+	int idx = g.PT.indexOf(cl);
+	return &(g.PT[idx]);
 }
 
-void CYK::coveringStart(const TSymbol& term, Grammar& g)
+Classifier* CYK::coveringStart(const TSymbol& term, Grammar& g)
 {
-	TClassifier cl(TCondition(term), Action(g.S));
+	TClassifier cl(TCondition(term), Action(g.Start));
 	cl.used(true);
 	Grammar::addClWithCrowding(cl, g.PT);
+
+	///////////
+	int idx = g.PT.indexOf(cl);
+	return &(g.PT[idx]);
 }
 
-void CYK::coveringFull(const NCondition& cond, Grammar& g)
+Classifier* CYK::coveringFull(const NCondition& cond, Grammar& g)
 {
-	NClassifier cl(cond, Action(g.S));
+	NClassifier cl(cond, Action(g.Start));
 	cl.used(true);
 	Grammar::addClWithCrowding(cl, g.PN);
+
+	///////////
+	int idx = g.PN.indexOf(cl);
+	return &(g.PN[idx]);
 }
 
-NSymbol CYK::coveringAggressive(const NCondition& cond, Grammar& g)
+Classifier* CYK::coveringAggressive(const NCondition& cond, Grammar& g)
 {
 	NSymbol newSymbol;
 	//TODO sprawdzić czy ma być nowy symbol czy pobrany losowo z g.N
 	NClassifier cl(cond, Action(newSymbol));
 	cl.used(true);
 	Grammar::addClWithCrowding(cl, g.PN);
-	return newSymbol;
+
+	///////////
+	int idx = g.PN.indexOf(cl);
+	return &(g.PN[idx]);
+}
+
+void CYK::updateClParams(CYKTable& cykTable, bool positive)
+{
+	int row = cykTable.size();
+	int col = 0;
+	QList<Classifier*> list = cykTable[row][col];
+	for (int i = 0; i < list.size(); i++)
+	{
+		//TODO update wszystkich czy tylko Start?
+		NClassifier* cl = (NClassifier*)list[i];
+		int amount = (computeAmount(cykTable, cl->condition().firstSymbol(), row, col, true, positive) + computeAmount(cykTable, cl->condition().secondSymbol(), row, col, false, positive)) * Params::renouncedAmountFactor();
+		cl->increasePoints(positive, amount);
+	}
+}
+
+int CYK::computeAmount(CYKTable& cykTable, NSymbol& symbol, int row, int col, bool left, bool positive)
+{
+	if (row < 2)
+	{
+		return Params::baseAmount();
+	}
+	Classifier* cl = NULL;
+	int newRow, newCol;
+	if (left == true)//searching vertically
+	{
+		for (int i = 0; i < row; i++)//go from row 0 to row from function param
+		{
+			for (int j = 0; j < cykTable[i][col].size(); j++)//go through cell
+			{
+				if (cykTable[i][col][j]->action().symbol() == symbol)
+				{
+					cl = cykTable[i][col][j];
+					newRow = i;
+					newCol = col;
+					i = row;//for break from outer loop
+					break;
+				}
+			}
+		}
+	}
+	else//searching aslant
+	{
+		for (int i = 0; i < row; i++)//go from row over row from param to row 0
+		{
+			for (int j = 0; j < cykTable[row-1-i][col-1-i].size(); j++)//go through cell
+			{
+				if (cykTable[row-1-i][col-1-i][j]->action().symbol() == symbol)
+				{
+					cl = cykTable[row-1-i][col-1-i][j];
+					newRow = row-1-i;
+					newCol = col-1-i;
+					i = row;
+					break;
+				}
+			}
+		}
+	}
+	//TODO udpate cl params
+	int amount = (computeAmount(cykTable, cl->condition().firstSymbol(), newRow, newCol, true) + computeAmount(cykTable, cl->condition().secondSymbol(), newRow, newCol, false)) * Params::renouncedAmountFactor();
+	cl->increasePoints(positive, amount);
+	return amount;
 }
