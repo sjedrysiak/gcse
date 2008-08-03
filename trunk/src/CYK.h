@@ -29,23 +29,25 @@
 class Sentence;
 class Grammar;
 
-typedef QVector<QVector<QList<NSymbol> > > CYKTable;
+typedef QVector<QVector<QList<Classifier*> > > CYKTable;
 
 class CYK
 {
 public:
 	static bool parse(const Sentence& sentence, Grammar& g);
 private:
-    static QList<NSymbol> getMatchingClassifiers(const NCondition& condition, Grammar& g, bool isPositive);
-    static QList<NSymbol> getMatchingClassifiers(const TCondition& condition, Grammar& g, bool isPositive);
+    static QList<Classifier*> getMatchingClassifiers(const NCondition& condition, Grammar& g, bool isPositive);
+    static QList<Classifier*> getMatchingClassifiers(const TCondition& condition, Grammar& g, bool isPositive);
     static QList<NCondition> getConditionsForCykCell(const CYKTable& cykTable, int row, int col);
 
     //covering operators
-    static NSymbol coveringTerminal(const TSymbol& term, Grammar& g);
-    static void coveringUniversal(const TSymbol& term, Grammar& g);
-    static void coveringStart(const TSymbol& term, Grammar& g);
-    static void coveringFull(const NCondition& cond, Grammar& g);
-    static NSymbol coveringAggressive(const NCondition& cond, Grammar& g);
+    static Classifier* coveringTerminal(const TSymbol& term, Grammar& g);
+    static Classifier* coveringUniversal(const TSymbol& term, Grammar& g);
+    static Classifier* coveringStart(const TSymbol& term, Grammar& g);
+    static Classifier* coveringFull(const NCondition& cond, Grammar& g);
+    static Classifier* coveringAggressive(const NCondition& cond, Grammar& g);
+    static void updateClParams(CYKTable& cykTable, bool positive);
+    static int computeAmount(CYKTable& cykTable, NSymbol& symbol, int row, int col, bool left, bool positive);
 };
 
 #endif /*CYK_H_*/

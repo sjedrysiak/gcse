@@ -34,8 +34,8 @@ class Grammar
 	friend class CYK;
 	friend class GA;
 public:
-	const NSymbol S;
-	const NSymbol Su;
+	const NSymbol Start;
+	const NSymbol Universal;
 
 	Grammar(const NSymbol& start = "_S_", const NSymbol& universal = "_U_");
 	void initGrammar();
