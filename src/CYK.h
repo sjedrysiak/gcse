@@ -46,8 +46,8 @@ private:
     static Classifier* coveringStart(const TSymbol& term, Grammar& g);
     static Classifier* coveringFull(const NCondition& cond, Grammar& g);
     static Classifier* coveringAggressive(const NCondition& cond, Grammar& g);
-    static void updateClParams(CYKTable& cykTable, bool positive);
-    static int computeAmount(CYKTable& cykTable, NSymbol& symbol, int row, int col, bool left, bool positive);
+    static void updateClParams(CYKTable& cykTable, bool isPositive);
+    static int computeAmount(CYKTable& cykTable, const NSymbol& symbol, int row, int col, bool left, bool isPositive);
 };
 
 #endif /*CYK_H_*/
