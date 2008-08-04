@@ -25,6 +25,9 @@
 #include "Random.h"
 #include <QSet>
 
+//TODO temporary
+#include <QtCore>
+
 bool CYK::parse(const Sentence& sentence, Grammar& g)
 {
 	int size = sentence.size();
@@ -38,7 +41,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 	{
 		M = getMatchingClassifiers(TCondition(sentence[col]), g, sentence.isPositive());
 		if (M.size() == 0) //there is no terminal prod for current word
-		{
+		{//TODO sprawdzić czy covering terminal jest tylko dla zdań pozytywnych
 			M << coveringTerminal(sentence[col], g);
 			if (Params::allowCoveringUniversal())
 			{
@@ -75,11 +78,31 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 			cykTable[row][col] += M;
 		}
 	}
+//	for (int i = 0; i < cykTable.size() && i < 1; i++)
+//	{
+//		for (int j = 0; j < cykTable[i].size(); j++)
+//		{
+//			for (int k = 0; k < cykTable[i][j].size(); k++)
+//			{
+//				qDebug() << i << j << ((TClassifier*)cykTable[i][j][k])->operator QString();
+//			}
+//		}
+//	}
+//	for (int i = 1; i < cykTable.size(); i++)
+//	{
+//		for (int j = 0; j < cykTable[i].size(); j++)
+//		{
+//			for (int k = 0; k < cykTable[i][j].size(); k++)
+//			{
+//				qDebug() << i << j << k << ((NClassifier*)cykTable[i][j][k])->operator QString();
+//			}
+//		}
+//	}
 	for (int i = 0; i < cykTable[size - 1][0].size(); i++)
 	{
 		if (cykTable[size - 1][0][i]->action().symbol() == g.Start)
 		{
-			//TODO czy update parametrów za każdym razem czy tyklo jeśli się uda sparsować zdanie?
+			//TODO czy update parametrów za każdym razem czy tylko jeśli się uda sparsować zdanie?
 			updateClParams(cykTable, sentence.isPositive());
 			return true;
 		}
@@ -89,30 +112,30 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 
 QList<Classifier*> CYK::getMatchingClassifiers(const NCondition& condition, Grammar& g, bool isPositive)
 {
-	QSet<Classifier*> set;
+	QList<Classifier*> set;
 	for (int i = 0; i < g.PN.size(); i++)
 	{
 		if (g.PN[i].condition() == condition)
 		{
 			set << &(g.PN[i]);
-			g.PN[i].used(isPositive);//TODO temporary
+			g.PN[i].used(isPositive);
 		}
 	}
-	return set.toList();
+	return set;//.toList();
 }
 
 QList<Classifier*> CYK::getMatchingClassifiers(const TCondition& condition, Grammar& g, bool isPositive)
 {
-	QSet<Classifier*> set;
+	QList<Classifier*> set;
 	for (int i = 0; i < g.PT.size(); i++)
 	{
 		if (g.PT[i].condition() == condition)
 		{
 			set << &(g.PT[i]);
-			g.PN[i].used(isPositive);//TODO temporary
+			g.PT[i].used(isPositive);
 		}
 	}
-	return set.toList();
+	return set;//.toList();
 }
 
 QList<NCondition> CYK::getConditionsForCykCell(const CYKTable& cykTable, int row, int col)
@@ -136,8 +159,7 @@ QList<NCondition> CYK::getConditionsForCykCell(const CYKTable& cykTable, int row
 //covering operators
 Classifier* CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
-	NSymbol newSymbol;
-	//TODO sprawdzić czy ma być nowy symbol czy pobrany losowo z g.N
+	NSymbol newSymbol = g.N[Random::rand(g.N.size())];
 	TCondition cond(term);
 	Action act(newSymbol);
 	TClassifier cl(cond, act);
@@ -184,8 +206,7 @@ Classifier* CYK::coveringFull(const NCondition& cond, Grammar& g)
 
 Classifier* CYK::coveringAggressive(const NCondition& cond, Grammar& g)
 {
-	NSymbol newSymbol;
-	//TODO sprawdzić czy ma być nowy symbol czy pobrany losowo z g.N
+	NSymbol newSymbol = g.N[Random::rand(g.N.size())];
 	NClassifier cl(cond, Action(newSymbol));
 	cl.used(true);
 	Grammar::addClWithCrowding(cl, g.PN);
@@ -195,29 +216,33 @@ Classifier* CYK::coveringAggressive(const NCondition& cond, Grammar& g)
 	return &(g.PN[idx]);
 }
 
-void CYK::updateClParams(CYKTable& cykTable, bool positive)
+void CYK::updateClParams(CYKTable& cykTable, bool isPositive)
 {
-	int row = cykTable.size();
+	int row = cykTable.size() - 1;
+	if (row < 1)//one word sentence (Start -> terminal)
+	{
+		return;
+	}
 	int col = 0;
 	QList<Classifier*> list = cykTable[row][col];
 	for (int i = 0; i < list.size(); i++)
 	{
 		//TODO update wszystkich czy tylko Start?
 		NClassifier* cl = (NClassifier*)list[i];
-		int amount = (computeAmount(cykTable, cl->condition().firstSymbol(), row, col, true, positive) + computeAmount(cykTable, cl->condition().secondSymbol(), row, col, false, positive)) * Params::renouncedAmountFactor();
-		cl->increasePoints(positive, amount);
+		int amount = (computeAmount(cykTable, cl->condition().firstSymbol(), row, col, true, isPositive) + computeAmount(cykTable, cl->condition().secondSymbol(), row, col, false, isPositive)) * Params::renouncedAmountFactor();
+		cl->increasePoints(isPositive, amount);
 	}
 }
 
-int CYK::computeAmount(CYKTable& cykTable, NSymbol& symbol, int row, int col, bool left, bool positive)
+int CYK::computeAmount(CYKTable& cykTable, const NSymbol& symbol, int row, int col, bool isLeftSymbol, bool isPositive)
 {
 	if (row < 2)
 	{
 		return Params::baseAmount();
 	}
-	Classifier* cl = NULL;
+	NClassifier* cl = NULL;
 	int newRow, newCol;
-	if (left == true)//searching vertically
+	if (isLeftSymbol == true)//searching vertically
 	{
 		for (int i = 0; i < row; i++)//go from row 0 to row from function param
 		{
@@ -225,7 +250,7 @@ int CYK::computeAmount(CYKTable& cykTable, NSymbol& symbol, int row, int col, bo
 			{
 				if (cykTable[i][col][j]->action().symbol() == symbol)
 				{
-					cl = cykTable[i][col][j];
+					cl = (NClassifier*)cykTable[i][col][j];
 					newRow = i;
 					newCol = col;
 					i = row;//for break from outer loop
@@ -242,7 +267,7 @@ int CYK::computeAmount(CYKTable& cykTable, NSymbol& symbol, int row, int col, bo
 			{
 				if (cykTable[row-1-i][col-1-i][j]->action().symbol() == symbol)
 				{
-					cl = cykTable[row-1-i][col-1-i][j];
+					cl = (NClassifier*)cykTable[row-1-i][col-1-i][j];
 					newRow = row-1-i;
 					newCol = col-1-i;
 					i = row;
@@ -251,8 +276,7 @@ int CYK::computeAmount(CYKTable& cykTable, NSymbol& symbol, int row, int col, bo
 			}
 		}
 	}
-	//TODO udpate cl params
-	int amount = (computeAmount(cykTable, cl->condition().firstSymbol(), newRow, newCol, true) + computeAmount(cykTable, cl->condition().secondSymbol(), newRow, newCol, false)) * Params::renouncedAmountFactor();
-	cl->increasePoints(positive, amount);
+	int amount = (computeAmount(cykTable, cl->condition().firstSymbol(), newRow, newCol, true, isPositive) + computeAmount(cykTable, cl->condition().secondSymbol(), newRow, newCol, false, isPositive)) * Params::renouncedAmountFactor();
+	cl->increasePoints(isPositive, amount);
 	return amount;
 }

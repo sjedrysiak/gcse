@@ -12,7 +12,6 @@ GCS::GCS()
 
 void GCS::run()
 {
-	this->mGrammar.initGrammar();
 	int step = 0;
 	while (step < Params::maxEvolutionSteps() && this->mGrammar.fitness() < 1.0)
 	{
@@ -20,8 +19,10 @@ void GCS::run()
 		this->mGrammar.computeFitness();
 		if (Params::allowGA())
 		{
+			qDebug() << "inside ga";
 			GA::evolve(this->mGrammar);
 		}
+		step++;
 	}
 }
 
@@ -66,7 +67,7 @@ void GCS::setParams()
 	Params::setAllowCoveringStart(true);
 	Params::setAllowCoveringFull(true);
 	Params::setAllowCoveringUniversal(false);
-	Params::setCoveringAggressiveProb(0.0);
+	Params::setCoveringAggressiveProb(1.0);//testing
 	Params::setAllowGA(false);
 	Params::setSelectionCl1(GA::RANDOM);
 	Params::setSelectionCl2(GA::RANDOM);
@@ -75,8 +76,8 @@ void GCS::setParams()
 	Params::setInversionProb(0.0);
 	Params::setEliteSize(0);
 	Params::setTournamentSize(0);
-	Params::setCrowdFactor(0);
-	Params::setCrowdSize(0);
+	Params::setCrowdFactor(3);
+	Params::setCrowdSize(2);
 	Params::setBaseAmount(0);
 	Params::setRenouncedAmountFactor(0);
 	Params::setPopulationSize(0);
@@ -84,7 +85,7 @@ void GCS::setParams()
 	Params::setNonterminalSymbolsAmount(0);
 	Params::setTerminalSymbolsAmount(0);
 	Params::setIterations(0);
-	Params::setMaxEvolutionSteps(0);
+	Params::setMaxEvolutionSteps(1);//testing
 	Params::setPositiveSentenceWeight(0);
 	Params::setNegativeSentenceWeight(0);
 	Params::setClassicFunWeight(0);

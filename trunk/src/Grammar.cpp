@@ -27,6 +27,9 @@
 #include "CYK.h"
 #include <QSet>
 
+//TODO temporary
+#include <QtCore>
+
 Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
 	Start(start), Universal(universal)
 {
@@ -41,8 +44,8 @@ void Grammar::initGrammar()
 	this->mNotParsedNegative = 0;
 	this->mMinClPointsDifference = 0;
 	this->mMaxClPointsDifference = 0;
-	this->N << this->Start;
-	this->N << this->Universal;
+//	this->N << this->Start;
+//	this->N << this->Universal;
 	NSymbol A, B, C, D;
 	TSymbol a("a"), b("b"), c("c");
 	this->N << A;
@@ -57,9 +60,9 @@ void Grammar::initGrammar()
 	this->PN << NClassifier(NCondition(A, C), Action(this->Start)); // S -> AC
 	this->PN << NClassifier(NCondition(this->Start, B), Action(C)); // C -> SB
 	this->PN << NClassifier(NCondition(B, B), Action(B)); // B -> BB
-	this->PT << TClassifier(TCondition(a), Action(C)); // C -> a
-	this->PT << TClassifier(TCondition(b), Action(B)); // B -> b
 	this->PT << TClassifier(TCondition(a), Action(A)); // A -> a
+	this->PT << TClassifier(TCondition(b), Action(B)); // B -> b
+	this->PT << TClassifier(TCondition(c), Action(C)); // C -> c
 }
 
 void Grammar::induct(const QList<Sentence>& sentences)
@@ -256,7 +259,7 @@ void Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& se
 			mostSimilar = i;
 		}
 	}
-	*K[mostSimilar] = newCl;
+	*(K[mostSimilar]) = newCl;
 }
 
 void Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set)

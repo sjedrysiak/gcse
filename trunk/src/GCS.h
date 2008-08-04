@@ -11,8 +11,8 @@ public:
     GCS();
     void run();
     virtual ~GCS();
-    void readSentences(const QString& path);
 protected:
+    void readSentences(const QString& path);
     void setParams();
     Grammar mGrammar;
     QList<Sentence> mSentences;

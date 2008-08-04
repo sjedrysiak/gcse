@@ -48,16 +48,18 @@
 //	}
 //}
 
-int main(int argc, char *argv[])
+int main()//int argc, char *argv[])
 {
 	Random::init();
 //	qInstallMsgHandler(myMessageOutput);
 	QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
-	QApplication app(argc, argv);
-	QLabel label("test");
-	label.show();
-	//TODO show main window
-	return app.exec();
+//	QApplication app(argc, argv);
+//	QLabel label("taka sobie labelka jestem");
+//	label.show();
+	GCS gcs;
+	gcs.run();
+//	return app.exec();
+	return EXIT_SUCCESS;
 }
