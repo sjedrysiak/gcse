@@ -21,10 +21,10 @@
 #include "Params.h"
 
 bool Params::mAllowCorrection = false;
-bool Params::mAllowCoveringStart = false;
-bool Params::mAllowCoveringFull = false;
+bool Params::mAllowCoveringStart = true;
+bool Params::mAllowCoveringFull = true;
 bool Params::mAllowCoveringUniversal = false;
-float Params::mCoveringAggressiveProb = 0.0;
+float Params::mCoveringAggressiveProb = 1.0;
 bool Params::mAllowGA = false;
 GA::SelectionType Params::mSelectionCl1 = GA::RANDOM;
 GA::SelectionType Params::mSelectionCl2 = GA::RANDOM;
@@ -33,10 +33,10 @@ float Params::mMutationProb = 0.0;
 float Params::mInversionProb = 0.0;
 int Params::mEliteSize = 0;
 int Params::mTournamentSize = 0;
-int Params::mCrowdFactor = 0;
-int Params::mCrowdSize = 0;
-int Params::mBaseAmount = 0;
-int Params::mRenouncedAmountFactor = 0;
+int Params::mCrowdFactor = 1;
+int Params::mCrowdSize = 1;
+int Params::mBaseAmount = 5;
+int Params::mRenouncedAmountFactor = 5;
 int Params::mPopulationSize = 0;
 int Params::mStartNonterminalProdsAmount = 0;
 int Params::mNonterminalSymbolsAmount = 0;

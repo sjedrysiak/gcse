@@ -27,6 +27,7 @@
 //#include "mainwindow.h"
 //#include "grammareditor.h"
 #include "GCS.h"
+#include "CYK.h"
 #include "Random.h"
 
 //void myMessageOutput(QtMsgType type, const char *msg)
@@ -58,8 +59,11 @@ int main()//int argc, char *argv[])
 //	QApplication app(argc, argv);
 //	QLabel label("taka sobie labelka jestem");
 //	label.show();
-	GCS gcs;
-	gcs.run();
+	Sentence sent("a a b b");
+	Grammar g;
+	CYK::parse(sent,g);
+//	GCS gcs;
+//	gcs.run();
 //	return app.exec();
 	return EXIT_SUCCESS;
 }
