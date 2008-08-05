@@ -60,44 +60,47 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 		for (int col = 0; col < size - row; col++)
 		{
 			QList<NCondition> D = getConditionsForCykCell(cykTable, row, col);
+			qDebug() << "dla" << row << col << D;
+			M.clear();
 			for (int i = 0; i < D.size(); i++)
 			{
-				M = getMatchingClassifiers(D[i], g, sentence.isPositive());
-				if (M.size() == 0 && sentence.isPositive())
+				M += getMatchingClassifiers(D[i], g, sentence.isPositive());
+			}
+			if (M.size() == 0 && sentence.isPositive() && D.size() > 0)
+			{
+				if (Random::rand() < Params::coveringAggressiveProb())
 				{
-					if (Random::rand() < Params::coveringAggressiveProb())
-					{
-						M << coveringAggressive(D[i], g);
-					}
-					if (Params::allowCoveringFull() && row == size - 1 && col == 0)
-					{
-						M << coveringFull(D[i], g);
-					}
+					M << coveringAggressive(D[0], g);
+				}
+				if (Params::allowCoveringFull() && row == size - 1 && col == 0)
+				{
+					M << coveringFull(D[0], g);
 				}
 			}
 			cykTable[row][col] += M;
+			//TODO usunąć redundantne elementy
 		}
 	}
-//	for (int i = 0; i < cykTable.size() && i < 1; i++)
-//	{
-//		for (int j = 0; j < cykTable[i].size(); j++)
-//		{
-//			for (int k = 0; k < cykTable[i][j].size(); k++)
-//			{
-//				qDebug() << i << j << ((TClassifier*)cykTable[i][j][k])->operator QString();
-//			}
-//		}
-//	}
-//	for (int i = 1; i < cykTable.size(); i++)
-//	{
-//		for (int j = 0; j < cykTable[i].size(); j++)
-//		{
-//			for (int k = 0; k < cykTable[i][j].size(); k++)
-//			{
-//				qDebug() << i << j << k << ((NClassifier*)cykTable[i][j][k])->operator QString();
-//			}
-//		}
-//	}
+	for (int i = 0; i < cykTable.size() && i < 1; i++)
+	{
+		for (int j = 0; j < cykTable[i].size(); j++)
+		{
+			for (int k = 0; k < cykTable[i][j].size(); k++)
+			{
+				qDebug() << i << j << ((TClassifier*)cykTable[i][j][k])->operator QString();
+			}
+		}
+	}
+	for (int i = 1; i < cykTable.size(); i++)
+	{
+		for (int j = 0; j < cykTable[i].size(); j++)
+		{
+			for (int k = 0; k < cykTable[i][j].size(); k++)
+			{
+				qDebug() << i << j << ((NClassifier*)cykTable[i][j][k])->operator QString();
+			}
+		}
+	}
 	for (int i = 0; i < cykTable[size - 1][0].size(); i++)
 	{
 		if (cykTable[size - 1][0][i]->action().symbol() == g.Start)
