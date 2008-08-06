@@ -70,6 +70,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 			{
 				if (Random::rand() < Params::coveringAggressiveProb())
 				{
+					qDebug() << "aggressive dla" << D[0];
 					M << coveringAggressive(D[0], g);
 				}
 				if (Params::allowCoveringFull() && row == size - 1 && col == 0)
@@ -222,7 +223,7 @@ Classifier* CYK::coveringAggressive(const NCondition& cond, Grammar& g)
 void CYK::updateClParams(CYKTable& cykTable, bool isPositive)
 {
 	int row = cykTable.size() - 1;
-	if (row < 1)//one word sentence (Start -> terminal)
+	if (row < 1)//one word sentence (Start -> terminal) or empty sentence
 	{
 		return;
 	}
@@ -264,16 +265,16 @@ int CYK::computeAmount(CYKTable& cykTable, const NSymbol& symbol, int row, int c
 	}
 	else//searching aslant
 	{
-		for (int i = 0; i < row; i++)//go from row over row from param to row 0
+		for (int i = row - 1; i >= 0; i--)//go from row over row from param to row 0
 		{
-			for (int j = 0; j < cykTable[row-1-i][col-1-i].size(); j++)//go through cell
+			for (int j = 0; j < cykTable[i][col+row-i].size(); j++)//go through cell
 			{
-				if (cykTable[row-1-i][col-1-i][j]->action().symbol() == symbol)
+				if (cykTable[i][col+row-i][j]->action().symbol() == symbol)
 				{
-					cl = (NClassifier*)cykTable[row-1-i][col-1-i][j];
-					newRow = row-1-i;
-					newCol = col-1-i;
-					i = row;
+					cl = (NClassifier*)cykTable[i][col+row-i][j];
+					newRow = i;
+					newCol = col+row-i;
+					i = -1;
 					break;
 				}
 			}
