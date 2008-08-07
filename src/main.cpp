@@ -24,11 +24,8 @@
 #include <QTextCodec>
 #include <cstdio>
 #include <cstdlib>
-//#include "mainwindow.h"
-//#include "grammareditor.h"
-#include "GCS.h"
-#include "CYK.h"
 #include "Random.h"
+#include "MainWindow.h"
 
 //void myMessageOutput(QtMsgType type, const char *msg)
 //{
@@ -49,18 +46,15 @@
 //	}
 //}
 
-int main()//int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	Random::init();
 //	qInstallMsgHandler(myMessageOutput);
 	QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
-//	QApplication app(argc, argv);
-//	QLabel label("taka sobie labelka jestem");
-//	label.show();
-	GCS gcs;
-	gcs.run();
-//	return app.exec();
-	return EXIT_SUCCESS;
+	QApplication app(argc, argv);
+	MainWindow window;
+	window.show();
+	return app.exec();
 }
