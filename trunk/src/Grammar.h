@@ -59,13 +59,11 @@ public:
 	void addSymbol(const TSymbol& s);
 	void addClNormal(const NClassifier& cl);
 	void addClNormal(const TClassifier& cl);
-	static void addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set);
-	static void addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set);
+	static NClassifier* addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set);
+	static TClassifier* addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set);
 
 	int maxClPointsDifference() const;
-	int computeMaxClPointsDifference();
 	int minClPointsDifference() const;
-	int computeMinClPointsDifference();
 
 	~Grammar();
 private:
@@ -75,11 +73,9 @@ private:
 	QList<TClassifier> PT;
 	//for fitness computing
 	float mFitness;
-	int mNumberOfSentences;
-	int mParsedPositive;
-	int mNotParsedNegative;
-	int mMinClPointsDifference;
-	int mMaxClPointsDifference;
+	unsigned int mNumberOfSentences;
+	unsigned int mParsedPositive;
+	unsigned int mNotParsedNegative;
 };
 
 #endif /*GRAMMAR_H_*/

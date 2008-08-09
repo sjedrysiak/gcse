@@ -42,10 +42,6 @@ void Grammar::initGrammar()
 	this->mNumberOfSentences = 0;
 	this->mParsedPositive = 0;
 	this->mNotParsedNegative = 0;
-	this->mMinClPointsDifference = 0;
-	this->mMaxClPointsDifference = 0;
-//	this->N << this->Start;
-//	this->N << this->Universal;
 	NSymbol A, B, C, D;
 	TSymbol a("a"), b("b"), c("c");
 	this->N << A;
@@ -68,13 +64,17 @@ void Grammar::initGrammar()
 void Grammar::induct(const QList<Sentence>& sentences)
 {
 	this->mNumberOfSentences = sentences.size();
+	if (this->mNumberOfSentences == 0)
+	{
+		return;
+	}
 	this->resetClParams();
 	Grammar operatingGrammar(*this);
 	if (Params::allowCorrection())
 	{
 		operatingGrammar.correction();
 	}
-	for (int i = 0; i < this->mNumberOfSentences; i++)
+	for (unsigned int i = 0; i < this->mNumberOfSentences; i++)
 	{
 		bool result = CYK::parse(sentences[i], operatingGrammar);
 		if (result == true && sentences[i].isPositive())
@@ -226,23 +226,20 @@ void Grammar::addClNormal(const TClassifier& cl)
 	}
 }
 
-void Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set)
+NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set)
 {
-//	if (set.contains(newCl))
-//	{
-//		return;
-//	}
-
-	QList<NClassifier*> K;
+	if (set.isEmpty())
+	{
+		set << newCl;
+		return &set.last();
+	}
+	QSet<NClassifier*> K;
 	for (int i = 0; i < Params::crowdFactor(); i++)
 	{
 		NClassifier* worst = &set[Random::rand(set.size())];
-		QSet<NClassifier*> W;
-		W << worst;
-		while (W.size() < Params::crowdSize())
+		for (int c = 1; c < Params::crowdSize(); c++)
 		{
 			NClassifier* temp = &set[Random::rand(set.size())];
-			W << temp;
 			if (temp->fitness() < worst->fitness())
 			{
 				worst = temp;
@@ -251,34 +248,33 @@ void Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& se
 		K << worst;
 	}
 
-	int mostSimilar = 0;
-	for (int i = 1; i < K.size(); i++)
+	NClassifier* mostSimilar = *(K.begin());
+	QSet<NClassifier*>::iterator iter = K.begin();
+	for (iter++; iter != K.end(); iter++)
 	{
-		if (K[i]->howSimilar(newCl) > K[mostSimilar]->howSimilar(newCl))
+		if ((*iter)->howSimilar(newCl) > mostSimilar->howSimilar(newCl))
 		{
-			mostSimilar = i;
+			mostSimilar = *iter;
 		}
 	}
-	*(K[mostSimilar]) = newCl;
+	*mostSimilar = newCl;
+	return mostSimilar;
 }
 
-void Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set)
+TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set)
 {
-//	if (set.contains(newCl))
-//	{
-//		return;
-//	}
-
-	QList<TClassifier*> K;
+	if (set.isEmpty())
+	{
+		set << newCl;
+		return &set.last();
+	}
+	QSet<TClassifier*> K;
 	for (int i = 0; i < Params::crowdFactor(); i++)
 	{
 		TClassifier* worst = &set[Random::rand(set.size())];
-		QSet<TClassifier*> W;
-		W << worst;
-		while (W.size() < Params::crowdSize())
+		for (int c = 1; c < Params::crowdSize(); c++)
 		{
 			TClassifier* temp = &set[Random::rand(set.size())];
-			W << temp;
 			if (temp->fitness() < worst->fitness())
 			{
 				worst = temp;
@@ -287,79 +283,73 @@ void Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& se
 		K << worst;
 	}
 
-	int mostSimilar = 0;
-	for (int i = 1; i < K.size(); i++)
+	TClassifier* mostSimilar = *(K.begin());
+	QSet<TClassifier*>::iterator iter = K.begin();
+	for (iter++; iter != K.end(); iter++)
 	{
-		if (K[i]->howSimilar(newCl) > K[mostSimilar]->howSimilar(newCl))
+		if ((*iter)->howSimilar(newCl) > mostSimilar->howSimilar(newCl))
 		{
-			mostSimilar = i;
+			mostSimilar = *iter;
 		}
 	}
-	*K[mostSimilar] = newCl;
+	*mostSimilar = newCl;
+	return mostSimilar;
 }
 
 int Grammar::maxClPointsDifference() const
 {
-	return this->mMaxClPointsDifference;
-}
-
-int Grammar::computeMaxClPointsDifference()
-{
-	if (this->PN.size() == 0)
+	int max;
+	if (this->PN.isEmpty())
 	{
-		this->mMaxClPointsDifference = 0;
+		max = 0;
 	}
 	else
 	{
-		this->mMaxClPointsDifference = this->PN[0].pointsDifference();
+		max = this->PN[0].pointsDifference();
 		for (int i = 1; i < this->PN.size(); i++)
 		{
-			if (this->PN[i].pointsDifference() > this->mMaxClPointsDifference)
+			if (this->PN[i].pointsDifference() > max)
 			{
-				this->mMaxClPointsDifference = this->PN[i].pointsDifference();
+				max = this->PN[i].pointsDifference();
 			}
 		}
-		for (int i = 0; i < this->PT.size(); i++)
-		{
-			if (this->PT[i].pointsDifference() > this->mMaxClPointsDifference)
-			{
-				this->mMaxClPointsDifference = this->PT[i].pointsDifference();
-			}
-		}
+//		for (int i = 0; i < this->PT.size(); i++)
+//		{
+//			if (this->PT[i].pointsDifference() > max)
+//			{
+//				max = this->PT[i].pointsDifference();
+//			}
+//		}
 	}
-	return this->mMaxClPointsDifference;
+	return max;
 }
 
 int Grammar::minClPointsDifference() const
 {
-	return this->mMinClPointsDifference;
-}
-
-int Grammar::computeMinClPointsDifference()
-{
-	if (this->PN.size() == 0)
+	int min;
+	if (this->PN.isEmpty())
 	{
-		this->mMinClPointsDifference = 0;
+		min = 0;
 	}
 	else
 	{
-		this->mMinClPointsDifference = this->PN[0].pointsDifference();
+		min = this->PN[0].pointsDifference();
 		for (int i = 1; i < this->PN.size(); i++)
 		{
-			if (this->PN[i].pointsDifference() < this->mMinClPointsDifference)
+			if (this->PN[i].pointsDifference() < min)
 			{
-				this->mMinClPointsDifference = this->PN[i].pointsDifference();
+				min = this->PN[i].pointsDifference();
 			}
 		}
-		for (int i = 0; i < this->PT.size(); i++)
-		{
-			if (this->PT[i].pointsDifference() < this->mMinClPointsDifference)
-			{
-				this->mMinClPointsDifference = this->PT[i].pointsDifference();
-			}
-		}
+//		for (int i = 0; i < this->PT.size(); i++)
+//		{
+//			if (this->PT[i].pointsDifference() < min)
+//			{
+//				min = this->PT[i].pointsDifference();
+//			}
+//		}
 	}
-	return this->mMinClPointsDifference;
+	return min;
 }
 
 Grammar::~Grammar()

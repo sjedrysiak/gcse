@@ -21,8 +21,10 @@
 #ifndef PARAMS_H_
 #define PARAMS_H_
 
-#include "GA.h"
 #include <QString>
+#include "GA.h"
+#include "MyException.h"
+#include <QMutex>
 
 class Params
 {
@@ -36,7 +38,7 @@ public:
 	static bool allowCoveringUniversal();
 	static void setAllowCoveringUniversal(bool allow);
 	static float coveringAggressiveProb();
-	static void setCoveringAggressiveProb(float probability);
+	static void setCoveringAggressiveProb(float probability) throw(ArgumentOutOfRangeException);
 	static bool allowGA();
 	static void setAllowGA(bool allow);
 	static GA::SelectionType selectionCl1();
@@ -44,45 +46,45 @@ public:
 	static GA::SelectionType selectionCl2();
 	static void setSelectionCl2(GA::SelectionType selection);
 	static float crossoverProb();
-	static void setCrossoverProb(float probability);
+	static void setCrossoverProb(float probability) throw(ArgumentOutOfRangeException);
 	static float mutationProb();
-	static void setMutationProb(float probability);
+	static void setMutationProb(float probability) throw(ArgumentOutOfRangeException);
 	static float inversionProb();
-	static void setInversionProb(float probability);
+	static void setInversionProb(float probability) throw(ArgumentOutOfRangeException);
 	static int eliteSize();
-	static void setEliteSize(int size);
+	static void setEliteSize(int size) throw(ArgumentOutOfRangeException);
 	static int tournamentSize();
-	static void setTournamentSize(int size);
+	static void setTournamentSize(int size) throw(ArgumentOutOfRangeException);
 	static int crowdFactor();
-	static void setCrowdFactor(int factor);
+	static void setCrowdFactor(int factor) throw(ArgumentOutOfRangeException);
 	static int crowdSize();
-	static void setCrowdSize(int size);
+	static void setCrowdSize(int size) throw(ArgumentOutOfRangeException);
 	static int baseAmount();
-	static void setBaseAmount(int amount);
+	static void setBaseAmount(int amount) throw(ArgumentOutOfRangeException);
 	static int renouncedAmountFactor();
-	static void setRenouncedAmountFactor(int factor);
+	static void setRenouncedAmountFactor(int factor) throw(ArgumentOutOfRangeException);
 	static int populationSize();
-	static void setPopulationSize(int size);
+	static void setPopulationSize(int size) throw(ArgumentOutOfRangeException);
 	static int startNonterminalProdsAmount();
-	static void setStartNonterminalProdsAmount(int amount);
+	static void setStartNonterminalProdsAmount(int amount) throw(ArgumentOutOfRangeException);
 	static int nonterminalSymbolsAmount();
-	static void setNonterminalSymbolsAmount(int amount);
+	static void setNonterminalSymbolsAmount(int amount) throw(ArgumentOutOfRangeException);
 	static int terminalSymbolsAmount();
-	static void setTerminalSymbolsAmount(int amount);
+	static void setTerminalSymbolsAmount(int amount) throw(ArgumentOutOfRangeException);
 	static int iterations();
-	static void setIterations(int amount);
-	static int maxEvolutionSteps();
-	static void setMaxEvolutionSteps(int steps);
+	static void setIterations(int amount) throw(ArgumentOutOfRangeException);
+	static unsigned int maxEvolutionSteps();
+	static void setMaxEvolutionSteps(unsigned int steps) throw(ArgumentOutOfRangeException);
 	static int positiveSentenceWeight();
-	static void setPositiveSentenceWeight(int weight);
+	static void setPositiveSentenceWeight(int weight) throw(ArgumentOutOfRangeException);
 	static int negativeSentenceWeight();
-	static void setNegativeSentenceWeight(int weight);
+	static void setNegativeSentenceWeight(int weight) throw(ArgumentOutOfRangeException);
 	static int classicFunWeight();
-	static void setClassicFunWeight(int weight);
+	static void setClassicFunWeight(int weight) throw(ArgumentOutOfRangeException);
 	static int fertilityFunWeight();
-	static void setFertilityFunWeight(int weight);
+	static void setFertilityFunWeight(int weight) throw(ArgumentOutOfRangeException);
 	static double unusedClassifierFitness();
-	static void setUnusedClassifierFitness(double fitness);
+	static void setUnusedClassifierFitness(double fitness) throw(ArgumentOutOfRangeException);
 	static QString sentencesFilePath();
 	static void setSentencesFilePath(const QString& path);
 private:
@@ -138,7 +140,7 @@ private:
 	//number of iterations 10, 50
 	static int mIterations;
 	//max evolution steps [1,50 000]
-	static int mMaxEvolutionSteps;
+	static unsigned int mMaxEvolutionSteps;
 	//positive sentence weight [1,20]
 	static int mPositiveSentenceWeight;
 	//negative sentence weight [1,20]
@@ -151,6 +153,7 @@ private:
 	static double mUnusedClassifierFitness;
 
 	static QString mSentencesFilePath;
+	static QMutex mutex;
 };
 
 #endif /*PARAMS_H_*/
