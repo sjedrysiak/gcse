@@ -85,6 +85,7 @@ public:
 	int howSimilar(const TClassifier& other) const;
 	operator QString() const;
 	bool operator ==(const TClassifier& other) const;
+	void resetParams();
 protected:
 	TCondition mCondition;
 };

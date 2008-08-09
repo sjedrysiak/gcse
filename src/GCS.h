@@ -3,9 +3,10 @@
 
 #include "Grammar.h"
 #include <QList>
+#include <QThread>
 #include "Sentence.h"
 
-class GCS
+class GCS : public QThread
 {
 public:
     GCS();

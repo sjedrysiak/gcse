@@ -50,7 +50,12 @@ float Classifier::computeFitness(const Grammar& g)
 	}
 
 	float fertilityFun = 0.0;
-	fertilityFun = (float) (this->mp - this->md - g.minClPointsDifference()) / (g.maxClPointsDifference() - g.minClPointsDifference());
+	int min = g.minClPointsDifference();
+	int max = g.maxClPointsDifference();
+	if (min != max)
+	{
+		fertilityFun = (float) (this->mp - this->md - min) / (max - min);
+	}
 
 	this->mFitness = (Params::classicFunWeight() * classicFun + Params::fertilityFunWeight() * fertilityFun) / (Params::classicFunWeight() + Params::fertilityFunWeight());
 	return this->mFitness;
@@ -61,8 +66,8 @@ void Classifier::resetParams()
 	this->mFitness = 0.0;
 	this->mup = 0;
 	this->mun = 0;
-	this->mp = Params::baseAmount();//TODO czy to może być tutaj?
-	this->md = Params::baseAmount();
+	this->mp = 0;
+	this->md = 0;
 }
 
 bool Classifier::operator <(const Classifier& other) const
@@ -163,6 +168,8 @@ bool NClassifier::operator ==(const NClassifier& other) const
 TClassifier::TClassifier(const TCondition& cond, const Action& act) :
 	Classifier(act), mCondition(cond)
 {
+	this->mp = Params::baseAmount();
+	this->md = Params::baseAmount();
 }
 
 const TCondition& TClassifier::condition() const
@@ -197,4 +204,13 @@ TClassifier::operator QString() const
 bool TClassifier::operator ==(const TClassifier& other) const
 {
 	return this->mCondition == other.mCondition && this->mAction == other.mAction;
+}
+
+void TClassifier::resetParams()
+{
+	this->mFitness = 0.0;
+	this->mup = 0;
+	this->mun = 0;
+	this->mp = Params::baseAmount();
+	this->md = Params::baseAmount();
 }
