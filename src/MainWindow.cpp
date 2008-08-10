@@ -48,8 +48,9 @@ void MainWindow::setupActions()
 void MainWindow::runGCS()
 {
 	action_Run->setEnabled(false);
-	this->gcs.start();
-	this->gcs.wait();
+	GCS tempgcs;
+	tempgcs.start();
+	tempgcs.wait();
 	action_Run->setEnabled(true);
 }
 

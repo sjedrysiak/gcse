@@ -38,6 +38,7 @@ Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
 
 void Grammar::initGrammar()
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	this->mFitness = 0.0;
 	this->mNumberOfSentences = 0;
 	this->mParsedPositive = 0;
@@ -59,10 +60,12 @@ void Grammar::initGrammar()
 	this->PT << TClassifier(TCondition(a), Action(A)); // A -> a
 	this->PT << TClassifier(TCondition(b), Action(B)); // B -> b
 	this->PT << TClassifier(TCondition(c), Action(C)); // C -> c
+	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void Grammar::induct(const QList<Sentence>& sentences)
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	this->mNumberOfSentences = sentences.size();
 	if (this->mNumberOfSentences == 0)
 	{
@@ -87,6 +90,8 @@ void Grammar::induct(const QList<Sentence>& sentences)
 		}
 	}
 	this->copyClParameters(operatingGrammar);
+	this->computeMaxClPointsDifference();
+	this->computeMinClPointsDifference();
 	for (int i = 0; i < this->PN.size(); i++)
 	{
 		this->PN[i].computeFitness(*this);
@@ -95,10 +100,12 @@ void Grammar::induct(const QList<Sentence>& sentences)
 	{
 		this->PT[i].computeFitness(*this);
 	}
+	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void Grammar::resetClParams()
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	for (int i = 0; i < this->PN.size(); i++)
 	{
 		this->PN[i].resetParams();
@@ -107,6 +114,7 @@ void Grammar::resetClParams()
 	{
 		this->PT[i].resetParams();
 	}
+	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void Grammar::correction()
@@ -116,10 +124,12 @@ void Grammar::correction()
 
 float Grammar::computeFitness()
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (this->mNumberOfSentences > 0)
 	{
 		this->mFitness = (float) (this->mParsedPositive + this->mNotParsedNegative) / this->mNumberOfSentences;
 	}
+	qDebug() << QString() + __FUNCTION__ + " end";
 	return this->mFitness;
 }
 
@@ -130,6 +140,7 @@ float Grammar::fitness() const
 
 void Grammar::copyClParameters(const Grammar& other)
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	for (int i = 0; i < this->PN.size(); i++)
 	{
 		int src = other.PN.indexOf(this->PN[i]);
@@ -146,6 +157,7 @@ void Grammar::copyClParameters(const Grammar& other)
 			this->PT[i] = other.PT[src];
 		}
 	}
+	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 const QList<NSymbol>& Grammar::NSet() const
@@ -191,22 +203,27 @@ void Grammar::setPT(const QList<TClassifier>& source)
 //adding methods
 void Grammar::addSymbol(const NSymbol& s)
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (!this->N.contains(s))
 	{
 		this->N << s;
 	}
+	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void Grammar::addSymbol(const TSymbol& s)
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (!this->T.contains(s))
 	{
 		this->T << s;
 	}
+	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void Grammar::addClNormal(const NClassifier& cl)
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (!this->PN.contains(cl))
 	{
 		this->addSymbol(cl.condition().firstSymbol());
@@ -214,23 +231,28 @@ void Grammar::addClNormal(const NClassifier& cl)
 		this->addSymbol(cl.action().symbol());
 		this->PN << cl;
 	}
+	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void Grammar::addClNormal(const TClassifier& cl)
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (!this->PT.contains(cl))
 	{
 		this->addSymbol(cl.condition().symbol());
 		this->addSymbol(cl.action().symbol());
 		this->PT << cl;
 	}
+	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set)
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (set.isEmpty())
 	{
 		set << newCl;
+		qDebug() << QString() + __FUNCTION__ + " end";
 		return &set.last();
 	}
 	QSet<NClassifier*> K;
@@ -258,14 +280,17 @@ NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassif
 		}
 	}
 	*mostSimilar = newCl;
+	qDebug() << QString() + __FUNCTION__ + " end";
 	return mostSimilar;
 }
 
 TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set)
 {
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (set.isEmpty())
 	{
 		set << newCl;
+		qDebug() << QString() + __FUNCTION__ + " end";
 		return &set.last();
 	}
 	QSet<TClassifier*> K;
@@ -293,24 +318,29 @@ TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassif
 		}
 	}
 	*mostSimilar = newCl;
+	qDebug() << QString() + __FUNCTION__ + " end";
 	return mostSimilar;
 }
-
 int Grammar::maxClPointsDifference() const
 {
-	int max;
+	return mMaxClPointsDifference;
+}
+
+int Grammar::computeMaxClPointsDifference()
+{
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (this->PN.isEmpty())
 	{
-		max = 0;
+		mMaxClPointsDifference = 0;
 	}
 	else
 	{
-		max = this->PN[0].pointsDifference();
+		mMaxClPointsDifference = this->PN[0].pointsDifference();
 		for (int i = 1; i < this->PN.size(); i++)
 		{
-			if (this->PN[i].pointsDifference() > max)
+			if (this->PN[i].pointsDifference() > mMaxClPointsDifference)
 			{
-				max = this->PN[i].pointsDifference();
+				mMaxClPointsDifference = this->PN[i].pointsDifference();
 			}
 		}
 //		for (int i = 0; i < this->PT.size(); i++)
@@ -321,24 +351,30 @@ int Grammar::maxClPointsDifference() const
 //			}
 //		}
 	}
-	return max;
+	qDebug() << QString() + __FUNCTION__ + " end";
+	return mMaxClPointsDifference;
 }
 
 int Grammar::minClPointsDifference() const
 {
-	int min;
+	return mMinClPointsDifference;
+}
+
+int Grammar::computeMinClPointsDifference()
+{
+	qDebug() << QString() + __FUNCTION__ + " start";
 	if (this->PN.isEmpty())
 	{
-		min = 0;
+		mMinClPointsDifference = 0;
 	}
 	else
 	{
-		min = this->PN[0].pointsDifference();
+		mMinClPointsDifference = this->PN[0].pointsDifference();
 		for (int i = 1; i < this->PN.size(); i++)
 		{
-			if (this->PN[i].pointsDifference() < min)
+			if (this->PN[i].pointsDifference() < mMinClPointsDifference)
 			{
-				min = this->PN[i].pointsDifference();
+				mMinClPointsDifference = this->PN[i].pointsDifference();
 			}
 		}
 //		for (int i = 0; i < this->PT.size(); i++)
@@ -349,7 +385,8 @@ int Grammar::minClPointsDifference() const
 //			}
 //		}
 	}
-	return min;
+	qDebug() << QString() + __FUNCTION__ + " end";
+	return mMinClPointsDifference;
 }
 
 Grammar::~Grammar()

@@ -64,6 +64,8 @@ public:
 
 	int maxClPointsDifference() const;
 	int minClPointsDifference() const;
+	int computeMaxClPointsDifference();
+	int computeMinClPointsDifference();
 
 	~Grammar();
 private:
@@ -76,6 +78,8 @@ private:
 	unsigned int mNumberOfSentences;
 	unsigned int mParsedPositive;
 	unsigned int mNotParsedNegative;
+	int mMaxClPointsDifference;
+	int mMinClPointsDifference;
 };
 
 #endif /*GRAMMAR_H_*/
