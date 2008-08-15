@@ -2,6 +2,9 @@
   <qresource prefix="/icons/about" >
     <file>icons/info.png</file>
   </qresource>
+  <qresource prefix="/icons/settings" >
+    <file>icons/settings.png</file>
+  </qresource>
   <qresource prefix="/icons/close" >
     <file>icons/close.png</file>
   </qresource>
