@@ -13,7 +13,7 @@ GCS::GCS() :
 
 void GCS::run()
 {
-	qDebug() << QString() + __FUNCTION__ + " start";
+//	qDebug() << QString() + __FUNCTION__ + " start";
 	unsigned int step = 0;
 	while (step < Params::maxEvolutionSteps() && this->mGrammar.fitness() < 1.0)
 	{
@@ -25,12 +25,12 @@ void GCS::run()
 		}
 		step++;
 	}
-	qDebug() << QString() + __FUNCTION__ + " end";
+//	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void GCS::readSentences(const QString& path)
 {
-	qDebug() << QString() + __FUNCTION__ + " start";
+//	qDebug() << QString() + __FUNCTION__ + " start";
 	QFile file(path);
 	if (file.open(QFile::ReadOnly))
 	{
@@ -62,12 +62,12 @@ void GCS::readSentences(const QString& path)
 		file.close();
 	}
 	//TODO obsługa błędów z plikiem
-	qDebug() << QString() + __FUNCTION__ + " end";
+//	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void GCS::setParams()
 {
-	qDebug() << QString() + __FUNCTION__ + " start";
+//	qDebug() << QString() + __FUNCTION__ + " start";
 	try
 	{
 		Params::setAllowCorrection(false);
@@ -92,7 +92,7 @@ void GCS::setParams()
 		Params::setNonterminalSymbolsAmount(1);
 		Params::setTerminalSymbolsAmount(0);
 		Params::setIterations(10);
-		Params::setMaxEvolutionSteps(50);//testing
+		Params::setMaxEvolutionSteps(5);//testing
 		Params::setPositiveSentenceWeight(1);
 		Params::setNegativeSentenceWeight(1);
 		Params::setClassicFunWeight(1);
@@ -110,7 +110,7 @@ void GCS::setParams()
 		qDebug() << exc;
 		throw exc;
 	}
-	qDebug() << QString() + __FUNCTION__ + " end";
+//	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 GCS::~GCS()
