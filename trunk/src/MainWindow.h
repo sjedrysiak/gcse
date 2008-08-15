@@ -33,6 +33,7 @@
 
 #include <QtGui/QMainWindow>
 #include "ui_MainWindow.h"
+#include "SettingsDialog.h"
 #include "GCS.h"
 
 class MainWindow: public QMainWindow, private Ui::MainWindowClass
@@ -45,8 +46,11 @@ public:
 protected slots:
 	void about();
 	void runGCS();
+	void gcsFinished();
+	void showSettingsDialog();
 private:
 	GCS gcs;
+	SettingsDialog* mSettingsDialog;
 };
 
 #endif // MAINWINDOW_H

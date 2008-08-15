@@ -31,11 +31,14 @@
 #include "MainWindow.h"
 #include <QMessageBox>
 
+#include <QtCore>
+
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent)
 {
 	this->setupUi(this);
 	this->setupActions();
+	this->mSettingsDialog = new SettingsDialog(this);
 }
 
 void MainWindow::setupActions()
@@ -43,15 +46,25 @@ void MainWindow::setupActions()
 	connect(action_Close, SIGNAL(triggered(bool)), qApp, SLOT(quit()));
 	connect(action_About, SIGNAL(triggered(bool)), this, SLOT(about()));
 	connect(action_Run, SIGNAL(triggered(bool)), this, SLOT(runGCS()));
+	connect(action_Settings, SIGNAL(triggered(bool)), this, SLOT(showSettingsDialog()));
+	connect(&gcs, SIGNAL(finished()), this, SLOT(gcsFinished()));
+	connect(&gcs, SIGNAL(terminated()), this, SLOT(gcsFinished()));
 }
 
 void MainWindow::runGCS()
 {
 	action_Run->setEnabled(false);
-	GCS tempgcs;
-	tempgcs.start();
-	tempgcs.wait();
+	gcs.start();
+}
+
+void MainWindow::gcsFinished()
+{
 	action_Run->setEnabled(true);
+}
+
+void MainWindow::showSettingsDialog()
+{
+	this->mSettingsDialog->show();
 }
 
 void MainWindow::about()
@@ -72,5 +85,9 @@ void MainWindow::about()
 
 MainWindow::~MainWindow()
 {
+	if (gcs.isRunning())
+	{
+		gcs.terminate();
+	}
 	gcs.wait();
 }
