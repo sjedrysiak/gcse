@@ -84,8 +84,14 @@
     <bool>false</bool>
    </attribute>
    <addaction name="action_Run" />
+   <addaction name="separator" />
+   <addaction name="action_Settings" />
   </widget>
   <action name="action_Close" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >
+     <normaloff>:/icons/close/icons/close.png</normaloff>:/icons/close/icons/close.png</iconset>
+   </property>
    <property name="text" >
     <string>&amp;Close</string>
    </property>
@@ -94,6 +100,10 @@
    </property>
   </action>
   <action name="action_Settings" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >
+     <normaloff>:/icons/settings/icons/settings.png</normaloff>:/icons/settings/icons/settings.png</iconset>
+   </property>
    <property name="text" >
     <string>&amp;Settings</string>
    </property>
@@ -113,10 +123,7 @@
      <normaloff>:/icons/play/icons/play.png</normaloff>:/icons/play/icons/play.png</iconset>
    </property>
    <property name="text" >
-    <string>&amp;Run</string>
-   </property>
-   <property name="iconVisibleInMenu" >
-    <bool>false</bool>
+    <string>Run</string>
    </property>
   </action>
  </widget>
