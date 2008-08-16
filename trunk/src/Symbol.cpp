@@ -27,7 +27,7 @@
 QString NSymbol::lastUsed = "";
 
 NSymbol::NSymbol() :
-	QString(generateNew())
+	QString()
 {}
 
 NSymbol::NSymbol(const QString& str) :
@@ -38,7 +38,7 @@ NSymbol::NSymbol(const char* str) :
 	QString(str)
 {}
 
-QString NSymbol::generateNew()
+NSymbol NSymbol::generateNew()
 {
 	if (lastUsed.size() == 0)
 	{
@@ -67,6 +67,10 @@ QString NSymbol::generateNew()
 	return lastUsed;
 }
 
+void NSymbol::resetGenerator()
+{
+	lastUsed = "";
+}
 ///////////////////////////////////////////////////
 //class TSymbol
 ///////////////////////////////////////////////////

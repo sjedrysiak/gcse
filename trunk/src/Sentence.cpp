@@ -66,6 +66,10 @@ Sentence::operator QString() const
 			ret += Sentence::wordSeparator();
 		}
 	}
+	if (!ret.isEmpty())
+	{
+		ret += QString(" (") + (this->isPositive() ? "positive" : "negative") + ")";
+	}
 	return ret;
 }
 

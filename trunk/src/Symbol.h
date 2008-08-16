@@ -33,8 +33,9 @@ public:
 	NSymbol();
 	NSymbol(const QString& str);
 	NSymbol(const char* str);
+	static NSymbol generateNew();
+	static void resetGenerator();
 protected:
-	static QString generateNew();
 	static QString lastUsed;
 };
 
