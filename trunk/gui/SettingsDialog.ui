@@ -9,7 +9,7 @@
     <x>0</x>
     <y>0</y>
     <width>651</width>
-    <height>645</height>
+    <height>666</height>
    </rect>
   </property>
   <property name="sizePolicy" >
@@ -35,7 +35,7 @@
           <item row="0" column="0" >
            <widget class="QLabel" name="lblPopulationSize" >
             <property name="text" >
-             <string>Population size:</string>
+             <string>Max population size:</string>
             </property>
             <property name="buddy" >
              <cstring>sbxPopulationSize</cstring>
@@ -360,17 +360,17 @@
            </layout>
           </item>
           <item>
+           <widget class="QCheckBox" name="cbxAllowUniversalSymbol" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
+            <property name="text" >
+             <string>Use don't care symbol</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <layout class="QGridLayout" name="gridLayout_6" >
-            <item row="0" column="0" >
-             <widget class="QLabel" name="lblAggressiveCovering" >
-              <property name="text" >
-               <string>Aggressive covering probability:</string>
-              </property>
-              <property name="buddy" >
-               <cstring>sbxAggressiveCovering</cstring>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="1" >
              <widget class="QDoubleSpinBox" name="sbxAggressiveCovering" >
               <property name="sizePolicy" >
@@ -393,9 +393,23 @@
               </property>
              </widget>
             </item>
+            <item row="0" column="0" >
+             <widget class="QLabel" name="lblAggressiveCovering" >
+              <property name="text" >
+               <string>Aggressive covering probability:</string>
+              </property>
+              <property name="buddy" >
+               <cstring>sbxAggressiveCovering</cstring>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
+         <zorder>cbxAllowUniversalSymbol</zorder>
+         <zorder>lblAggressiveCovering</zorder>
+         <zorder>sbxAggressiveCovering</zorder>
+         <zorder></zorder>
         </widget>
        </item>
        <item>
@@ -564,6 +578,38 @@
               </property>
              </widget>
             </item>
+            <item row="5" column="0" >
+             <widget class="QLabel" name="lblTournamentSubpop" >
+              <property name="text" >
+               <string>Tournament subpop:</string>
+              </property>
+              <property name="buddy" >
+               <cstring>sbxTournamentSubpop</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1" >
+             <widget class="QSpinBox" name="sbxTournamentSubpop" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize" >
+               <size>
+                <width>70</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="minimum" >
+               <number>1</number>
+              </property>
+              <property name="maximum" >
+               <number>30</number>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
@@ -654,105 +700,78 @@
             </item>
            </layout>
           </item>
-          <item>
-           <layout class="QGridLayout" name="gridLayout_5" >
-            <item row="0" column="0" >
-             <widget class="QLabel" name="lblTournamentSubpop" >
-              <property name="text" >
-               <string>Tournament subpop:</string>
-              </property>
-              <property name="buddy" >
-               <cstring>sbxTournamentSubpop</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1" >
-             <widget class="QSpinBox" name="sbxTournamentSubpop" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize" >
-               <size>
-                <width>70</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="minimum" >
-               <number>1</number>
-              </property>
-              <property name="maximum" >
-               <number>30</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" >
-             <widget class="QLabel" name="lblCrowdingFactor" >
-              <property name="text" >
-               <string>Crowding factor:</string>
-              </property>
-              <property name="buddy" >
-               <cstring>sbxCrowdingFactor</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" >
-             <widget class="QSpinBox" name="sbxCrowdingFactor" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize" >
-               <size>
-                <width>70</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="minimum" >
-               <number>1</number>
-              </property>
-              <property name="maximum" >
-               <number>30</number>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0" >
-             <widget class="QLabel" name="lblCrowdingSubpop" >
-              <property name="text" >
-               <string>Crowding subpop:</string>
-              </property>
-              <property name="buddy" >
-               <cstring>sbxCrowdingSubpop</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" >
-             <widget class="QSpinBox" name="sbxCrowdingSubpop" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize" >
-               <size>
-                <width>70</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="minimum" >
-               <number>1</number>
-              </property>
-              <property name="maximum" >
-               <number>30</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2" >
+         <property name="title" >
+          <string>Crowding</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7" >
+          <item row="0" column="0" >
+           <widget class="QLabel" name="lblCrowdingFactor" >
+            <property name="text" >
+             <string>Crowding factor:</string>
+            </property>
+            <property name="buddy" >
+             <cstring>sbxCrowdingFactor</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" >
+           <widget class="QSpinBox" name="sbxCrowdingFactor" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize" >
+             <size>
+              <width>70</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="maximum" >
+             <number>30</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" >
+           <widget class="QLabel" name="lblCrowdingSubpop" >
+            <property name="text" >
+             <string>Crowding subpop:</string>
+            </property>
+            <property name="buddy" >
+             <cstring>sbxCrowdingSubpop</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" >
+           <widget class="QSpinBox" name="sbxCrowdingSubpop" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize" >
+             <size>
+              <width>70</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="maximum" >
+             <number>30</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -779,16 +798,6 @@
             </property>
             <property name="text" >
              <string>Grammar correction</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="cbxAllowUniversalSymbol" >
-            <property name="enabled" >
-             <bool>false</bool>
-            </property>
-            <property name="text" >
-             <string>Use don't care symbol</string>
             </property>
            </widget>
           </item>
@@ -937,7 +946,6 @@
  <tabstops>
   <tabstop>sbxPopulationSize</tabstop>
   <tabstop>sbxNonterminals</tabstop>
-  <tabstop>cbxAllowUniversalSymbol</tabstop>
   <tabstop>cbxGrammarCorrection</tabstop>
   <tabstop>btnOK</tabstop>
   <tabstop>btnCancel</tabstop>
@@ -956,7 +964,7 @@
    <hints>
     <hint type="sourcelabel" >
      <x>555</x>
-     <y>667</y>
+     <y>632</y>
     </hint>
     <hint type="destinationlabel" >
      <x>401</x>
@@ -972,7 +980,7 @@
    <hints>
     <hint type="sourcelabel" >
      <x>638</x>
-     <y>667</y>
+     <y>632</y>
     </hint>
     <hint type="destinationlabel" >
      <x>449</x>
