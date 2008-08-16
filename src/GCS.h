@@ -9,12 +9,10 @@
 class GCS : public QThread
 {
 public:
-    GCS();
+    GCS(const Grammar& grammar, const QList<Sentence> list);
     void run();
     virtual ~GCS();
 protected:
-    void readSentences(const QString& path);
-    void setParams();
     Grammar mGrammar;
     QList<Sentence> mSentences;
 };

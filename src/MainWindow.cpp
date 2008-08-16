@@ -30,6 +30,7 @@
 
 #include "MainWindow.h"
 #include <QMessageBox>
+#include "Params.h"
 
 #include <QtCore>
 
@@ -47,24 +48,96 @@ void MainWindow::setupActions()
 	connect(action_About, SIGNAL(triggered(bool)), this, SLOT(about()));
 	connect(action_Run, SIGNAL(triggered(bool)), this, SLOT(runGCS()));
 	connect(action_Settings, SIGNAL(triggered(bool)), this, SLOT(showSettingsDialog()));
-	connect(&gcs, SIGNAL(finished()), this, SLOT(gcsFinished()));
-	connect(&gcs, SIGNAL(terminated()), this, SLOT(gcsFinished()));
+//	connect(&gcs, SIGNAL(terminated()), this, SLOT(gcsFinished()));
+	connect(btnInitGrammar, SIGNAL(clicked()), this, SLOT(initGrammar()));
+	connect(btnRun, SIGNAL(clicked()), this, SLOT(runGCS()));
+	connect(btnLoadSentences, SIGNAL(clicked()), this, SLOT(readSentences()));
+	connect(sbxEvolutionSteps, SIGNAL(valueChanged(int)), this, SLOT(changeMaxEvolutionSteps(int)));
 }
 
 void MainWindow::runGCS()
 {
 	action_Run->setEnabled(false);
-	gcs.start();
+	btnRun->setEnabled(false);
+	gcs = new GCS(mGrammar, mSentences);
+	connect(gcs, SIGNAL(finished()), this, SLOT(gcsFinished()));
+	gcs->start();
 }
 
 void MainWindow::gcsFinished()
 {
 	action_Run->setEnabled(true);
+	btnRun->setEnabled(true);
+	delete gcs;
+	gcs = NULL;
 }
 
 void MainWindow::showSettingsDialog()
 {
 	this->mSettingsDialog->show();
+}
+
+void MainWindow::initGrammar()
+{
+	this->mGrammar.initGrammar(this->sbxNonterminals->value(), this->sbxRules->value());
+	this->listNonterminals->clear();
+	for (int i = 0; i < this->mGrammar.NSet().size(); i++)
+	{
+		this->listNonterminals->addItem(this->mGrammar.NSet()[i]);
+	}
+	this->listRules->clear();
+	for (int i = 0; i < this->mGrammar.PNSet().size(); i++)
+	{
+		this->listRules->addItem(this->mGrammar.PNSet()[i]);
+	}
+}
+
+void MainWindow::readSentences()
+{
+//	qDebug() << QString() + __FUNCTION__ + " start";
+	QFile file(edtFilePath->text());
+	if (file.open(QFile::ReadOnly))
+	{
+		QTextStream lines(&file);
+		while (!lines.atEnd())
+		{
+			QString tmp = lines.readLine();
+			if (tmp.size() > 4)
+			{
+				QTextStream line(&tmp);
+				Sentence snt;
+				int positive;
+				line >> positive;
+				line.skipWhiteSpace();
+				int trash;
+				line >> trash;//only for read second number from line (number useless at this moment)
+				line.skipWhiteSpace();
+				snt = line.readAll();
+				if (positive == 0)
+				{
+					snt.setPositive(false);
+				}
+				else
+				{
+					snt.setPositive(true);
+				}
+				this->mSentences << snt;
+			}
+		}
+		file.close();
+	}
+	this->listSentences->clear();
+	for (int i = 0; i < mSentences.size(); i++)
+	{
+		this->listSentences->addItem(mSentences[i]);
+	}
+	//TODO obsługa błędów z plikiem
+//	qDebug() << QString() + __FUNCTION__ + " end";
+}
+
+void MainWindow::changeMaxEvolutionSteps(int value)
+{
+	Params::setMaxEvolutionSteps(value);
 }
 
 void MainWindow::about()
@@ -85,9 +158,11 @@ void MainWindow::about()
 
 MainWindow::~MainWindow()
 {
-	if (gcs.isRunning())
+	if (gcs != NULL && gcs->isRunning())
 	{
-		gcs.terminate();
+		gcs->terminate();
+		gcs->wait();
+		delete gcs;
+		gcs = NULL;
 	}
-	gcs.wait();
 }

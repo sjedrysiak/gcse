@@ -33,33 +33,40 @@
 Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
 	Start(start), Universal(universal)
 {
-	this->initGrammar();
+	initGrammar();
 }
 
-void Grammar::initGrammar()
+void Grammar::initGrammar(int nonterminals, int rules)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
 	this->mFitness = 0.0;
 	this->mNumberOfSentences = 0;
 	this->mParsedPositive = 0;
 	this->mNotParsedNegative = 0;
-	NSymbol A, B, C, D;
-	TSymbol a("a"), b("b"), c("c");
-	this->N << A;
-	this->N << B;
-	this->N << C;
-	this->N << D;
-	this->T << a;
-	this->T << b;
-	this->T << c;
-
-	this->PN << NClassifier(NCondition(A, B), Action(this->Start)); // S -> AB
-	this->PN << NClassifier(NCondition(A, C), Action(this->Start)); // S -> AC
-	this->PN << NClassifier(NCondition(this->Start, B), Action(C)); // C -> SB
-	this->PN << NClassifier(NCondition(B, B), Action(B)); // B -> BB
-	this->PT << TClassifier(TCondition(a), Action(A)); // A -> a
-	this->PT << TClassifier(TCondition(b), Action(B)); // B -> b
-	this->PT << TClassifier(TCondition(c), Action(C)); // C -> c
+	this->N.clear();
+	NSymbol::resetGenerator();
+	for (int i = 0; i < nonterminals; i++)
+	{
+		this->N << NSymbol::generateNew();
+	}
+	this->PN.clear();
+	if (!this->N.empty())
+	{
+		for (int i = 0; i < rules; i++)
+		{
+			NSymbol s1, s2, s3;
+			s1 = this->N[Random::rand(this->N.size())];
+			s2 = this->N[Random::rand(this->N.size())];
+			s3 = this->N[Random::rand(this->N.size())];
+			NCondition cond(s1, s2);
+			Action act(s3);
+			NClassifier cl(cond, act);
+			if (!this->PN.contains(cl))
+			{
+				this->PN << cl;
+			}
+		}
+	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
 }
 

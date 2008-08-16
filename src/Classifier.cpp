@@ -153,7 +153,7 @@ int NClassifier::howSimilar(const NClassifier& other) const
 
 NClassifier::operator QString() const
 {
-	return this->mCondition + "<-" + this->mAction + "/" + QString::number(this->mFitness);
+	return this->mAction + "=>" + this->mCondition + " (" + QString::number(this->mFitness) + ")";
 }
 
 bool NClassifier::operator ==(const NClassifier& other) const
@@ -198,7 +198,7 @@ int TClassifier::howSimilar(const TClassifier& other) const
 
 TClassifier::operator QString() const
 {
-	return this->mCondition + "<-" + this->mAction + "/" + QString::number(this->mFitness);
+	return this->mAction + "=>" + this->mCondition + " (" + QString::number(this->mFitness) + ")";
 }
 
 bool TClassifier::operator ==(const TClassifier& other) const

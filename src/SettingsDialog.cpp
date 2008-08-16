@@ -38,17 +38,21 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 {
 	this->setupUi(this);
 	this->setupActions();
+	this->updateFromParams();
 }
 
 void SettingsDialog::setupActions()
 {
-	this->updateFromParams();
 }
 
 void SettingsDialog::accept()
 {
 	try
 	{
+		Params::setPopulationSize(this->sbxPopulationSize->value());
+		Params::setNonterminalSymbolsAmount(this->sbxNonterminals->value());
+		Params::setUnusedClassifierFitness(this->sbxUnusedFitness->value());
+
 		Params::setAllowCorrection(this->cbxGrammarCorrection->isChecked());
 		Params::setAllowCoveringStart(this->cbxStartCovering->isChecked());
 		Params::setAllowCoveringFull(this->cbxFullCovering->isChecked());
@@ -92,13 +96,10 @@ void SettingsDialog::accept()
 		Params::setCrowdSize(this->sbxCrowdingSubpop->value());
 		Params::setBaseAmount(this->sbxBaseAmount->value());
 		Params::setRenouncedAmountFactor(this->sbxRAF->value());
-		Params::setPopulationSize(this->sbxPopulationSize->value());
-		Params::setNonterminalSymbolsAmount(this->sbxNonterminals->value());
 		Params::setPositiveSentenceWeight(this->sbxPositiveWeight->value());
 		Params::setNegativeSentenceWeight(this->sbxNegativeWeight->value());
 		Params::setClassicFunWeight(this->sbxClassicWeight->value());
 		Params::setFertilityFunWeight(this->sbxFertilityWeight->value());
-		Params::setUnusedClassifierFitness(this->sbxUnusedFitness->value());
 	}
 	catch(ArgumentOutOfRangeException& exc)
 	{
@@ -121,7 +122,52 @@ void SettingsDialog::reject()
 
 void SettingsDialog::updateFromParams()
 {
-	//read Params and set fields on dialog
+	this->cbxGrammarCorrection->setChecked(Params::allowCorrection());
+	this->cbxStartCovering->setChecked(Params::allowCoveringStart());
+	this->cbxFullCovering->setChecked(Params::allowCoveringFull());
+	this->cbxAllowUniversalSymbol->setChecked(Params::allowCoveringUniversal());
+	this->sbxAggressiveCovering->setValue(Params::coveringAggressiveProb());
+	this->cbxAllowGA->setChecked(Params::allowGA());
+	switch (Params::selectionCl1())
+	{
+		case GA::RANDOM:
+			this->rbnRandom1->setChecked(true);
+			break;
+		case GA::ROULETTE:
+			this->rbnRoulette1->setChecked(true);
+			break;
+		case GA::TOURNAMENT:
+			this->rbnTournament1->setChecked(true);
+			break;
+	}
+	switch (Params::selectionCl2())
+	{
+		case GA::RANDOM:
+			this->rbnRandom2->setChecked(true);
+			break;
+		case GA::ROULETTE:
+			this->rbnRoulette2->setChecked(true);
+			break;
+		case GA::TOURNAMENT:
+			this->rbnTournament2->setChecked(true);
+			break;
+	}
+	this->sbxCrossoverProb->setValue(Params::crossoverProb());
+	this->sbxMutationProb->setValue(Params::mutationProb());
+	this->sbxInversionProb->setValue(Params::inversionProb());
+	this->sbxEliteSize->setValue(Params::eliteSize());
+	this->sbxTournamentSubpop->setValue(Params::tournamentSize());
+	this->sbxCrowdingFactor->setValue(Params::crowdFactor());
+	this->sbxCrowdingSubpop->setValue(Params::crowdSize());
+	this->sbxBaseAmount->setValue(Params::baseAmount());
+	this->sbxRAF->setValue(Params::renouncedAmountFactor());
+	this->sbxPopulationSize->setValue(Params::populationSize());
+	this->sbxNonterminals->setValue(Params::nonterminalSymbolsAmount());
+	this->sbxPositiveWeight->setValue(Params::positiveSentenceWeight());
+	this->sbxNegativeWeight->setValue(Params::negativeSentenceWeight());
+	this->sbxClassicWeight->setValue(Params::classicFunWeight());
+	this->sbxFertilityWeight->setValue(Params::fertilityFunWeight());
+	this->sbxUnusedFitness->setValue(Params::unusedClassifierFitness());
 }
 
 SettingsDialog::~SettingsDialog()

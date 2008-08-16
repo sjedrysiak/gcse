@@ -41,16 +41,22 @@ class MainWindow: public QMainWindow, private Ui::MainWindowClass
 	Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
-    void setupActions();
 	~MainWindow();
 protected slots:
 	void about();
 	void runGCS();
 	void gcsFinished();
 	void showSettingsDialog();
+	void initGrammar();
+    void readSentences();
+    void changeMaxEvolutionSteps(int value);
 private:
-	GCS gcs;
+    void setupActions();
+    void initValues();//TODO implementation
+	GCS* gcs;
 	SettingsDialog* mSettingsDialog;
+	QList<Sentence> mSentences;
+	Grammar mGrammar;
 };
 
 #endif // MAINWINDOW_H

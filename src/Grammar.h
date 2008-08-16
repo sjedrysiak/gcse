@@ -38,7 +38,7 @@ public:
 	const NSymbol Universal;
 
 	Grammar(const NSymbol& start = "_S_", const NSymbol& universal = "_U_");
-	void initGrammar();
+	void initGrammar(int nonterminals = 0, int rules = 0);
 	void induct(const QList<Sentence>& sentences);
 	void resetClParams();
 	void correction();
