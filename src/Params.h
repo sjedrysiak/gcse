@@ -63,8 +63,8 @@ public:
 	static void setBaseAmount(int amount) throw(ArgumentOutOfRangeException);
 	static int renouncedAmountFactor();
 	static void setRenouncedAmountFactor(int factor) throw(ArgumentOutOfRangeException);
-	static int populationSize();
-	static void setPopulationSize(int size) throw(ArgumentOutOfRangeException);
+	static int maxPopulationSize();
+	static void setMaxPopulationSize(int size) throw(ArgumentOutOfRangeException);
 	static int startNonterminalProdsAmount();
 	static void setStartNonterminalProdsAmount(int amount) throw(ArgumentOutOfRangeException);
 	static int nonterminalSymbolsAmount();
@@ -130,7 +130,7 @@ private:
 	//renounced amount factor [0,15]
 	static int mRenouncedAmountFactor;
 	//classifiers population size ( = mStartNonterminalProdsAmount + PT.size())
-	static int mPopulationSize;
+	static int mMaxPopulationSize;
 	//start nonterminal classifiers amount [1,30]
 	static int mStartNonterminalProdsAmount;
 	//nonterminal symbols amount [1,30]

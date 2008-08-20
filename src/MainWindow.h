@@ -50,8 +50,12 @@ protected slots:
 	void initGrammar();
     void readSentences();
     void changeMaxEvolutionSteps(int value);
+    void addNonterminal();
+    void addRule();
+    void clearGrammar();
 private:
-    void setupActions();
+	void reloadCombos();
+	void setupActions();
     void initValues();//TODO implementation
 	GCS* gcs;
 	SettingsDialog* mSettingsDialog;

@@ -26,19 +26,19 @@ bool Params::mAllowCoveringStart = true;
 bool Params::mAllowCoveringFull = true;
 bool Params::mAllowCoveringUniversal = false;
 float Params::mCoveringAggressiveProb = 1.0;
-bool Params::mAllowGA = false;
+bool Params::mAllowGA = true;
 GA::SelectionType Params::mSelectionCl1 = GA::RANDOM;
 GA::SelectionType Params::mSelectionCl2 = GA::RANDOM;
-float Params::mCrossoverProb = 0.0;
-float Params::mMutationProb = 0.0;
-float Params::mInversionProb = 0.0;
-int Params::mEliteSize = 1;
-int Params::mTournamentSize = 1;
+float Params::mCrossoverProb = 0.2;
+float Params::mMutationProb = 0.2;
+float Params::mInversionProb = 0.2;
+int Params::mEliteSize = 2;
+int Params::mTournamentSize = 2;
 int Params::mCrowdFactor = 2;
 int Params::mCrowdSize = 2;
 int Params::mBaseAmount = 5;
 int Params::mRenouncedAmountFactor = 2;
-int Params::mPopulationSize = 20;
+int Params::mMaxPopulationSize = 20;
 int Params::mStartNonterminalProdsAmount = 5;
 int Params::mNonterminalSymbolsAmount = 26;
 int Params::mTerminalSymbolsAmount = 1;
@@ -297,18 +297,18 @@ void Params::setRenouncedAmountFactor(int factor) throw(ArgumentOutOfRangeExcept
 	mRenouncedAmountFactor = factor;
 }
 
-int Params::populationSize()
+int Params::maxPopulationSize()
 {
 	//TODO czy to jest w ogóle potrzebne?
 	QMutexLocker locker(&mutex);
-	return mPopulationSize;
+	return mMaxPopulationSize;
 }
 
-void Params::setPopulationSize(int size) throw(ArgumentOutOfRangeException)
+void Params::setMaxPopulationSize(int size) throw(ArgumentOutOfRangeException)
 {
 	//TODO czy to jest w ogóle potrzebne?
 	QMutexLocker locker(&mutex);
-	mPopulationSize = size;
+	mMaxPopulationSize = size;
 }
 
 int Params::startNonterminalProdsAmount()

@@ -55,18 +55,19 @@ public:
 	void setPT(const QList<TClassifier>& source);
 
 	//adding methods
-	void addSymbol(const NSymbol& s);
-	void addSymbol(const TSymbol& s);
-	void addClNormal(const NClassifier& cl);
-	void addClNormal(const TClassifier& cl);
-	static NClassifier* addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set);
-	static TClassifier* addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set);
+	bool addSymbol(const NSymbol& s);
+	bool addSymbol(const TSymbol& s);
+	bool addClNormal(const NClassifier& cl);
+	bool addClNormal(const TClassifier& cl);
+	static NClassifier* addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set, int maxSize);
+	static TClassifier* addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set, int maxSize);
 
 	int maxClPointsDifference() const;
 	int minClPointsDifference() const;
 	int computeMaxClPointsDifference();
 	int computeMinClPointsDifference();
 
+	operator QString() const;
 	~Grammar();
 private:
 	QList<NSymbol> N;

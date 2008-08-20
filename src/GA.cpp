@@ -92,8 +92,8 @@ void GA::evolve(Grammar& g)
 		temp << elite.takeFirst();
 	}
 
-	g.addClWithCrowding(cl1, temp);
-	g.addClWithCrowding(cl2, temp);
+	g.addClWithCrowding(cl1, temp, temp.size());
+	g.addClWithCrowding(cl2, temp, temp.size());
 	g.PN = elite + temp;
 }
 
