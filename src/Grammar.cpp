@@ -74,6 +74,8 @@ void Grammar::induct(const QList<Sentence>& sentences)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
 	this->mNumberOfSentences = sentences.size();
+	this->mParsedPositive = 0;
+	this->mNotParsedNegative = 0;
 	if (this->mNumberOfSentences == 0)
 	{
 		return;
@@ -87,6 +89,7 @@ void Grammar::induct(const QList<Sentence>& sentences)
 	for (unsigned int i = 0; i < this->mNumberOfSentences; i++)
 	{
 		bool result = CYK::parse(sentences[i], operatingGrammar);
+		qDebug() << "sentence:" << sentences[i].operator QString() << (result ? "parsed" : "not parsed");
 		if (result == true && sentences[i].isPositive())
 		{
 			this->mParsedPositive++;
@@ -135,6 +138,7 @@ float Grammar::computeFitness()
 	if (this->mNumberOfSentences > 0)
 	{
 		this->mFitness = (float) (this->mParsedPositive + this->mNotParsedNegative) / this->mNumberOfSentences;
+		qDebug() << "fitness =" << this->mParsedPositive << "+" << this->mNotParsedNegative << "/" << this->mNumberOfSentences;
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
 	return this->mFitness;
