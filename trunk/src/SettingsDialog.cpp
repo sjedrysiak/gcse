@@ -49,7 +49,7 @@ void SettingsDialog::accept()
 {
 	try
 	{
-		Params::setPopulationSize(this->sbxPopulationSize->value());
+		Params::setMaxPopulationSize(this->sbxPopulationSize->value());
 		Params::setNonterminalSymbolsAmount(this->sbxNonterminals->value());
 		Params::setUnusedClassifierFitness(this->sbxUnusedFitness->value());
 
@@ -161,7 +161,7 @@ void SettingsDialog::updateFromParams()
 	this->sbxCrowdingSubpop->setValue(Params::crowdSize());
 	this->sbxBaseAmount->setValue(Params::baseAmount());
 	this->sbxRAF->setValue(Params::renouncedAmountFactor());
-	this->sbxPopulationSize->setValue(Params::populationSize());
+	this->sbxPopulationSize->setValue(Params::maxPopulationSize());
 	this->sbxNonterminals->setValue(Params::nonterminalSymbolsAmount());
 	this->sbxPositiveWeight->setValue(Params::positiveSentenceWeight());
 	this->sbxNegativeWeight->setValue(Params::negativeSentenceWeight());

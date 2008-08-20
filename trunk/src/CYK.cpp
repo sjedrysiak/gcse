@@ -207,7 +207,7 @@ Classifier* CYK::coveringStart(const TSymbol& term, Grammar& g)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
 	TClassifier cl(TCondition(term), Action(g.Start));
-	TClassifier* added = Grammar::addClWithCrowding(cl, g.PT);
+	TClassifier* added = Grammar::addClWithCrowding(cl, g.PT, g.PT.size());
 //	qDebug() << QString() + __FUNCTION__ + " end";
 	return added;
 }
@@ -216,7 +216,7 @@ Classifier* CYK::coveringFull(const NCondition& cond, Grammar& g)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
 	NClassifier cl(cond, Action(g.Start));
-	NClassifier* added = Grammar::addClWithCrowding(cl, g.PN);
+	NClassifier* added = Grammar::addClWithCrowding(cl, g.PN, Params::maxPopulationSize());
 //	qDebug() << QString() + __FUNCTION__ + " end";
 	return added;
 }
@@ -226,7 +226,7 @@ Classifier* CYK::coveringAggressive(const NCondition& cond, Grammar& g)
 //	qDebug() << QString() + __FUNCTION__ + " start";
 	NSymbol newSymbol = g.N[Random::rand(g.N.size())];
 	NClassifier cl(cond, Action(newSymbol));
-	NClassifier* added = Grammar::addClWithCrowding(cl, g.PN);
+	NClassifier* added = Grammar::addClWithCrowding(cl, g.PN, Params::maxPopulationSize());
 //	qDebug() << QString() + __FUNCTION__ + " end";
 	return added;
 }

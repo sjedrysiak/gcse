@@ -53,6 +53,9 @@ void MainWindow::setupActions()
 	connect(btnRun, SIGNAL(clicked()), this, SLOT(runGCS()));
 	connect(btnLoadSentences, SIGNAL(clicked()), this, SLOT(readSentences()));
 	connect(sbxEvolutionSteps, SIGNAL(valueChanged(int)), this, SLOT(changeMaxEvolutionSteps(int)));
+	connect(btnAddSymbol, SIGNAL(clicked()), this, SLOT(addNonterminal()));
+	connect(btnAddRule, SIGNAL(clicked()), this, SLOT(addRule()));
+	connect(btnClearGrammar, SIGNAL(clicked()), this, SLOT(clearGrammar()));
 }
 
 void MainWindow::runGCS()
@@ -85,6 +88,7 @@ void MainWindow::initGrammar()
 	{
 		this->listNonterminals->addItem(this->mGrammar.NSet()[i]);
 	}
+	this->reloadCombos();
 	this->listRules->clear();
 	for (int i = 0; i < this->mGrammar.PNSet().size(); i++)
 	{
@@ -95,6 +99,7 @@ void MainWindow::initGrammar()
 void MainWindow::readSentences()
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
+	this->mSentences.clear();
 	QFile file(edtFilePath->text());
 	if (file.open(QFile::ReadOnly))
 	{
@@ -138,6 +143,58 @@ void MainWindow::readSentences()
 void MainWindow::changeMaxEvolutionSteps(int value)
 {
 	Params::setMaxEvolutionSteps(value);
+}
+
+void MainWindow::addNonterminal()
+{
+	if (!this->edtSymbol->text().isEmpty())
+	{
+		NSymbol symbol(this->edtSymbol->text());
+		if (this->mGrammar.addSymbol(symbol))
+		{
+			this->listNonterminals->addItem(symbol);
+			this->reloadCombos();
+		}
+	}
+}
+
+void MainWindow::addRule()
+{
+	QString s1, s2, s3;
+	s1 = this->cbxAction1->currentText();
+	s2 = this->cbxAction2->currentText();
+	s3 = this->cbxCondition->currentText();
+	if (!s1.isEmpty() && !s2.isEmpty() && !s3.isEmpty())
+	{
+		NCondition cond(s1, s2);
+		Action act(s3);
+		NClassifier cl(cond, act);
+		if (this->mGrammar.addClNormal(cl))
+		{
+			this->listRules->addItem(cl);
+		}
+	}
+}
+
+void MainWindow::reloadCombos()
+{
+	this->cbxCondition->clear();
+	this->cbxAction1->clear();
+	this->cbxAction2->clear();
+	for (int i = 0; i < this->mGrammar.NSet().size(); i++)
+	{
+		this->cbxCondition->addItem(this->mGrammar.NSet()[i], this->mGrammar.NSet()[i]);
+		this->cbxAction1->addItem(this->mGrammar.NSet()[i], this->mGrammar.NSet()[i]);
+		this->cbxAction2->addItem(this->mGrammar.NSet()[i], this->mGrammar.NSet()[i]);
+	}
+}
+
+void MainWindow::clearGrammar()
+{
+	this->mGrammar.initGrammar();
+	this->listNonterminals->clear();
+	this->listRules->clear();
+	this->reloadCombos();
 }
 
 void MainWindow::about()
