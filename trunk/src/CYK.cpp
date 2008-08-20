@@ -114,12 +114,12 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 //			}
 //		}
 //	}
+	//TODO czy update parametrów za każdym razem czy tylko jeśli się uda sparsować zdanie?
+	updateClParams(cykTable, sentence.isPositive());
 	for (int i = 0; i < cykTable[size - 1][0].size(); i++)
 	{
 		if (cykTable[size - 1][0][i]->action().symbol() == g.Start)
 		{
-			//TODO czy update parametrów za każdym razem czy tylko jeśli się uda sparsować zdanie?
-			updateClParams(cykTable, sentence.isPositive());
 //			qDebug() << QString() + __FUNCTION__ + " end";
 			return true;
 		}
@@ -323,8 +323,8 @@ int CYK::computeAmount(CYKTable& cykTable, const NSymbol& symbol, int row, int c
 			}
 		}
 	}
-	int amount = Params::baseAmount()*2;
-//	if (cl != NULL)
+	int amount = 0;//Params::baseAmount()*2;
+	if (cl != NULL)
 	{
 		amount = (computeAmount(cykTable, cl->condition().firstSymbol(), newRow, newCol, true, isPositive) + computeAmount(cykTable, cl->condition().secondSymbol(), newRow, newCol, false, isPositive)) * Params::renouncedAmountFactor();
 		cl->increasePoints(isPositive, amount);
