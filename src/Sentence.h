@@ -32,14 +32,14 @@ public:
 	Sentence(const char* str, bool isPositive = true);
 	bool isPositive() const;
 	void setPositive(bool isPositive);
-	static const QString& wordSeparator();
-	static void setWordSeparator(const QString& str);
 	operator QString() const;
-	virtual ~Sentence();
+	virtual ~Sentence(){}
+
+    static QString wordSeparator;
 protected:
-	void split(QString str);
+	void split(const QString& str);
+
     bool mIsPositive;
-    static QString mWordSeparator;
 };
 
 #endif /*SENTENCE_H_*/

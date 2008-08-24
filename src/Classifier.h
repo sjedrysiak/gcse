@@ -24,20 +24,18 @@
 #include "Condition.h"
 #include "Action.h"
 
-class Grammar;
-
 class Classifier
 {
 public:
 	float fitness() const;
-	float computeFitness(const Grammar& g);
-	void resetParams();
+	float computeFitness(int minDifference, int maxDifference);
+	virtual void resetParams();
 	bool operator <(const Classifier& other) const;
 	int pointsDifference() const;
 	void used(bool positiveSentence);
 	void increasePoints(bool positive, int points);
-	const Action& action() const;
-	void setAction(const Action& act);
+
+	Action action;
 protected:
 	Classifier(const Action& act);
 	/**
@@ -60,34 +58,29 @@ protected:
 	 * points for negative sentences
 	 */
 	unsigned int md;
-	Action mAction;
 };
 
 class NClassifier: public Classifier
 {
 public:
 	NClassifier(const NCondition& cond, const Action& act);
-	const NCondition& condition() const;
-	void setCondition(const NCondition& cond);
 	int howSimilar(const NClassifier& other) const;
 	operator QString() const;
 	bool operator ==(const NClassifier& other) const;
-protected:
-	NCondition mCondition;
+
+	NCondition condition;
 };
 
 class TClassifier: public Classifier
 {
 public:
 	TClassifier(const TCondition& cond, const Action& act);
-	const TCondition& condition() const;
-	void setCondition(const TCondition& cond);
 	int howSimilar(const TClassifier& other) const;
 	operator QString() const;
 	bool operator ==(const TClassifier& other) const;
 	void resetParams();
-protected:
-	TCondition mCondition;
+
+	TCondition condition;
 };
 
 #endif /*CLASSIFIER_H_*/
