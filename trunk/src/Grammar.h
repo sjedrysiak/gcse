@@ -44,15 +44,7 @@ public:
 	void correction();
 	float computeFitness();
 	float fitness() const;
-	void copyClParameters(const Grammar& other);
-	const QList<NSymbol>& NSet() const;
-	const QList<TSymbol>& TSet() const;
-	const QList<NClassifier>& PNSet() const;
-	const QList<TClassifier>& PTSet() const;
-	void setN(const QList<NSymbol>& source);
-	void setT(const QList<TSymbol>& source);
-	void setPN(const QList<NClassifier>& source);
-	void setPT(const QList<TClassifier>& source);
+//	void copyClParameters(const Grammar& other);
 
 	//adding methods
 	bool addSymbol(const NSymbol& s);
@@ -62,23 +54,24 @@ public:
 	static NClassifier* addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set, int maxSize);
 	static TClassifier* addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set, int maxSize);
 
+	operator QString() const;
+	~Grammar();
+
+	QList<NSymbol> N;
+	QList<TSymbol> T;
+	QList<NClassifier> PN;
+	QList<TClassifier> PT;
+private:
 	int maxClPointsDifference() const;
 	int minClPointsDifference() const;
 	int computeMaxClPointsDifference();
 	int computeMinClPointsDifference();
 
-	operator QString() const;
-	~Grammar();
-private:
-	QList<NSymbol> N;
-	QList<TSymbol> T;
-	QList<NClassifier> PN;
-	QList<TClassifier> PT;
 	//for fitness computing
 	float mFitness;
-	unsigned int mNumberOfSentences;
-	unsigned int mParsedPositive;
-	unsigned int mNotParsedNegative;
+	int mNumberOfSentences;
+	int mParsedPositive;
+	int mNotParsedNegative;
 	int mMaxClPointsDifference;
 	int mMinClPointsDifference;
 };

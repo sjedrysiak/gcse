@@ -26,10 +26,6 @@
 
 QString NSymbol::lastUsed = "";
 
-NSymbol::NSymbol() :
-	QString()
-{}
-
 NSymbol::NSymbol(const QString& str) :
 	QString(str)
 {}

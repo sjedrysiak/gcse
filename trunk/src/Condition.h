@@ -30,29 +30,21 @@ class NCondition
 {
 public:
 	NCondition(const NSymbol& first, const NSymbol& second);
-	const NSymbol& firstSymbol() const;
-	void setFirstSymbol(const NSymbol& s);
-	const NSymbol& secondSymbol() const;
-	void setSecondSymbol(const NSymbol& s);
 	bool operator ==(const NCondition& other) const;
 	operator QString() const;
-	virtual ~NCondition();
-protected:
-	NSymbol mFirstSymbol;
-	NSymbol mSecondSymbol;
+
+	NSymbol firstSymbol;
+	NSymbol secondSymbol;
 };
 
 class TCondition
 {
 public:
 	TCondition(const TSymbol& s);
-	const TSymbol& symbol() const;
-	void setSymbol(const TSymbol& s);
 	bool operator ==(const TCondition& other) const;
 	operator QString() const;
-	virtual ~TCondition();
-protected:
-	TSymbol mSymbol;
+
+	TSymbol symbol;
 };
 
 #endif /*CONDITION_H_*/

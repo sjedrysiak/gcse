@@ -27,13 +27,10 @@ class Action
 {
 public:
 	Action(const NSymbol& s);
-	const NSymbol& symbol() const;
-	void setSymbol(const NSymbol& s);
 	bool operator ==(const Action& other) const;
 	operator QString() const;
-	~Action();
-private:
-	NSymbol mSymbol;
+
+	NSymbol symbol;
 };
 
 #endif /*ACTION_H_*/

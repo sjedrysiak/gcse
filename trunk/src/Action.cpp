@@ -21,29 +21,16 @@
 #include "Action.h"
 
 Action::Action(const NSymbol& s) :
-	mSymbol(s)
+	symbol(s)
 {
-}
-
-const NSymbol& Action::symbol() const
-{
-    return this->mSymbol;
-}
-
-void Action::setSymbol(const NSymbol& s)
-{
-    this->mSymbol = s;
 }
 
 bool Action::operator ==(const Action& other) const
 {
-    return this->mSymbol == other.mSymbol;
+    return symbol == other.symbol;
 }
 
 Action::operator QString() const
 {
-    return this->mSymbol;
+    return symbol;
 }
-
-Action::~Action()
-{}

@@ -12,17 +12,18 @@ GCS::GCS(const Grammar& grammar, const QList<Sentence> list) :
 void GCS::run()
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	unsigned int step = 0;
+	Params& p = Params::instance();
+	int step = 0;
 	QFile file("wyniki");
 	file.open(QFile::WriteOnly);
 	QTextStream stream(&file);
 	stream << mGrammar;
 	double maxFitness = 0;
-	while (step < Params::maxEvolutionSteps() && this->mGrammar.fitness() < 1.0)
+	while (step < p.maxEvolutionSteps && mGrammar.fitness() < 1.0)
 	{
 //		qDebug() << "step:" << step;
-		this->mGrammar.induct(this->mSentences);
-		this->mGrammar.computeFitness();
+		mGrammar.induct(mSentences);
+		mGrammar.computeFitness();
 		if (mGrammar.fitness() > maxFitness)
 		{
 			stream << "\nstep: " << step << " fitness: " << mGrammar.fitness() << "\n\n";
@@ -30,9 +31,9 @@ void GCS::run()
 			stream.flush();
 			maxFitness = mGrammar.fitness();
 		}
-		if (Params::allowGA())
+		if (mGrammar.fitness() < 1.0 && p.allowGA)
 		{
-			GA::evolve(this->mGrammar);
+			GA::evolve(mGrammar);
 		}
 		step++;
 	}

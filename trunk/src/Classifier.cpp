@@ -20,75 +20,73 @@
 
 #include "Classifier.h"
 #include "Params.h"
-#include "Grammar.h"
 
 ///////////////////////////////////////////////////
 //class Classifier (only for inheritence)
 ///////////////////////////////////////////////////
 
 Classifier::Classifier(const Action& act) :
-	mAction(act)
+	action(act)
 {
-	this->resetParams();
+	resetParams();
 }
 
 float Classifier::fitness() const
 {
-	return this->mFitness;
+	return mFitness;
 }
 
-float Classifier::computeFitness(const Grammar& g)
+float Classifier::computeFitness(int minDifference, int maxDifference)
 {
+	Params& p = Params::instance();
 	float classicFun = 0.0;
-	if (this->mup > 0 || this->mun > 0)//classifier used at least once
+	if (mup > 0 || mun > 0)//classifier used at least once
 	{
-		classicFun = (float) (Params::positiveSentenceWeight() * this->mup) / (Params::negativeSentenceWeight() * this->mun + Params::positiveSentenceWeight() * this->mup);
+		classicFun = (float) (p.positiveSentenceWeight * mup) / (p.negativeSentenceWeight * mun + p.positiveSentenceWeight * mup);
 	}
 	else//classifier not used
 	{
-		classicFun = Params::unusedClassifierFitness();
+		classicFun = p.unusedClassifierFitness;
 	}
 
 	float fertilityFun = 0.0;
-	int min = g.minClPointsDifference();
-	int max = g.maxClPointsDifference();
-	if (min != max)
+	if (minDifference != maxDifference)
 	{
-		fertilityFun = (float) (this->mp - this->md - min) / (max - min);
+		fertilityFun = (float) (mp - md - minDifference) / (maxDifference - minDifference);
 	}
 
-	this->mFitness = (Params::classicFunWeight() * classicFun + Params::fertilityFunWeight() * fertilityFun) / (Params::classicFunWeight() + Params::fertilityFunWeight());
-	return this->mFitness;
+	mFitness = (p.classicFunWeight * classicFun + p.fertilityFunWeight * fertilityFun) / (p.classicFunWeight + p.fertilityFunWeight);
+	return mFitness;
 }
 
 void Classifier::resetParams()
 {
-	this->mFitness = 0.0;
-	this->mup = 0;
-	this->mun = 0;
-	this->mp = 0;
-	this->md = 0;
+	mFitness = 0.0;
+	mup = 0;
+	mun = 0;
+	mp = 0;
+	md = 0;
 }
 
 bool Classifier::operator <(const Classifier& other) const
 {
-	return this->fitness() < other.fitness();
+	return mFitness < other.mFitness;
 }
 
 int Classifier::pointsDifference() const
 {
-	return this->mp - this->md;
+	return mp - md;
 }
 
 void Classifier::used(bool positiveSentence)
 {
 	if (positiveSentence)
 	{
-		this->mup++;
+		mup++;
 	}
 	else
 	{
-		this->mun++;
+		mun++;
 	}
 }
 
@@ -96,22 +94,12 @@ void Classifier::increasePoints(bool positive, int points)
 {
 	if (positive)
 	{
-		this->mp += points;
+		mp += points;
 	}
 	else
 	{
-		this->md += points;
+		md += points;
 	}
-}
-
-const Action& Classifier::action() const
-{
-	return this->mAction;
-}
-
-void Classifier::setAction(const Action& act)
-{
-	this->mAction = act;
 }
 
 ///////////////////////////////////////////////////
@@ -119,32 +107,22 @@ void Classifier::setAction(const Action& act)
 ///////////////////////////////////////////////////
 
 NClassifier::NClassifier(const NCondition& cond, const Action& act) :
-	Classifier(act), mCondition(cond)
+	Classifier(act), condition(cond)
 {
-}
-
-const NCondition& NClassifier::condition() const
-{
-	return this->mCondition;
-}
-
-void NClassifier::setCondition(const NCondition& cond)
-{
-	this->mCondition = cond;
 }
 
 int NClassifier::howSimilar(const NClassifier& other) const
 {
 	int c = 0;
-	if (this->mCondition.firstSymbol() == other.mCondition.firstSymbol())
+	if (condition.firstSymbol == other.condition.firstSymbol)
 	{
 		c++;
 	}
-	if (this->mCondition.secondSymbol() == other.mCondition.secondSymbol())
+	if (condition.secondSymbol == other.condition.secondSymbol)
 	{
 		c++;
 	}
-	if (this->mAction == other.mAction)
+	if (action == other.action)
 	{
 		c++;
 	}
@@ -153,12 +131,12 @@ int NClassifier::howSimilar(const NClassifier& other) const
 
 NClassifier::operator QString() const
 {
-	return this->mAction + "=>" + this->mCondition + " (" + QString::number(this->mFitness) + ")";
+	return action + "=>" + condition + " (" + QString::number(mFitness) + ")";
 }
 
 bool NClassifier::operator ==(const NClassifier& other) const
 {
-	return this->mCondition == other.mCondition && this->mAction == other.mAction;
+	return condition == other.condition && action == other.action;
 }
 
 ///////////////////////////////////////////////////
@@ -166,30 +144,20 @@ bool NClassifier::operator ==(const NClassifier& other) const
 ///////////////////////////////////////////////////
 
 TClassifier::TClassifier(const TCondition& cond, const Action& act) :
-	Classifier(act), mCondition(cond)
+	Classifier(act), condition(cond)
 {
-	this->mp = Params::baseAmount();
-	this->md = Params::baseAmount();
-}
-
-const TCondition& TClassifier::condition() const
-{
-	return this->mCondition;
-}
-
-void TClassifier::setCondition(const TCondition& cond)
-{
-	this->mCondition = cond;
+	mp = Params::instance().baseAmount;
+	md = Params::instance().baseAmount;
 }
 
 int TClassifier::howSimilar(const TClassifier& other) const
 {
 	int c = 0;
-	if (this->mCondition == other.mCondition)
+	if (condition == other.condition)
 	{
 		c++;
 	}
-	if (this->mAction == other.mAction)
+	if (action == other.action)
 	{
 		c++;
 	}
@@ -198,19 +166,19 @@ int TClassifier::howSimilar(const TClassifier& other) const
 
 TClassifier::operator QString() const
 {
-	return this->mAction + "=>" + this->mCondition + " (" + QString::number(this->mFitness) + ")";
+	return action + "=>" + condition + " (" + QString::number(mFitness) + ")";
 }
 
 bool TClassifier::operator ==(const TClassifier& other) const
 {
-	return this->mCondition == other.mCondition && this->mAction == other.mAction;
+	return condition == other.condition && action == other.action;
 }
 
 void TClassifier::resetParams()
 {
-	this->mFitness = 0.0;
-	this->mup = 0;
-	this->mun = 0;
-	this->mp = Params::baseAmount();
-	this->md = Params::baseAmount();
+	mFitness = 0.0;
+	mup = 0;
+	mun = 0;
+	mp = Params::instance().baseAmount;
+	md = Params::instance().baseAmount;
 }

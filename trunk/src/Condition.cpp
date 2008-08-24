@@ -21,69 +21,31 @@
 #include "Condition.h"
 
 NCondition::NCondition(const NSymbol& first, const NSymbol& second) :
-	mFirstSymbol(first), mSecondSymbol(second)
+	firstSymbol(first), secondSymbol(second)
 {
-}
-
-const NSymbol& NCondition::firstSymbol() const
-{
-	return this->mFirstSymbol;
-}
-
-void NCondition::setFirstSymbol(const NSymbol& s)
-{
-	this->mFirstSymbol = s;
-}
-
-const NSymbol& NCondition::secondSymbol() const
-{
-	return this->mSecondSymbol;
-}
-
-void NCondition::setSecondSymbol(const NSymbol& s)
-{
-	this->mSecondSymbol = s;
 }
 
 bool NCondition::operator ==(const NCondition& other) const
 {
-	return this->mFirstSymbol == other.mFirstSymbol && this->mSecondSymbol == other.mSecondSymbol;
+	return firstSymbol == other.firstSymbol && secondSymbol == other.secondSymbol;
 }
 
 NCondition::operator QString() const
 {
-	return this->mFirstSymbol + "|" + this->mSecondSymbol;
-}
-
-NCondition::~NCondition()
-{
+	return firstSymbol + "|" + secondSymbol;
 }
 
 TCondition::TCondition(const TSymbol& s) :
-	mSymbol(s)
+	symbol(s)
 {
-}
-
-const TSymbol& TCondition::symbol() const
-{
-	return this->mSymbol;
-}
-
-void TCondition::setSymbol(const TSymbol& s)
-{
-	this->mSymbol = s;
 }
 
 bool TCondition::operator ==(const TCondition& other) const
 {
-	return this->mSymbol == other.mSymbol;
+	return symbol == other.symbol;
 }
 
 TCondition::operator QString() const
 {
-	return this->mSymbol;
-}
-
-TCondition::~TCondition()
-{
+	return symbol;
 }

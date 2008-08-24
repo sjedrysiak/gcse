@@ -39,32 +39,33 @@ Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
 void Grammar::initGrammar(int nonterminals, int rules)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	this->mFitness = 0.0;
-	this->mNumberOfSentences = 0;
-	this->mParsedPositive = 0;
-	this->mNotParsedNegative = 0;
-	this->N.clear();
-	this->N << this->Start;
+	mFitness = 0.0;
+	mNumberOfSentences = 0;
+	mParsedPositive = 0;
+	mNotParsedNegative = 0;
+	N.clear();
+	N << Start;
 	NSymbol::resetGenerator();
 	for (int i = 0; i < nonterminals; i++)
 	{
-		this->N << NSymbol::generateNew();
+		N << NSymbol::generateNew();
 	}
-	this->PN.clear();
-	if (!this->N.empty())
+	PN.clear();
+	int Nsize = N.size();
+	if (!N.empty())
 	{
 		for (int i = 0; i < rules; i++)
 		{
 			NSymbol s1, s2, s3;
-			s1 = this->N[Random::rand(this->N.size())];
-			s2 = this->N[Random::rand(this->N.size())];
-			s3 = this->N[Random::rand(this->N.size())];
+			s1 = N[Random::rand(Nsize)];
+			s2 = N[Random::rand(Nsize)];
+			s3 = N[Random::rand(Nsize)];
 			NCondition cond(s1, s2);
 			Action act(s3);
 			NClassifier cl(cond, act);
-			if (!this->PN.contains(cl))
+			if (!PN.contains(cl))
 			{
-				this->PN << cl;
+				PN << cl;
 			}
 		}
 	}
@@ -74,42 +75,42 @@ void Grammar::initGrammar(int nonterminals, int rules)
 void Grammar::induct(const QList<Sentence>& sentences)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	this->mNumberOfSentences = sentences.size();
-	this->mParsedPositive = 0;
-	this->mNotParsedNegative = 0;
-	if (this->mNumberOfSentences == 0)
+	mNumberOfSentences = sentences.size();
+	mParsedPositive = 0;
+	mNotParsedNegative = 0;
+	if (mNumberOfSentences == 0)
 	{
 		return;
 	}
-	this->resetClParams();
-	Grammar operatingGrammar(*this);
-	if (Params::allowCorrection())
+	resetClParams();
+//	Grammar operatingGrammar(*this);
+//	if (Params::instance().allowCorrection)
+//	{
+//		operatingGrammar.correction();
+//	}
+	for (int i = 0; i < mNumberOfSentences; i++)
 	{
-		operatingGrammar.correction();
-	}
-	for (unsigned int i = 0; i < this->mNumberOfSentences; i++)
-	{
-		bool result = CYK::parse(sentences[i], operatingGrammar);
+		bool result = CYK::parse(sentences[i], *this);
 //		qDebug() << "sentence:" << sentences[i].operator QString() << (result ? "parsed" : "not parsed");
 		if (result == true && sentences[i].isPositive())
 		{
-			this->mParsedPositive++;
+			mParsedPositive++;
 		}
 		else if (result == false && !sentences[i].isPositive())
 		{
-			this->mNotParsedNegative++;
+			mNotParsedNegative++;
 		}
 	}
-	this->copyClParameters(operatingGrammar);
-	this->computeMaxClPointsDifference();
-	this->computeMinClPointsDifference();
-	for (int i = 0; i < this->PN.size(); i++)
+//	copyClParameters(operatingGrammar);
+	computeMaxClPointsDifference();
+	computeMinClPointsDifference();
+	for (int i = 0, size = PN.size(); i < size; i++)
 	{
-		this->PN[i].computeFitness(*this);
+		PN[i].computeFitness(mMinClPointsDifference, mMaxClPointsDifference);
 	}
-	for (int i = 0; i < this->PT.size(); i++)
+	for (int i = 0, size = PT.size(); i < size; i++)
 	{
-		this->PT[i].computeFitness(*this);
+		PT[i].computeFitness(mMinClPointsDifference, mMaxClPointsDifference);
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
 }
@@ -117,13 +118,13 @@ void Grammar::induct(const QList<Sentence>& sentences)
 void Grammar::resetClParams()
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	for (int i = 0; i < this->PN.size(); i++)
+	for (int i = 0, size = PN.size(); i < size; i++)
 	{
-		this->PN[i].resetParams();
+		PN[i].resetParams();
 	}
-	for (int i = 0; i < this->PT.size(); i++)
+	for (int i = 0, size = PT.size(); i < size; i++)
 	{
-		this->PT[i].resetParams();
+		PT[i].resetParams();
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
 }
@@ -136,97 +137,57 @@ void Grammar::correction()
 float Grammar::computeFitness()
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (this->mNumberOfSentences > 0)
+	if (mNumberOfSentences > 0)
 	{
-		this->mFitness = (float) (this->mParsedPositive + this->mNotParsedNegative) / this->mNumberOfSentences;
-//		qDebug() << "fitness =" << this->mParsedPositive << "+" << this->mNotParsedNegative << "/" << this->mNumberOfSentences;
+		mFitness = (float) (mParsedPositive + mNotParsedNegative) / mNumberOfSentences;
+//		qDebug() << "fitness =" << mParsedPositive << "+" << mNotParsedNegative << "/" << mNumberOfSentences;
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
-	return this->mFitness;
+	return mFitness;
 }
 
 float Grammar::fitness() const
 {
-	return this->mFitness;
+	return mFitness;
 }
 
-void Grammar::copyClParameters(const Grammar& other)
-{
-//	qDebug() << QString() + __FUNCTION__ + " start";
-	for (int i = 0; i < other.PN.size(); i++)
-	{
-		int dest = this->PN.indexOf(other.PN[i]);
-		if (dest != -1)
-		{
-			this->PN[dest] = other.PN[i];
-		}
-		else
-		{
-			this->PN << other.PN[i];
-		}
-	}
-	for (int i = 0; i < other.PT.size(); i++)
-	{
-		int dest = this->PT.indexOf(other.PT[i]);
-		if (dest != -1)
-		{
-			this->PT[dest] = other.PT[i];
-		}
-		else
-		{
-			this->PT << other.PT[i];
-		}
-	}
-//	qDebug() << QString() + __FUNCTION__ + " end";
-}
-
-const QList<NSymbol>& Grammar::NSet() const
-{
-	return this->N;
-}
-
-const QList<TSymbol>& Grammar::TSet() const
-{
-	return this->T;
-}
-
-const QList<NClassifier>& Grammar::PNSet() const
-{
-	return this->PN;
-}
-
-const QList<TClassifier>& Grammar::PTSet() const
-{
-	return this->PT;
-}
-
-void Grammar::setN(const QList<NSymbol>& source)
-{
-	this->N = source;
-}
-
-void Grammar::setT(const QList<TSymbol>& source)
-{
-	this->T = source;
-}
-
-void Grammar::setPN(const QList<NClassifier>& source)
-{
-	this->PN = source;
-}
-
-void Grammar::setPT(const QList<TClassifier>& source)
-{
-	this->PT = source;
-}
+//void Grammar::copyClParameters(const Grammar& other)
+//{
+////	qDebug() << QString() + __FUNCTION__ + " start";
+//	for (int i = 0, size = other.PN.size(); i < size; i++)
+//	{
+//		int dest = PN.indexOf(other.PN[i]);
+//		if (dest != -1)
+//		{
+//			PN[dest] = other.PN[i];
+//		}
+//		else
+//		{
+//			PN << other.PN[i];
+//		}
+//	}
+//	for (int i = 0, size = other.PT.size(); i < size; i++)
+//	{
+//		int dest = PT.indexOf(other.PT[i]);
+//		if (dest != -1)
+//		{
+//			PT[dest] = other.PT[i];
+//		}
+//		else
+//		{
+//			PT << other.PT[i];
+//		}
+//	}
+////	qDebug() << QString() + __FUNCTION__ + " end";
+//}
 
 //adding methods
 bool Grammar::addSymbol(const NSymbol& s)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (!this->N.contains(s))
+	if (!N.contains(s))
 	{
-		this->N << s;
+		N << s;
 		return true;
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
@@ -236,9 +197,9 @@ bool Grammar::addSymbol(const NSymbol& s)
 bool Grammar::addSymbol(const TSymbol& s)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (!this->T.contains(s))
+	if (!T.contains(s))
 	{
-		this->T << s;
+		T << s;
 		return true;
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
@@ -248,12 +209,12 @@ bool Grammar::addSymbol(const TSymbol& s)
 bool Grammar::addClNormal(const NClassifier& cl)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (!this->PN.contains(cl))
+	if (!PN.contains(cl))
 	{
-		this->addSymbol(cl.condition().firstSymbol());
-		this->addSymbol(cl.condition().secondSymbol());
-		this->addSymbol(cl.action().symbol());
-		this->PN << cl;
+		addSymbol(cl.condition.firstSymbol);
+		addSymbol(cl.condition.secondSymbol);
+		addSymbol(cl.action.symbol);
+		PN << cl;
 		return true;
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
@@ -263,11 +224,11 @@ bool Grammar::addClNormal(const NClassifier& cl)
 bool Grammar::addClNormal(const TClassifier& cl)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (!this->PT.contains(cl))
+	if (!PT.contains(cl))
 	{
-		this->addSymbol(cl.condition().symbol());
-		this->addSymbol(cl.action().symbol());
-		this->PT << cl;
+		addSymbol(cl.condition.symbol);
+		addSymbol(cl.action.symbol);
+		PT << cl;
 		return true;
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
@@ -277,7 +238,9 @@ bool Grammar::addClNormal(const TClassifier& cl)
 NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set, int maxSize)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (set.isEmpty() || (set.size() < maxSize && !set.contains(newCl)))
+	Params& p = Params::instance();
+	int setSize = set.size();
+	if (set.isEmpty() || (setSize < maxSize && !set.contains(newCl)))
 	{
 		set << newCl;
 //		qDebug() << QString() + __FUNCTION__ + " end";
@@ -289,12 +252,12 @@ NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassif
 		return &set[idx];
 	}
 	QSet<NClassifier*> K;
-	for (int i = 0; i < Params::crowdFactor(); i++)
+	for (int i = 0; i < p.crowdFactor; i++)
 	{
-		NClassifier* worst = &set[Random::rand(set.size())];
-		for (int c = 1; c < Params::crowdSize(); c++)
+		NClassifier* worst = &set[Random::rand(setSize)];
+		for (int c = 1; c < p.crowdSize; c++)
 		{
-			NClassifier* temp = &set[Random::rand(set.size())];
+			NClassifier* temp = &set[Random::rand(setSize)];
 			if (temp->fitness() < worst->fitness())
 			{
 				worst = temp;
@@ -320,7 +283,9 @@ NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassif
 TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set, int maxSize)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (set.isEmpty() || (set.size() < maxSize && !set.contains(newCl)))
+	Params& p = Params::instance();
+	int setSize = set.size();
+	if (set.isEmpty() || (setSize < maxSize && !set.contains(newCl)))
 	{
 		set << newCl;
 //		qDebug() << QString() + __FUNCTION__ + " end";
@@ -332,12 +297,12 @@ TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassif
 		return &set[idx];
 	}
 	QSet<TClassifier*> K;
-	for (int i = 0; i < Params::crowdFactor(); i++)
+	for (int i = 0; i < p.crowdFactor; i++)
 	{
-		TClassifier* worst = &set[Random::rand(set.size())];
-		for (int c = 1; c < Params::crowdSize(); c++)
+		TClassifier* worst = &set[Random::rand(setSize)];
+		for (int c = 1; c < p.crowdSize; c++)
 		{
-			TClassifier* temp = &set[Random::rand(set.size())];
+			TClassifier* temp = &set[Random::rand(setSize)];
 			if (temp->fitness() < worst->fitness())
 			{
 				worst = temp;
@@ -367,25 +332,25 @@ int Grammar::maxClPointsDifference() const
 int Grammar::computeMaxClPointsDifference()
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (this->PN.isEmpty())
+	if (PN.isEmpty())
 	{
 		mMaxClPointsDifference = 0;
 	}
 	else
 	{
-		mMaxClPointsDifference = this->PN[0].pointsDifference();
-		for (int i = 1; i < this->PN.size(); i++)
+		mMaxClPointsDifference = PN[0].pointsDifference();
+		for (int i = 1, size = PN.size(); i < size; i++)
 		{
-			if (this->PN[i].pointsDifference() > mMaxClPointsDifference)
+			if (PN[i].pointsDifference() > mMaxClPointsDifference)
 			{
-				mMaxClPointsDifference = this->PN[i].pointsDifference();
+				mMaxClPointsDifference = PN[i].pointsDifference();
 			}
 		}
-//		for (int i = 0; i < this->PT.size(); i++)
+//		for (int i = 0, size = PT.size(); i < size; i++)
 //		{
-//			if (this->PT[i].pointsDifference() > max)
+//			if (PT[i].pointsDifference() > max)
 //			{
-//				max = this->PT[i].pointsDifference();
+//				max = PT[i].pointsDifference();
 //			}
 //		}
 	}
@@ -401,25 +366,25 @@ int Grammar::minClPointsDifference() const
 int Grammar::computeMinClPointsDifference()
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	if (this->PN.isEmpty())
+	if (PN.isEmpty())
 	{
 		mMinClPointsDifference = 0;
 	}
 	else
 	{
-		mMinClPointsDifference = this->PN[0].pointsDifference();
-		for (int i = 1; i < this->PN.size(); i++)
+		mMinClPointsDifference = PN[0].pointsDifference();
+		for (int i = 1, size = PN.size(); i < size; i++)
 		{
-			if (this->PN[i].pointsDifference() < mMinClPointsDifference)
+			if (PN[i].pointsDifference() < mMinClPointsDifference)
 			{
-				mMinClPointsDifference = this->PN[i].pointsDifference();
+				mMinClPointsDifference = PN[i].pointsDifference();
 			}
 		}
-//		for (int i = 0; i < this->PT.size(); i++)
+//		for (int i = 0, size = PT.size(); i < size; i++)
 //		{
-//			if (this->PT[i].pointsDifference() < min)
+//			if (PT[i].pointsDifference() < min)
 //			{
-//				min = this->PT[i].pointsDifference();
+//				min = PT[i].pointsDifference();
 //			}
 //		}
 	}
@@ -431,12 +396,12 @@ Grammar::operator QString() const
 {
 	QString out;
 	out += "Produkcje terminalne:\n";
-	for (int i = 0; i < PT.size(); i++)
+	for (int i = 0, size = PT.size(); i < size; i++)
 	{
 		out += PT[i] + ", ";
 	}
 	out += "\nProdukcje nieterminalne:\n";
-	for (int i = 0; i < PN.size(); i++)
+	for (int i = 0, size = PN.size(); i < size; i++)
 	{
 		out += PN[i] + ", ";
 	}

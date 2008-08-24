@@ -21,66 +21,56 @@
 #include "Sentence.h"
 #include <QStringList>
 
-QString Sentence::mWordSeparator = " ";
+QString Sentence::wordSeparator = " ";
 
 Sentence::Sentence(const QString& str, bool isPositive) :
 	QList<TSymbol> (), mIsPositive(isPositive)
 {
-	this->split(str);
+	if (!str.isEmpty())
+	{
+		split(str);
+	}
 }
 
 Sentence::Sentence(const char* str, bool isPositive) :
 	QList<TSymbol> (), mIsPositive(isPositive)
 {
-	this->split(str);
+	split(str);
 }
 
 bool Sentence::isPositive() const
 {
-	return this->mIsPositive;
+	return mIsPositive;
 }
 
 void Sentence::setPositive(bool isPositive)
 {
-	this->mIsPositive = isPositive;
-}
-
-const QString& Sentence::wordSeparator()
-{
-	return Sentence::mWordSeparator;
-}
-
-void Sentence::setWordSeparator(const QString& str)
-{
-	Sentence::mWordSeparator = str;
+	mIsPositive = isPositive;
 }
 
 Sentence::operator QString() const
 {
 	QString ret;
-	for (int i = 0; i < this->size(); i++)
+	for (int i = 0, size = this->size(); i < size; i++)
 	{
 		ret += (*this)[i];
-		if (i < this->size()-1)
+		if (i < size-1)
 		{
-			ret += Sentence::wordSeparator();
+			ret += Sentence::wordSeparator;
 		}
 	}
 	if (!ret.isEmpty())
 	{
-		ret += QString(" (") + (this->isPositive() ? "positive" : "negative") + ")";
+		ret += QString(mIsPositive ? "(positive)" : "(negative)");
 	}
 	return ret;
 }
 
-void Sentence::split(QString str)
+void Sentence::split(const QString& str)
 {
-	QStringList list = str.split(Sentence::wordSeparator(), QString::SkipEmptyParts);
-	foreach (QString s, list){
-	this->append(TSymbol(s));
-}
-}
-
-Sentence::~Sentence()
-{
+	QStringList list = str.split(Sentence::wordSeparator, QString::SkipEmptyParts);
+	for (int i = 0, size = list.size(); i < size; i++)
+	{
+		append(TSymbol(list[i]));
+	}
 }

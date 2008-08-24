@@ -30,8 +30,7 @@
 class NSymbol: public QString
 {
 public:
-	NSymbol();
-	NSymbol(const QString& str);
+	NSymbol(const QString& str = "");
 	NSymbol(const char* str);
 	static NSymbol generateNew();
 	static void resetGenerator();

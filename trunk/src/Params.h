@@ -23,137 +23,81 @@
 
 #include <QString>
 #include "GA.h"
-#include "MyException.h"
-#include <QMutex>
 
 class Params
 {
 public:
-	static bool allowCorrection();
-	static void setAllowCorrection(bool allow);
-	static bool allowCoveringStart();
-	static void setAllowCoveringStart(bool allow);
-	static bool allowCoveringFull();
-	static void setAllowCoveringFull(bool allow);
-	static bool allowCoveringUniversal();
-	static void setAllowCoveringUniversal(bool allow);
-	static float coveringAggressiveProb();
-	static void setCoveringAggressiveProb(float probability) throw(ArgumentOutOfRangeException);
-	static bool allowGA();
-	static void setAllowGA(bool allow);
-	static GA::SelectionType selectionCl1();
-	static void setSelectionCl1(GA::SelectionType selection);
-	static GA::SelectionType selectionCl2();
-	static void setSelectionCl2(GA::SelectionType selection);
-	static float crossoverProb();
-	static void setCrossoverProb(float probability) throw(ArgumentOutOfRangeException);
-	static float mutationProb();
-	static void setMutationProb(float probability) throw(ArgumentOutOfRangeException);
-	static float inversionProb();
-	static void setInversionProb(float probability) throw(ArgumentOutOfRangeException);
-	static int eliteSize();
-	static void setEliteSize(int size) throw(ArgumentOutOfRangeException);
-	static int tournamentSize();
-	static void setTournamentSize(int size) throw(ArgumentOutOfRangeException);
-	static int crowdFactor();
-	static void setCrowdFactor(int factor) throw(ArgumentOutOfRangeException);
-	static int crowdSize();
-	static void setCrowdSize(int size) throw(ArgumentOutOfRangeException);
-	static int baseAmount();
-	static void setBaseAmount(int amount) throw(ArgumentOutOfRangeException);
-	static int renouncedAmountFactor();
-	static void setRenouncedAmountFactor(int factor) throw(ArgumentOutOfRangeException);
-	static int maxPopulationSize();
-	static void setMaxPopulationSize(int size) throw(ArgumentOutOfRangeException);
-	static int startNonterminalProdsAmount();
-	static void setStartNonterminalProdsAmount(int amount) throw(ArgumentOutOfRangeException);
-	static int nonterminalSymbolsAmount();
-	static void setNonterminalSymbolsAmount(int amount) throw(ArgumentOutOfRangeException);
-	static int terminalSymbolsAmount();
-	static void setTerminalSymbolsAmount(int amount) throw(ArgumentOutOfRangeException);
-	static int iterations();
-	static void setIterations(int amount) throw(ArgumentOutOfRangeException);
-	static unsigned int maxEvolutionSteps();
-	static void setMaxEvolutionSteps(unsigned int steps) throw(ArgumentOutOfRangeException);
-	static int positiveSentenceWeight();
-	static void setPositiveSentenceWeight(int weight) throw(ArgumentOutOfRangeException);
-	static int negativeSentenceWeight();
-	static void setNegativeSentenceWeight(int weight) throw(ArgumentOutOfRangeException);
-	static int classicFunWeight();
-	static void setClassicFunWeight(int weight) throw(ArgumentOutOfRangeException);
-	static int fertilityFunWeight();
-	static void setFertilityFunWeight(int weight) throw(ArgumentOutOfRangeException);
-	static double unusedClassifierFitness();
-	static void setUnusedClassifierFitness(double fitness) throw(ArgumentOutOfRangeException);
-	static QString sentencesFilePath();
-	static void setSentencesFilePath(const QString& path);
-private:
+	inline static Params& instance()
+	{
+		return mInstance;
+	}
+
 	//allow to run grammar correction
-	static bool mAllowCorrection;
+	bool allowCorrection;
 
 	//parameters for covering operators
 	//allow to run start covering
-	static bool mAllowCoveringStart;
+	bool allowCoveringStart;
 	//allow to run full covering
-	static bool mAllowCoveringFull;
+	bool allowCoveringFull;
 	//allow to run universal covering
-	static bool mAllowCoveringUniversal;
+	bool allowCoveringUniversal;
 	//aggressive covering probability
-	static float mCoveringAggressiveProb;
+	float coveringAggressiveProb;
 
 	//parameters for ga
 	//allow to run ga
-	static bool mAllowGA;
+	bool allowGA;
 	//selection type for first classifier
-	static GA::SelectionType mSelectionCl1;
+	GA::SelectionType selectionParent1;
 	//selection type for second classifier
-	static GA::SelectionType mSelectionCl2;
+	GA::SelectionType selectionParent2;
 	//crossover probability
-	static float mCrossoverProb;
+	float crossoverProb;
 	//mutation probability
-	static float mMutationProb;
+	float mutationProb;
 	//inversion probability
-	static float mInversionProb;
+	float inversionProb;
 
 	//elite population size [1,30]
-	static int mEliteSize;
+	int eliteSize;
 	//tournament population size [1,30]
-	static int mTournamentSize;
+	int tournamentSize;
 	//crowding factor [1,30]
-	static int mCrowdFactor;
+	int crowdFactor;
 	//crowding population size [1,30]
-	static int mCrowdSize;
+	int crowdSize;
 
 	//parsing parameters
 	//classifier base amount [0,15]
-	static int mBaseAmount;
+	int baseAmount;
 	//renounced amount factor [0,15]
-	static int mRenouncedAmountFactor;
-	//classifiers population size ( = mStartNonterminalProdsAmount + PT.size())
-	static int mMaxPopulationSize;
+	float renouncedAmountFactor;
+	//max nonterminal rules
+	int maxNonterminalRules;
 	//start nonterminal classifiers amount [1,30]
-	static int mStartNonterminalProdsAmount;
+	int startNonterminalRules;
 	//nonterminal symbols amount [1,30]
-	static int mNonterminalSymbolsAmount;
-	//terminal symbols amount
-	static int mTerminalSymbolsAmount;
+	int nonterminalSymbolsAmount;
 	//number of iterations 10, 50
-	static int mIterations;
+	int iterations;
 	//max evolution steps [1,50 000]
-	static unsigned int mMaxEvolutionSteps;
+	int maxEvolutionSteps;
 	//positive sentence weight [1,20]
-	static int mPositiveSentenceWeight;
+	int positiveSentenceWeight;
 	//negative sentence weight [1,20]
-	static int mNegativeSentenceWeight;
+	int negativeSentenceWeight;
 	//classic function weight [1,20]
-	static int mClassicFunWeight;
+	int classicFunWeight;
 	//fertility function weight [1,15]
-	static int mFertilityFunWeight;
+	int fertilityFunWeight;
 	//unused classifier fitness [1,10]
-	static double mUnusedClassifierFitness;
-
-	static QString mSentencesFilePath;
-	static QMutex mutex;
+	float unusedClassifierFitness;
+private:
+	Params();
+	Params(const Params&);
+	Params& operator=(const Params&);
+	static Params mInstance;
 };
 
 #endif /*PARAMS_H_*/
