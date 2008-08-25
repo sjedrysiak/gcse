@@ -22,7 +22,6 @@
 #include "Grammar.h"
 #include "Random.h"
 #include "Params.h"
-#include <QSet>
 
 void GA::evolve(Grammar& g)
 {
@@ -140,7 +139,7 @@ NClassifier GA::selectionTournament(const Grammar& g)
 	}
 	else
 	{
-		QSet<NClassifier> tournamentSet;
+		QList<NClassifier> tournamentSet;
 		NClassifier bestCl(g.PN[Random::rand(PNSize)]);
 		tournamentSet << bestCl;
 		for (int i = 0; i < p.tournamentSize; i++)

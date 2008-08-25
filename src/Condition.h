@@ -31,7 +31,7 @@ class NCondition
 public:
 	NCondition(const NSymbol& first, const NSymbol& second);
 	bool operator ==(const NCondition& other) const;
-	operator QString() const;
+	QString toString() const;
 
 	NSymbol firstSymbol;
 	NSymbol secondSymbol;
@@ -42,7 +42,7 @@ class TCondition
 public:
 	TCondition(const TSymbol& s);
 	bool operator ==(const TCondition& other) const;
-	operator QString() const;
+	QString toString() const;
 
 	TSymbol symbol;
 };

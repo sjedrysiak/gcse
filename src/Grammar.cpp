@@ -398,12 +398,12 @@ Grammar::operator QString() const
 	out += "Produkcje terminalne:\n";
 	for (int i = 0, size = PT.size(); i < size; i++)
 	{
-		out += PT[i] + ", ";
+		out += PT[i].toString() + ", ";
 	}
 	out += "\nProdukcje nieterminalne:\n";
 	for (int i = 0, size = PN.size(); i < size; i++)
 	{
-		out += PN[i] + ", ";
+		out += PN[i].toString() + ", ";
 	}
 	out += "\n";
 	return out;

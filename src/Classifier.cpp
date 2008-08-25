@@ -129,9 +129,9 @@ int NClassifier::howSimilar(const NClassifier& other) const
 	return c;
 }
 
-NClassifier::operator QString() const
+QString NClassifier::toString() const
 {
-	return action + "=>" + condition + " (" + QString::number(mFitness) + ")";
+	return action.toString() + "=>" + condition.toString() + " (" + QString::number(mFitness) + ")";
 }
 
 bool NClassifier::operator ==(const NClassifier& other) const
@@ -164,9 +164,9 @@ int TClassifier::howSimilar(const TClassifier& other) const
 	return c;
 }
 
-TClassifier::operator QString() const
+QString TClassifier::toString() const
 {
-	return action + "=>" + condition + " (" + QString::number(mFitness) + ")";
+	return action.toString() + "=>" + condition.toString() + " (" + QString::number(mFitness) + ")";
 }
 
 bool TClassifier::operator ==(const TClassifier& other) const

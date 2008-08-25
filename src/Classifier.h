@@ -65,7 +65,7 @@ class NClassifier: public Classifier
 public:
 	NClassifier(const NCondition& cond, const Action& act);
 	int howSimilar(const NClassifier& other) const;
-	operator QString() const;
+	QString toString() const;
 	bool operator ==(const NClassifier& other) const;
 
 	NCondition condition;
@@ -76,7 +76,7 @@ class TClassifier: public Classifier
 public:
 	TClassifier(const TCondition& cond, const Action& act);
 	int howSimilar(const TClassifier& other) const;
-	operator QString() const;
+	QString toString() const;
 	bool operator ==(const TClassifier& other) const;
 	void resetParams();
 
