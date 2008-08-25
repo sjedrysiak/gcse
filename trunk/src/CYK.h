@@ -36,9 +36,9 @@ class CYK
 public:
 	static bool parse(const Sentence& sentence, Grammar& g);
 private:
-    static QList<Classifier*> getMatchingClassifiers(const NCondition& condition, Grammar& g);
-    static QList<Classifier*> getMatchingClassifiers(const TCondition& condition, Grammar& g);
-    static QList<NCondition> getConditionsForCykCell(const CYKTable& cykTable, int row, int col);
+    static void getMatchingClassifiers(const NCondition& condition, Grammar& g, QList<Classifier*>& list);
+    static void getMatchingClassifiers(const TCondition& condition, Grammar& g, QList<Classifier*>& list);
+    static void getConditionsForCykCell(const CYKTable& cykTable, int row, int col, QList<NCondition>& list);
 
     //covering operators
     static Classifier* coveringTerminal(const TSymbol& term, Grammar& g);

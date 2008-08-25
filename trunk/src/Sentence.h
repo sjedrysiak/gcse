@@ -32,7 +32,7 @@ public:
 	Sentence(const char* str, bool isPositive = true);
 	bool isPositive() const;
 	void setPositive(bool isPositive);
-	operator QString() const;
+	QString toString() const;
 	virtual ~Sentence(){}
 
     static QString wordSeparator;

@@ -48,7 +48,7 @@ void Sentence::setPositive(bool isPositive)
 	mIsPositive = isPositive;
 }
 
-Sentence::operator QString() const
+QString Sentence::toString() const
 {
 	QString ret;
 	for (int i = 0, size = this->size(); i < size; i++)

@@ -25,7 +25,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "Random.h"
-#include "MainWindow.h"
+#include "../gui/MainWindow.h"
 
 //void myMessageOutput(QtMsgType type, const char *msg)
 //{

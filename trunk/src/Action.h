@@ -28,7 +28,7 @@ class Action
 public:
 	Action(const NSymbol& s);
 	bool operator ==(const Action& other) const;
-	operator QString() const;
+	QString toString() const;
 
 	NSymbol symbol;
 };

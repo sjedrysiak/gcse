@@ -30,7 +30,7 @@ bool Action::operator ==(const Action& other) const
     return symbol == other.symbol;
 }
 
-Action::operator QString() const
+QString Action::toString() const
 {
     return symbol;
 }

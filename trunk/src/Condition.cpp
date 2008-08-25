@@ -30,7 +30,7 @@ bool NCondition::operator ==(const NCondition& other) const
 	return firstSymbol == other.firstSymbol && secondSymbol == other.secondSymbol;
 }
 
-NCondition::operator QString() const
+QString NCondition::toString() const
 {
 	return firstSymbol + "|" + secondSymbol;
 }
@@ -45,7 +45,7 @@ bool TCondition::operator ==(const TCondition& other) const
 	return symbol == other.symbol;
 }
 
-TCondition::operator QString() const
+QString TCondition::toString() const
 {
 	return symbol;
 }
