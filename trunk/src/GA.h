@@ -22,8 +22,8 @@
 #define GA_H_
 
 #include "Classifier.h"
-
-class Grammar;
+#include "Grammar.h"
+#include "Random.h"
 
 class GA
 {
@@ -38,11 +38,17 @@ protected:
 	//selection operators
 	static NClassifier selectionRoulette(const Grammar& g);
 	static NClassifier selectionTournament(const Grammar& g);
-	static NClassifier selectionRandom(const Grammar& g);
+	static NClassifier selectionRandom(const Grammar& g)
+	{
+		return g.PN[Random::rand(g.PN.size())];
+	}
 
 	//genetic operators
 	static void crossover(NClassifier& first, NClassifier& second);
-	static void inversion(NClassifier& cl);
+	static void inversion(NClassifier& cl)
+	{
+		cl.condition = NCondition(cl.condition.secondSymbol, cl.condition.firstSymbol);
+	}
 	static void mutation(NClassifier& cl, const QList<NSymbol>& symbols);
 };
 

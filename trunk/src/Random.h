@@ -21,21 +21,34 @@
 #ifndef RANDOM_H_
 #define RANDOM_H_
 
+#include <QDateTime>
+#include <cstdlib>
+
 class Random
 {
 public:
 	/**
 	 * returns random integer from 0 to n-1
 	 */
-	static int rand(unsigned int n);
+	static int rand(unsigned int n)
+	{
+		return Random::rand() * n;
+	}
 	/**
 	 * returns random double from [0,1)
 	 */
-	static double rand();
+	static double rand()
+	{
+		return qrand() / (RAND_MAX + 1.0);
+	}
 	/**
 	 * initialize random generator by calling srand()
 	 */
-	static void init();
+	static void init()
+	{
+		QDateTime currentTime = QDateTime::currentDateTime();
+		qsrand(currentTime.toTime_t());
+	}
 };
 
 #endif /*RANDOM_H_*/

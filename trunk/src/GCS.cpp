@@ -21,11 +21,11 @@ void GCS::run()
 	double maxFitness = 0;
 	while (step < p.maxEvolutionSteps && mGrammar.fitness() < 1.0)
 	{
-//		qDebug() << "step:" << step;
 		mGrammar.induct(mSentences);
 		mGrammar.computeFitness();
 		if (mGrammar.fitness() > maxFitness)
 		{
+			qDebug() << "step:" << step;
 			stream << "\nstep: " << step << " fitness: " << mGrammar.fitness() << "\n\n";
 			stream << mGrammar;
 			stream.flush();

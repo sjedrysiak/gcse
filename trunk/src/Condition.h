@@ -29,9 +29,12 @@
 class NCondition
 {
 public:
-	NCondition(const NSymbol& first, const NSymbol& second);
-	bool operator ==(const NCondition& other) const;
-	QString toString() const;
+	NCondition(const NSymbol& first, const NSymbol& second) :
+		firstSymbol(first), secondSymbol(second) {}
+	bool operator ==(const NCondition& other) const
+	{	return firstSymbol == other.firstSymbol && secondSymbol == other.secondSymbol;	}
+	QString toString() const
+	{	return firstSymbol + "|" + secondSymbol;	}
 
 	NSymbol firstSymbol;
 	NSymbol secondSymbol;
@@ -40,9 +43,11 @@ public:
 class TCondition
 {
 public:
-	TCondition(const TSymbol& s);
-	bool operator ==(const TCondition& other) const;
-	QString toString() const;
+	TCondition(const TSymbol& s) : symbol(s) {}
+	bool operator ==(const TCondition& other) const
+	{	return symbol == other.symbol;	}
+	QString toString() const
+	{	return symbol;	}
 
 	TSymbol symbol;
 };

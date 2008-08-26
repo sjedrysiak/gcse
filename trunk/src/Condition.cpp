@@ -17,35 +17,3 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#include "Condition.h"
-
-NCondition::NCondition(const NSymbol& first, const NSymbol& second) :
-	firstSymbol(first), secondSymbol(second)
-{
-}
-
-bool NCondition::operator ==(const NCondition& other) const
-{
-	return firstSymbol == other.firstSymbol && secondSymbol == other.secondSymbol;
-}
-
-QString NCondition::toString() const
-{
-	return firstSymbol + "|" + secondSymbol;
-}
-
-TCondition::TCondition(const TSymbol& s) :
-	symbol(s)
-{
-}
-
-bool TCondition::operator ==(const TCondition& other) const
-{
-	return symbol == other.symbol;
-}
-
-QString TCondition::toString() const
-{
-	return symbol;
-}

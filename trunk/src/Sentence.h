@@ -25,21 +25,29 @@
 #include <QList>
 #include "Symbol.h"
 
-class Sentence : public QList<TSymbol>
+class Sentence: public QList<TSymbol>
 {
 public:
-	Sentence(const QString& str = "", bool isPositive = true);
-	Sentence(const char* str, bool isPositive = true);
-	bool isPositive() const;
-	void setPositive(bool isPositive);
+	Sentence(const QString& str = "", bool isPositive = true) :
+		QList<TSymbol> (), isPositive(isPositive)
+	{
+		split(str);
+	}
+	Sentence(const char* str, bool isPositive = true) :
+		QList<TSymbol> (), isPositive(isPositive)
+	{
+		split(str);
+	}
 	QString toString() const;
-	virtual ~Sentence(){}
+	virtual ~Sentence()
+	{
+	}
 
-    static QString wordSeparator;
+	static QString wordSeparator;
+	bool isPositive;
 protected:
 	void split(const QString& str);
 
-    bool mIsPositive;
 };
 
 #endif /*SENTENCE_H_*/

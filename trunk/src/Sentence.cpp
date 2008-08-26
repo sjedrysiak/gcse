@@ -23,31 +23,6 @@
 
 QString Sentence::wordSeparator = " ";
 
-Sentence::Sentence(const QString& str, bool isPositive) :
-	QList<TSymbol> (), mIsPositive(isPositive)
-{
-	if (!str.isEmpty())
-	{
-		split(str);
-	}
-}
-
-Sentence::Sentence(const char* str, bool isPositive) :
-	QList<TSymbol> (), mIsPositive(isPositive)
-{
-	split(str);
-}
-
-bool Sentence::isPositive() const
-{
-	return mIsPositive;
-}
-
-void Sentence::setPositive(bool isPositive)
-{
-	mIsPositive = isPositive;
-}
-
 QString Sentence::toString() const
 {
 	QString ret;
@@ -61,7 +36,7 @@ QString Sentence::toString() const
 	}
 	if (!ret.isEmpty())
 	{
-		ret += QString(mIsPositive ? "(positive)" : "(negative)");
+		ret += QString(isPositive ? "(positive)" : "(negative)");
 	}
 	return ret;
 }

@@ -37,33 +37,103 @@ public:
 	const NSymbol Start;
 	const NSymbol Universal;
 
-	Grammar(const NSymbol& start = "_S_", const NSymbol& universal = "_U_");
+	Grammar(const NSymbol& start = "_S_", const NSymbol& universal = "_U_") :
+		Start(start), Universal(universal)
+	{
+		initGrammar();
+	}
 	void initGrammar(int nonterminals = 0, int rules = 0);
 	void induct(const QList<Sentence>& sentences);
 	void resetClParams();
 	void correction();
-	float computeFitness();
-	float fitness() const;
-//	void copyClParameters(const Grammar& other);
+	float computeFitness()
+	{
+		//qDebug() << QString() + __FUNCTION__ + " start";
+		if (mNumberOfSentences > 0)
+		{
+			mFitness = (float) (mParsedPositive + mNotParsedNegative) / mNumberOfSentences;
+			//qDebug() << "fitness =" << mParsedPositive << "+" << mNotParsedNegative << "/" << mNumberOfSentences;
+		}
+		//qDebug() << QString() + __FUNCTION__ + " end";
+		return mFitness;
+	}
+	float fitness() const
+	{
+		return mFitness;
+	}
+	//	void copyClParameters(const Grammar& other);
 
 	//adding methods
-	bool addSymbol(const NSymbol& s);
-	bool addSymbol(const TSymbol& s);
-	bool addClNormal(const NClassifier& cl);
-	bool addClNormal(const TClassifier& cl);
+	bool addSymbol(const NSymbol& s)
+	{
+		//qDebug() << QString() + __FUNCTION__ + " start";
+		if (!N.contains(s))
+		{
+			N << s;
+			return true;
+		}
+		//qDebug() << QString() + __FUNCTION__ + " end";
+		return false;
+	}
+	bool addSymbol(const TSymbol& s)
+	{
+		//qDebug() << QString() + __FUNCTION__ + " start";
+		if (!T.contains(s))
+		{
+			T << s;
+			return true;
+		}
+		//qDebug() << QString() + __FUNCTION__ + " end";
+		return false;
+	}
+	bool addClNormal(const NClassifier& cl)
+	{
+		//qDebug() << QString() + __FUNCTION__ + " start";
+		if (!PN.contains(cl))
+		{
+			//addSymbol(cl.condition.firstSymbol);
+			//addSymbol(cl.condition.secondSymbol);
+			//addSymbol(cl.action.symbol);
+			PN << cl;
+			return true;
+		}
+		//qDebug() << QString() + __FUNCTION__ + " end";
+		return false;
+	}
+	bool addClNormal(const TClassifier& cl)
+	{
+		//qDebug() << QString() + __FUNCTION__ + " start";
+		if (!PT.contains(cl))
+		{
+			addSymbol(cl.condition.symbol);
+			addSymbol(cl.action.symbol);
+			PT << cl;
+			return true;
+		}
+		//qDebug() << QString() + __FUNCTION__ + " end";
+		return false;
+	}
 	static NClassifier* addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set, int maxSize);
 	static TClassifier* addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set, int maxSize);
 
 	operator QString() const;
-	~Grammar();
+	~Grammar()
+	{
+	}
 
 	QList<NSymbol> N;
 	QList<TSymbol> T;
 	QList<NClassifier> PN;
 	QList<TClassifier> PT;
 private:
-	int maxClPointsDifference() const;
-	int minClPointsDifference() const;
+	int maxClPointsDifference() const
+	{
+		return mMaxClPointsDifference;
+	}
+	int minClPointsDifference() const
+	{
+		return mMinClPointsDifference;
+	}
 	int computeMaxClPointsDifference();
 	int computeMinClPointsDifference();
 

@@ -26,9 +26,11 @@
 class Action
 {
 public:
-	Action(const NSymbol& s);
-	bool operator ==(const Action& other) const;
-	QString toString() const;
+	Action(const NSymbol& s) : symbol(s) {}
+	bool operator ==(const Action& other) const
+	{	return symbol == other.symbol;	}
+	QString toString() const
+	{	return symbol;	}
 
 	NSymbol symbol;
 };
