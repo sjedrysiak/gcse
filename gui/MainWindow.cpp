@@ -92,7 +92,7 @@ void MainWindow::initGrammar()
 	listRules->clear();
 	for (int i = 0, size = mGrammar.PN.size(); i < size; i++)
 	{
-		listRules->addItem(mGrammar.PN[i]);
+		listRules->addItem(mGrammar.PN[i].toString());
 	}
 }
 
@@ -134,7 +134,7 @@ void MainWindow::readSentences()
 	listSentences->clear();
 	for (int i = 0, size = mSentences.size(); i < size; i++)
 	{
-		listSentences->addItem(mSentences[i]);
+		listSentences->addItem(mSentences[i].toString());
 	}
 	//TODO obsługa błędów z plikiem
 //	qDebug() << QString() + __FUNCTION__ + " end";
@@ -171,7 +171,7 @@ void MainWindow::addRule()
 		NClassifier cl(cond, act);
 		if (mGrammar.addClNormal(cl))
 		{
-			listRules->addItem(cl);
+			listRules->addItem(cl.toString());
 		}
 	}
 }
