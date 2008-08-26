@@ -120,11 +120,11 @@ void MainWindow::readSentences()
 				snt = line.readAll();
 				if (positive == 0)
 				{
-					snt.setPositive(false);
+					snt.isPositive = false;
 				}
 				else
 				{
-					snt.setPositive(true);
+					snt.isPositive = true;
 				}
 				mSentences << snt;
 			}
