@@ -25,16 +25,9 @@
 #include "Params.h"
 #include "Random.h"
 #include "CYK.h"
-#include <QSet>
 
 //TODO temporary
-#include <QtCore>
-
-Grammar::Grammar(const NSymbol& start, const NSymbol& universal) :
-	Start(start), Universal(universal)
-{
-	initGrammar();
-}
+#include <QtDebug>
 
 void Grammar::initGrammar(int nonterminals, int rules)
 {
@@ -92,11 +85,11 @@ void Grammar::induct(const QList<Sentence>& sentences)
 	{
 		bool result = CYK::parse(sentences[i], *this);
 //		qDebug() << "sentence:" << sentences[i].operator QString() << (result ? "parsed" : "not parsed");
-		if (result == true && sentences[i].isPositive())
+		if (result == true && sentences[i].isPositive)
 		{
 			mParsedPositive++;
 		}
-		else if (result == false && !sentences[i].isPositive())
+		else if (result == false && !sentences[i].isPositive)
 		{
 			mNotParsedNegative++;
 		}
@@ -134,23 +127,6 @@ void Grammar::correction()
 	//TODO brak implementacji
 }
 
-float Grammar::computeFitness()
-{
-//	qDebug() << QString() + __FUNCTION__ + " start";
-	if (mNumberOfSentences > 0)
-	{
-		mFitness = (float) (mParsedPositive + mNotParsedNegative) / mNumberOfSentences;
-//		qDebug() << "fitness =" << mParsedPositive << "+" << mNotParsedNegative << "/" << mNumberOfSentences;
-	}
-//	qDebug() << QString() + __FUNCTION__ + " end";
-	return mFitness;
-}
-
-float Grammar::fitness() const
-{
-	return mFitness;
-}
-
 //void Grammar::copyClParameters(const Grammar& other)
 //{
 ////	qDebug() << QString() + __FUNCTION__ + " start";
@@ -181,60 +157,6 @@ float Grammar::fitness() const
 ////	qDebug() << QString() + __FUNCTION__ + " end";
 //}
 
-//adding methods
-bool Grammar::addSymbol(const NSymbol& s)
-{
-//	qDebug() << QString() + __FUNCTION__ + " start";
-	if (!N.contains(s))
-	{
-		N << s;
-		return true;
-	}
-//	qDebug() << QString() + __FUNCTION__ + " end";
-	return false;
-}
-
-bool Grammar::addSymbol(const TSymbol& s)
-{
-//	qDebug() << QString() + __FUNCTION__ + " start";
-	if (!T.contains(s))
-	{
-		T << s;
-		return true;
-	}
-//	qDebug() << QString() + __FUNCTION__ + " end";
-	return false;
-}
-
-bool Grammar::addClNormal(const NClassifier& cl)
-{
-//	qDebug() << QString() + __FUNCTION__ + " start";
-	if (!PN.contains(cl))
-	{
-		addSymbol(cl.condition.firstSymbol);
-		addSymbol(cl.condition.secondSymbol);
-		addSymbol(cl.action.symbol);
-		PN << cl;
-		return true;
-	}
-//	qDebug() << QString() + __FUNCTION__ + " end";
-	return false;
-}
-
-bool Grammar::addClNormal(const TClassifier& cl)
-{
-//	qDebug() << QString() + __FUNCTION__ + " start";
-	if (!PT.contains(cl))
-	{
-		addSymbol(cl.condition.symbol);
-		addSymbol(cl.action.symbol);
-		PT << cl;
-		return true;
-	}
-//	qDebug() << QString() + __FUNCTION__ + " end";
-	return false;
-}
-
 NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set, int maxSize)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
@@ -251,14 +173,14 @@ NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassif
 	{
 		return &set[idx];
 	}
-	QSet<NClassifier*> K;
+	QList<NClassifier*> K;
 	for (int i = 0; i < p.crowdFactor; i++)
 	{
 		NClassifier* worst = &set[Random::rand(setSize)];
 		for (int c = 1; c < p.crowdSize; c++)
 		{
 			NClassifier* temp = &set[Random::rand(setSize)];
-			if (temp->fitness() < worst->fitness())
+			if (temp->fitness < worst->fitness)
 			{
 				worst = temp;
 			}
@@ -267,12 +189,11 @@ NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassif
 	}
 
 	NClassifier* mostSimilar = *(K.begin());
-	QSet<NClassifier*>::iterator iter = K.begin();
-	for (iter++; iter != K.end(); iter++)
+	for (int i = 0, size = K.size(); i < size; i++)
 	{
-		if ((*iter)->howSimilar(newCl) > mostSimilar->howSimilar(newCl))
+		if (K[i]->howSimilar(newCl) > mostSimilar->howSimilar(newCl))
 		{
-			mostSimilar = *iter;
+			mostSimilar = K[i];
 		}
 	}
 	*mostSimilar = newCl;
@@ -303,7 +224,7 @@ TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassif
 		for (int c = 1; c < p.crowdSize; c++)
 		{
 			TClassifier* temp = &set[Random::rand(setSize)];
-			if (temp->fitness() < worst->fitness())
+			if (temp->fitness < worst->fitness)
 			{
 				worst = temp;
 			}
@@ -323,10 +244,6 @@ TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassif
 	*mostSimilar = newCl;
 //	qDebug() << QString() + __FUNCTION__ + " end";
 	return mostSimilar;
-}
-int Grammar::maxClPointsDifference() const
-{
-	return mMaxClPointsDifference;
 }
 
 int Grammar::computeMaxClPointsDifference()
@@ -356,11 +273,6 @@ int Grammar::computeMaxClPointsDifference()
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
 	return mMaxClPointsDifference;
-}
-
-int Grammar::minClPointsDifference() const
-{
-	return mMinClPointsDifference;
 }
 
 int Grammar::computeMinClPointsDifference()
@@ -407,8 +319,4 @@ Grammar::operator QString() const
 	}
 	out += "\n";
 	return out;
-}
-
-Grammar::~Grammar()
-{
 }

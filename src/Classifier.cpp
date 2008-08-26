@@ -25,17 +25,6 @@
 //class Classifier (only for inheritence)
 ///////////////////////////////////////////////////
 
-Classifier::Classifier(const Action& act) :
-	action(act)
-{
-	resetParams();
-}
-
-float Classifier::fitness() const
-{
-	return mFitness;
-}
-
 float Classifier::computeFitness(int minDifference, int maxDifference)
 {
 	Params& p = Params::instance();
@@ -55,61 +44,13 @@ float Classifier::computeFitness(int minDifference, int maxDifference)
 		fertilityFun = (float) (mp - md - minDifference) / (maxDifference - minDifference);
 	}
 
-	mFitness = (p.classicFunWeight * classicFun + p.fertilityFunWeight * fertilityFun) / (p.classicFunWeight + p.fertilityFunWeight);
-	return mFitness;
-}
-
-void Classifier::resetParams()
-{
-	mFitness = 0.0;
-	mup = 0;
-	mun = 0;
-	mp = 0;
-	md = 0;
-}
-
-bool Classifier::operator <(const Classifier& other) const
-{
-	return mFitness < other.mFitness;
-}
-
-int Classifier::pointsDifference() const
-{
-	return mp - md;
-}
-
-void Classifier::used(bool positiveSentence)
-{
-	if (positiveSentence)
-	{
-		mup++;
-	}
-	else
-	{
-		mun++;
-	}
-}
-
-void Classifier::increasePoints(bool positive, int points)
-{
-	if (positive)
-	{
-		mp += points;
-	}
-	else
-	{
-		md += points;
-	}
+	fitness = (p.classicFunWeight * classicFun + p.fertilityFunWeight * fertilityFun) / (p.classicFunWeight + p.fertilityFunWeight);
+	return fitness;
 }
 
 ///////////////////////////////////////////////////
 //class NClassifier
 ///////////////////////////////////////////////////
-
-NClassifier::NClassifier(const NCondition& cond, const Action& act) :
-	Classifier(act), condition(cond)
-{
-}
 
 int NClassifier::howSimilar(const NClassifier& other) const
 {
@@ -129,26 +70,9 @@ int NClassifier::howSimilar(const NClassifier& other) const
 	return c;
 }
 
-QString NClassifier::toString() const
-{
-	return action.toString() + "=>" + condition.toString() + " (" + QString::number(mFitness) + ")";
-}
-
-bool NClassifier::operator ==(const NClassifier& other) const
-{
-	return condition == other.condition && action == other.action;
-}
-
 ///////////////////////////////////////////////////
 //class TClassifier
 ///////////////////////////////////////////////////
-
-TClassifier::TClassifier(const TCondition& cond, const Action& act) :
-	Classifier(act), condition(cond)
-{
-	mp = Params::instance().baseAmount;
-	md = Params::instance().baseAmount;
-}
 
 int TClassifier::howSimilar(const TClassifier& other) const
 {
@@ -164,19 +88,9 @@ int TClassifier::howSimilar(const TClassifier& other) const
 	return c;
 }
 
-QString TClassifier::toString() const
-{
-	return action.toString() + "=>" + condition.toString() + " (" + QString::number(mFitness) + ")";
-}
-
-bool TClassifier::operator ==(const TClassifier& other) const
-{
-	return condition == other.condition && action == other.action;
-}
-
 void TClassifier::resetParams()
 {
-	mFitness = 0.0;
+	fitness = 0.0;
 	mup = 0;
 	mun = 0;
 	mp = Params::instance().baseAmount;

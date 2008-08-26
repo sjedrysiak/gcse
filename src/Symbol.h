@@ -22,6 +22,7 @@
 #define SYMBOL_H_
 
 #include <QString>
+#include <QHash>
 
 ///////////////////////////////////////////////////
 //class NSymbol
@@ -30,11 +31,15 @@
 class NSymbol: public QString
 {
 public:
-	NSymbol(const QString& str = "");
-	NSymbol(const char* str);
+	NSymbol(const QString& str = "") : QString(str), hash(qHash(str)) {}
+	NSymbol(const char* str) : QString(str), hash(qHash(QString(str))) {}
+	bool operator ==(const NSymbol& other) const
+	{	return hash == other.hash;	}
 	static NSymbol generateNew();
-	static void resetGenerator();
+	static void resetGenerator()
+	{	lastUsed = "";	}
 protected:
+	uint hash;
 	static QString lastUsed;
 };
 
@@ -45,8 +50,12 @@ protected:
 class TSymbol: public QString
 {
 public:
-	TSymbol(const QString& str);
-	TSymbol(const char* str);
+	TSymbol(const QString& str) : QString(str), hash(qHash(str)) {}
+	TSymbol(const char* str) : QString(str), hash(qHash(QString(str))) {}
+	bool operator ==(const TSymbol& other) const
+	{	return hash == other.hash;	}
+protected:
+	uint hash;
 };
 
 #endif /*SYMBOL_H_*/

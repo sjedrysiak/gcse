@@ -21,13 +21,12 @@
 #ifndef PARAMS_H_
 #define PARAMS_H_
 
-#include <QString>
 #include "GA.h"
 
 class Params
 {
 public:
-	inline static Params& instance()
+	static Params& instance()
 	{
 		return mInstance;
 	}

@@ -18,19 +18,4 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "Action.h"
-
-Action::Action(const NSymbol& s) :
-	symbol(s)
-{
-}
-
-bool Action::operator ==(const Action& other) const
-{
-    return symbol == other.symbol;
-}
-
-QString Action::toString() const
-{
-    return symbol;
-}
+//#include "Action.h"

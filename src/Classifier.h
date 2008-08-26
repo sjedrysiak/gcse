@@ -27,21 +27,43 @@
 class Classifier
 {
 public:
-	float fitness() const;
 	float computeFitness(int minDifference, int maxDifference);
-	virtual void resetParams();
-	bool operator <(const Classifier& other) const;
-	int pointsDifference() const;
-	void used(bool positiveSentence);
-	void increasePoints(bool positive, int points);
+	virtual void resetParams()
+	{
+		fitness = 0.0;
+		mup = 0;
+		mun = 0;
+		mp = 0;
+		md = 0;
+	}
+	bool operator <(const Classifier& other) const
+	{
+		return fitness < other.fitness;
+	}
+	int pointsDifference() const
+	{
+		return mp - md;
+	}
+	void used(bool positiveSentence)
+	{
+		positiveSentence ? mup++ : mun++;
+	}
+	void increasePoints(bool positiveSentence, int points)
+	{
+		positiveSentence ? mp += points : md += points;
+	}
 
 	Action action;
-protected:
-	Classifier(const Action& act);
 	/**
 	 * classifier fitness
 	 */
-	float mFitness;
+	float fitness;
+protected:
+	Classifier(const Action& act) :
+		action(act)
+	{
+		resetParams();
+	}
 	/**
 	 * used in positive sentence
 	 */
@@ -63,10 +85,19 @@ protected:
 class NClassifier: public Classifier
 {
 public:
-	NClassifier(const NCondition& cond, const Action& act);
+	NClassifier(const NCondition& cond, const Action& act) :
+		Classifier(act), condition(cond)
+	{
+	}
 	int howSimilar(const NClassifier& other) const;
-	QString toString() const;
-	bool operator ==(const NClassifier& other) const;
+	QString toString() const
+	{
+		return action.toString() + "=>" + condition.toString() + " (" + QString::number(fitness) + ")";
+	}
+	bool operator ==(const NClassifier& other) const
+	{
+		return condition == other.condition && action == other.action;
+	}
 
 	NCondition condition;
 };
@@ -74,10 +105,20 @@ public:
 class TClassifier: public Classifier
 {
 public:
-	TClassifier(const TCondition& cond, const Action& act);
+	TClassifier(const TCondition& cond, const Action& act) :
+		Classifier(act), condition(cond)
+	{
+		resetParams();
+	}
 	int howSimilar(const TClassifier& other) const;
-	QString toString() const;
-	bool operator ==(const TClassifier& other) const;
+	QString toString() const
+	{
+		return action.toString() + "=>" + condition.toString() + " (" + QString::number(fitness) + ")";
+	}
+	bool operator ==(const TClassifier& other) const
+	{
+		return condition == other.condition && action == other.action;
+	}
 	void resetParams();
 
 	TCondition condition;

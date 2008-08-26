@@ -19,8 +19,6 @@
  ***************************************************************************/
 
 #include "GA.h"
-#include "Grammar.h"
-#include "Random.h"
 #include "Params.h"
 
 void GA::evolve(Grammar& g)
@@ -103,14 +101,14 @@ NClassifier GA::selectionRoulette(const Grammar& g)
 	double sum = 0.0;
 	for (int i = 0, size = g.PN.size(); i < size; i++)
 	{
-		sum += g.PN[i].fitness();
+		sum += g.PN[i].fitness;
 	}
 	double random = Random::rand() * sum;
 	sum = 0.0;
 	NClassifier winner(g.PN[0]);
 	for (int i = 1, size = g.PN.size(); i < size; i++)
 	{
-		sum += g.PN[i].fitness();
+		sum += g.PN[i].fitness;
 		if (random <= sum)
 		{
 			winner = g.PN[i];
@@ -130,7 +128,7 @@ NClassifier GA::selectionTournament(const Grammar& g)
 		NClassifier bestCl(g.PN[0]);
 		for (int i = 0; i < PNSize; i++)
 		{
-			if (g.PN[i].fitness() > bestCl.fitness())
+			if (g.PN[i].fitness > bestCl.fitness)
 			{
 				bestCl = g.PN[i];
 			}
@@ -146,18 +144,13 @@ NClassifier GA::selectionTournament(const Grammar& g)
 		{
 			NClassifier cl(g.PN[Random::rand(PNSize)]);
 			tournamentSet << cl;
-			if (cl.fitness() > bestCl.fitness())
+			if (cl.fitness > bestCl.fitness)
 			{
 				bestCl = cl;
 			}
 		}
 		return bestCl;
 	}
-}
-
-NClassifier GA::selectionRandom(const Grammar& g)
-{
-	return g.PN[Random::rand(g.PN.size())];
 }
 
 //genetic operators
@@ -176,11 +169,6 @@ void GA::crossover(NClassifier& first, NClassifier& second)
 	}
 	first.action = Action(second.action.symbol);
 	second.action = Action(copyFirst.action.symbol);
-}
-
-void GA::inversion(NClassifier& cl)
-{
-	cl.condition = NCondition(cl.condition.secondSymbol, cl.condition.firstSymbol);
 }
 
 void GA::mutation(NClassifier& cl, const QList<NSymbol>& symbols)

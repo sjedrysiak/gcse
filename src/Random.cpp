@@ -17,26 +17,3 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#include "Random.h"
-#include <QtGlobal>
-#include <QTime>
-#include <cstdlib>
-
-//returns random integer from 0 to n-1
-int Random::rand(unsigned int n)
-{
-	return Random::rand() * n;
-}
-
-//returns random double from [0,1)
-double Random::rand()
-{
-	return qrand() / (RAND_MAX + 1.0);
-}
-
-void Random::init()
-{
-	QTime currentTime = QTime::currentTime();
-	qsrand(currentTime.minute() * 60000 + currentTime.second() * 1000 + currentTime.msec());
-}
