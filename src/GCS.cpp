@@ -25,10 +25,10 @@ void GCS::run()
 		mGrammar.computeFitness();
 		if (mGrammar.fitness() > maxFitness)
 		{
-			qDebug() << "step:" << step;
+//			qDebug() << "step:" << step;
 			stream << "\nstep: " << step << " fitness: " << mGrammar.fitness() << "\n\n";
 			stream << mGrammar;
-			stream.flush();
+//			stream.flush();
 			maxFitness = mGrammar.fitness();
 		}
 		if (mGrammar.fitness() < 1.0 && p.allowGA)
