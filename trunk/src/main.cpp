@@ -48,7 +48,7 @@
 
 int main(int argc, char *argv[])
 {
-	Random::init();
+	Random::srand();
 //	qInstallMsgHandler(myMessageOutput);
 	QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
