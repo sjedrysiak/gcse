@@ -57,7 +57,6 @@ public:
 	float mutationProb;
 	//inversion probability
 	float inversionProb;
-
 	//elite population size [1,30]
 	int eliteSize;
 	//tournament population size [1,30]
@@ -66,6 +65,7 @@ public:
 	int crowdFactor;
 	//crowding population size [1,30]
 	int crowdSize;
+
 
 	//parsing parameters
 	//classifier base amount [0,15]
@@ -78,10 +78,16 @@ public:
 	int startNonterminalRules;
 	//nonterminal symbols amount [1,30]
 	int nonterminalSymbolsAmount;
+
+	//number of threads
+	int threads;
 	//number of iterations 10, 50
 	int iterations;
 	//max evolution steps [1,50 000]
 	int maxEvolutionSteps;
+	//end on 100% fitness
+	bool endOnFullFitness;
+
 	//positive sentence weight [1,20]
 	int positiveSentenceWeight;
 	//negative sentence weight [1,20]
