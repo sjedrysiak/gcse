@@ -47,16 +47,16 @@ void SettingsDialog::setupActions()
 
 void SettingsDialog::accept()
 {
-	Params::instance().maxNonterminalRules = sbxPopulationSize->value();
-	Params::instance().nonterminalSymbolsAmount = sbxNonterminals->value();
-	Params::instance().unusedClassifierFitness = sbxUnusedFitness->value();
+	Params& p = Params::instance();
+	p.maxNonterminalRules = sbxMaxNonterminals->value();
+	p.unusedClassifierFitness = sbxUnusedFitness->value();
 
-	Params::instance().allowCorrection = cbxGrammarCorrection->isChecked();
-	Params::instance().allowCoveringStart = cbxStartCovering->isChecked();
-	Params::instance().allowCoveringFull = cbxFullCovering->isChecked();
-	Params::instance().allowCoveringUniversal = cbxAllowUniversalSymbol->isChecked();
-	Params::instance().coveringAggressiveProb = sbxAggressiveCovering->value();
-	Params::instance().allowGA = cbxAllowGA->isChecked();
+	p.allowCorrection = cbxGrammarCorrection->isChecked();
+	p.allowCoveringStart = cbxStartCovering->isChecked();
+	p.allowCoveringFull = cbxFullCovering->isChecked();
+	p.allowCoveringUniversal = cbxAllowUniversalSymbol->isChecked();
+	p.coveringAggressiveProb = sbxAggressiveCovering->value();
+	p.allowGA = cbxAllowGA->isChecked();
 	GA::SelectionType sel1;
 	if (rbnRandom1->isChecked())
 	{
@@ -83,21 +83,21 @@ void SettingsDialog::accept()
 	{
 		sel2 = GA::TOURNAMENT;
 	}
-	Params::instance().selectionParent1 = sel1;
-	Params::instance().selectionParent2 = sel2;
-	Params::instance().crossoverProb = sbxCrossoverProb->value();
-	Params::instance().mutationProb = sbxMutationProb->value();
-	Params::instance().inversionProb = sbxInversionProb->value();
-	Params::instance().eliteSize = sbxEliteSize->value();
-	Params::instance().tournamentSize = sbxTournamentSubpop->value();
-	Params::instance().crowdFactor = sbxCrowdingFactor->value();
-	Params::instance().crowdSize = sbxCrowdingSubpop->value();
-	Params::instance().baseAmount = sbxBaseAmount->value();
-	Params::instance().renouncedAmountFactor = sbxRAF->value();
-	Params::instance().positiveSentenceWeight = sbxPositiveWeight->value();
-	Params::instance().negativeSentenceWeight = sbxNegativeWeight->value();
-	Params::instance().classicFunWeight = sbxClassicWeight->value();
-	Params::instance().fertilityFunWeight = sbxFertilityWeight->value();
+	p.selectionParent1 = sel1;
+	p.selectionParent2 = sel2;
+	p.crossoverProb = sbxCrossoverProb->value();
+	p.mutationProb = sbxMutationProb->value();
+	p.inversionProb = sbxInversionProb->value();
+	p.eliteSize = sbxEliteSize->value();
+	p.tournamentSize = sbxTournamentSubpop->value();
+	p.crowdFactor = sbxCrowdingFactor->value();
+	p.crowdSize = sbxCrowdingSubpop->value();
+	p.baseAmount = sbxBaseAmount->value();
+	p.renouncedAmountFactor = sbxRAF->value();
+	p.positiveSentenceWeight = sbxPositiveWeight->value();
+	p.negativeSentenceWeight = sbxNegativeWeight->value();
+	p.classicFunWeight = sbxClassicWeight->value();
+	p.fertilityFunWeight = sbxFertilityWeight->value();
 	hide();
 }
 
@@ -109,13 +109,14 @@ void SettingsDialog::reject()
 
 void SettingsDialog::updateFromParams()
 {
-	cbxGrammarCorrection->setChecked(Params::instance().allowCorrection);
-	cbxStartCovering->setChecked(Params::instance().allowCoveringStart);
-	cbxFullCovering->setChecked(Params::instance().allowCoveringFull);
-	cbxAllowUniversalSymbol->setChecked(Params::instance().allowCoveringUniversal);
-	sbxAggressiveCovering->setValue(Params::instance().coveringAggressiveProb);
-	cbxAllowGA->setChecked(Params::instance().allowGA);
-	switch (Params::instance().selectionParent1)
+	Params& p = Params::instance();
+	cbxGrammarCorrection->setChecked(p.allowCorrection);
+	cbxStartCovering->setChecked(p.allowCoveringStart);
+	cbxFullCovering->setChecked(p.allowCoveringFull);
+	cbxAllowUniversalSymbol->setChecked(p.allowCoveringUniversal);
+	sbxAggressiveCovering->setValue(p.coveringAggressiveProb);
+	cbxAllowGA->setChecked(p.allowGA);
+	switch (p.selectionParent1)
 	{
 		case GA::RANDOM:
 			rbnRandom1->setChecked(true);
@@ -127,7 +128,7 @@ void SettingsDialog::updateFromParams()
 			rbnTournament1->setChecked(true);
 			break;
 	}
-	switch (Params::instance().selectionParent2)
+	switch (p.selectionParent2)
 	{
 		case GA::RANDOM:
 			rbnRandom2->setChecked(true);
@@ -139,22 +140,21 @@ void SettingsDialog::updateFromParams()
 			rbnTournament2->setChecked(true);
 			break;
 	}
-	sbxCrossoverProb->setValue(Params::instance().crossoverProb);
-	sbxMutationProb->setValue(Params::instance().mutationProb);
-	sbxInversionProb->setValue(Params::instance().inversionProb);
-	sbxEliteSize->setValue(Params::instance().eliteSize);
-	sbxTournamentSubpop->setValue(Params::instance().tournamentSize);
-	sbxCrowdingFactor->setValue(Params::instance().crowdFactor);
-	sbxCrowdingSubpop->setValue(Params::instance().crowdSize);
-	sbxBaseAmount->setValue(Params::instance().baseAmount);
-	sbxRAF->setValue(Params::instance().renouncedAmountFactor);
-	sbxPopulationSize->setValue(Params::instance().maxNonterminalRules);
-	sbxNonterminals->setValue(Params::instance().nonterminalSymbolsAmount);
-	sbxPositiveWeight->setValue(Params::instance().positiveSentenceWeight);
-	sbxNegativeWeight->setValue(Params::instance().negativeSentenceWeight);
-	sbxClassicWeight->setValue(Params::instance().classicFunWeight);
-	sbxFertilityWeight->setValue(Params::instance().fertilityFunWeight);
-	sbxUnusedFitness->setValue(Params::instance().unusedClassifierFitness);
+	sbxCrossoverProb->setValue(p.crossoverProb);
+	sbxMutationProb->setValue(p.mutationProb);
+	sbxInversionProb->setValue(p.inversionProb);
+	sbxEliteSize->setValue(p.eliteSize);
+	sbxTournamentSubpop->setValue(p.tournamentSize);
+	sbxCrowdingFactor->setValue(p.crowdFactor);
+	sbxCrowdingSubpop->setValue(p.crowdSize);
+	sbxBaseAmount->setValue(p.baseAmount);
+	sbxRAF->setValue(p.renouncedAmountFactor);
+	sbxMaxNonterminals->setValue(p.maxNonterminalRules);
+	sbxPositiveWeight->setValue(p.positiveSentenceWeight);
+	sbxNegativeWeight->setValue(p.negativeSentenceWeight);
+	sbxClassicWeight->setValue(p.classicFunWeight);
+	sbxFertilityWeight->setValue(p.fertilityFunWeight);
+	sbxUnusedFitness->setValue(p.unusedClassifierFitness);
 }
 
 SettingsDialog::~SettingsDialog()

@@ -32,9 +32,9 @@
 #define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
-#include "ui_MainWindow.h"
+#include "../ui_MainWindow.h"
 #include "SettingsDialog.h"
-#include "src/GCS.h"
+#include "../src/GCS.h"
 
 class MainWindow: public QMainWindow, private Ui::MainWindowClass
 {
@@ -49,10 +49,16 @@ protected slots:
 	void showSettingsDialog();
 	void initGrammar();
     void readSentences();
+    void changeNonterminalsAmount(int value);
+    void changeStartRulesAmount(int value);
+    void changeThreadsAmount(int value);
+    void changeIterationsAmount(int value);
     void changeMaxEvolutionSteps(int value);
+    void changeEndOnFullFintess(bool value);
     void addNonterminal();
     void addRule();
     void clearGrammar();
+    void sentencesFileBrowse();
 private:
 	void reloadCombos();
 	void setupActions();
