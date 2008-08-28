@@ -30,6 +30,7 @@
 
 #include "MainWindow.h"
 #include <QMessageBox>
+#include <QFileDialog>
 #include "../src/Params.h"
 
 #include <QtCore>
@@ -52,10 +53,16 @@ void MainWindow::setupActions()
 	connect(btnInitGrammar, SIGNAL(clicked()), this, SLOT(initGrammar()));
 	connect(btnRun, SIGNAL(clicked()), this, SLOT(runGCS()));
 	connect(btnLoadSentences, SIGNAL(clicked()), this, SLOT(readSentences()));
+	connect(sbxNonterminals, SIGNAL(valueChanged(int)), this, SLOT(changeNonterminalsAmount(int)));
+	connect(sbxRules, SIGNAL(valueChanged(int)), this, SLOT(changeStartRulesAmount(int)));
+	connect(sbxThreads, SIGNAL(valueChanged(int)), this, SLOT(changeThreadsAmount(int)));
+	connect(sbxIterations, SIGNAL(valueChanged(int)), this, SLOT(changeIterationsAmount(int)));
 	connect(sbxEvolutionSteps, SIGNAL(valueChanged(int)), this, SLOT(changeMaxEvolutionSteps(int)));
+	connect(cbxEndOnFull, SIGNAL(toggled(bool)), this, SLOT(changeEndOnFullFintess(bool)));
 	connect(btnAddSymbol, SIGNAL(clicked()), this, SLOT(addNonterminal()));
 	connect(btnAddRule, SIGNAL(clicked()), this, SLOT(addRule()));
 	connect(btnClearGrammar, SIGNAL(clicked()), this, SLOT(clearGrammar()));
+	connect(btnBrowse, SIGNAL(clicked()), this, SLOT(sentencesFileBrowse()));
 }
 
 void MainWindow::runGCS()
@@ -104,6 +111,10 @@ void MainWindow::readSentences()
 	if (file.open(QFile::ReadOnly))
 	{
 		QTextStream lines(&file);
+		if (!lines.atEnd())
+		{
+			lines.readLine();//first line is useless
+		}
 		while (!lines.atEnd())
 		{
 			QString tmp = lines.readLine();
@@ -140,9 +151,34 @@ void MainWindow::readSentences()
 //	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
+void MainWindow::changeNonterminalsAmount(int value)
+{
+	Params::instance().nonterminalSymbolsAmount = value;
+}
+
+void MainWindow::changeStartRulesAmount(int value)
+{
+	Params::instance().startNonterminalRules = value;
+}
+
+void MainWindow::changeThreadsAmount(int value)
+{
+	Params::instance().threads = value;
+}
+
+void MainWindow::changeIterationsAmount(int value)
+{
+	Params::instance().iterations = value;
+}
+
 void MainWindow::changeMaxEvolutionSteps(int value)
 {
 	Params::instance().maxEvolutionSteps = value;
+}
+
+void MainWindow::changeEndOnFullFintess(bool value)
+{
+	Params::instance().endOnFullFitness = value;
 }
 
 void MainWindow::addNonterminal()
@@ -187,6 +223,12 @@ void MainWindow::reloadCombos()
 		cbxAction1->addItem(mGrammar.N[i], mGrammar.N[i]);
 		cbxAction2->addItem(mGrammar.N[i], mGrammar.N[i]);
 	}
+}
+
+void MainWindow::sentencesFileBrowse()
+{
+	QString file = QFileDialog::getOpenFileName(this, tr("Open file with sentences"), ".", tr("Text files (*.txt);;All files (*)"));
+	edtFilePath->setText(file);
 }
 
 void MainWindow::clearGrammar()
