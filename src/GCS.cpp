@@ -4,42 +4,48 @@
 //#include <QTextStream>
 #include <QtCore>
 
+int GCS::counter = 0;
+
 GCS::GCS(const Grammar& grammar, const QList<Sentence> list) :
 	QThread(), mGrammar(grammar), mSentences(list)
 {
+	threadNumber = counter++;
 }
 
 void GCS::run()
 {
-//	qDebug() << QString() + __FUNCTION__ + " start";
+	//	qDebug() << QString() + __FUNCTION__ + " start";
 	Params& p = Params::instance();
-	int step = 0;
-	QFile file("wyniki");
+	QFile file("thread"+threadNumber);
 	file.open(QFile::WriteOnly);
 	QTextStream stream(&file);
-	stream << mGrammar;
-	double maxFitness = 0;
-	while (step < p.maxEvolutionSteps && mGrammar.fitness() < 1.0)
+	int success = 0;
+	for (int iter = 0; iter < p.iterations; iter++)
 	{
-		mGrammar.induct(mSentences);
-		mGrammar.computeFitness();
-		if (mGrammar.fitness() > maxFitness)
+		Grammar tmpGrammar(mGrammar);
+//		tmpGrammar = mGrammar;
+		stream << "\n\niteration " << iter+1 << " started";
+		int step = 0;
+		while (step < p.maxEvolutionSteps && (!p.endOnFullFitness || tmpGrammar.fitness() < 1.0))
 		{
-//			qDebug() << "step:" << step;
-			stream << "\nstep: " << step << " fitness: " << mGrammar.fitness() << "\n\n";
-			stream << mGrammar;
-//			stream.flush();
-			maxFitness = mGrammar.fitness();
+			tmpGrammar.induct(mSentences);
+			tmpGrammar.computeFitness();
+			if (tmpGrammar.fitness() == 1.0)
+			{
+				stream << "\nfitness == 100% in step " << step;
+				success++;
+			}
+			if (p.allowGA && (tmpGrammar.fitness() < 1.0 || !p.endOnFullFitness))
+			{
+				GA::evolve(tmpGrammar);
+			}
+			step++;
 		}
-		if (mGrammar.fitness() < 1.0 && p.allowGA)
-		{
-			GA::evolve(mGrammar);
-		}
-		step++;
+		stream << "\niteration " << iter << " ended with fitness " << tmpGrammar.fitness();
 	}
-	stream << "\n\n" << mGrammar;
+	stream << "\n\naverage: " << QString::number(100.0 * success / p.iterations,'f',1) << "%";
 	file.close();
-//	qDebug() << QString() + __FUNCTION__ + " end";
+	//	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 GCS::~GCS()

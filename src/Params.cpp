@@ -9,6 +9,7 @@ Params::Params()
 	allowCoveringFull = true;
 	allowCoveringUniversal = false;
 	coveringAggressiveProb = 1.0;
+
 	allowGA = true;
 	selectionParent1 = GA::RANDOM;
 	selectionParent2 = GA::RANDOM;
@@ -19,13 +20,18 @@ Params::Params()
 	tournamentSize = 2;
 	crowdFactor = 2;
 	crowdSize = 2;
+
 	baseAmount = 2;
 	renouncedAmountFactor = 0.5;
-	maxNonterminalRules = 20;
-	startNonterminalRules = 5;
-	nonterminalSymbolsAmount = 26;
+	maxNonterminalRules = 30;
+	startNonterminalRules = 15;
+	nonterminalSymbolsAmount = 25;
+
+	threads = 1;
 	iterations = 5;
 	maxEvolutionSteps = 1;
+	endOnFullFitness = true;
+
 	positiveSentenceWeight = 1;
 	negativeSentenceWeight = 1;
 	classicFunWeight = 1;

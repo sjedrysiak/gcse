@@ -13,8 +13,10 @@ public:
     void run();
     virtual ~GCS();
 protected:
+	int threadNumber;
     Grammar mGrammar;
     QList<Sentence> mSentences;
+    static int counter;
 };
 
 #endif /*GCS_H_*/
