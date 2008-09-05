@@ -304,7 +304,7 @@ int Grammar::computeMinClPointsDifference()
 	return mMinClPointsDifference;
 }
 
-Grammar::operator QString() const
+QString Grammar::toString() const
 {
 	QString out;
 	out += "Produkcje terminalne:\n";

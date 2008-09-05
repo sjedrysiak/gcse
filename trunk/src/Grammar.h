@@ -34,8 +34,8 @@ class Grammar
 	friend class CYK;
 	friend class GA;
 public:
-	const NSymbol Start;
-	const NSymbol Universal;
+	NSymbol Start;
+	NSymbol Universal;
 
 	Grammar(const NSymbol& start = "_S_", const NSymbol& universal = "_U_") :
 		Start(start), Universal(universal)
@@ -116,7 +116,7 @@ public:
 	static NClassifier* addClWithCrowding(const NClassifier& newCl, QList<NClassifier>& set, int maxSize);
 	static TClassifier* addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set, int maxSize);
 
-	operator QString() const;
+	QString toString() const;
 	~Grammar()
 	{
 	}
