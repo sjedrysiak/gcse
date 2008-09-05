@@ -35,12 +35,14 @@
 #include "../ui_MainWindow.h"
 #include "SettingsDialog.h"
 #include "../src/GCS.h"
+#include <QMutex>
 
 class MainWindow: public QMainWindow, private Ui::MainWindowClass
 {
 	Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
+    void sendRules(QList<NClassifier> list);
 	~MainWindow();
 protected slots:
 	void about();
@@ -62,11 +64,12 @@ protected slots:
 private:
 	void reloadCombos();
 	void setupActions();
-    void initValues();//TODO implementation
-	GCS* gcs;
+    void initValues();
+	QList<GCS*> gcsList;
 	SettingsDialog* mSettingsDialog;
 	QList<Sentence> mSentences;
 	Grammar mGrammar;
+	QMutex mutex;
 };
 
 #endif // MAINWINDOW_H

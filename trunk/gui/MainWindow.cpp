@@ -31,15 +31,16 @@
 #include "MainWindow.h"
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QTextStream>
 #include "../src/Params.h"
-
-#include <QtCore>
+#include <QMutexLocker>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent)
 {
 	setupUi(this);
 	setupActions();
+	initValues();
 	mSettingsDialog = new SettingsDialog(this);
 }
 
@@ -69,17 +70,40 @@ void MainWindow::runGCS()
 {
 	action_Run->setEnabled(false);
 	btnRun->setEnabled(false);
-	gcs = new GCS(mGrammar, mSentences);
-	connect(gcs, SIGNAL(finished()), this, SLOT(gcsFinished()));
-	gcs->start();
+	GCS* gcs;
+	for (int i = 0; i < Params::instance().threads; i++)
+	{
+		gcs = new GCS(mGrammar, mSentences, *this);
+		connect(gcs, SIGNAL(finished()), this, SLOT(gcsFinished()));
+		gcs->start();
+//		qDebug() << "gcs" << i << "started" << gcs;
+		gcsList << gcs;
+	}
 }
 
 void MainWindow::gcsFinished()
 {
-	action_Run->setEnabled(true);
-	btnRun->setEnabled(true);
-	delete gcs;
-	gcs = NULL;
+//	qDebug() << "gcs finished...";
+	QMutexLocker locker(&mutex);
+	if (gcsList.size() == 1)
+	{
+		delete gcsList[0];
+		gcsList.clear();
+		action_Run->setEnabled(true);
+		btnRun->setEnabled(true);
+	}
+	else
+	{
+		for (int i = 0, size = gcsList.size(); i < size; i++)
+		{
+			if (gcsList[i]->isFinished())
+			{
+				delete gcsList[i];
+				gcsList.removeAt(i);
+				break;
+			}
+		}
+	}
 }
 
 void MainWindow::showSettingsDialog()
@@ -239,6 +263,28 @@ void MainWindow::clearGrammar()
 	reloadCombos();
 }
 
+void MainWindow::initValues()
+{
+	Params& p = Params::instance();
+	sbxNonterminals->setValue(p.nonterminalSymbolsAmount);
+	sbxRules->setValue(p.startNonterminalRules);
+	sbxThreads->setValue(p.threads);
+	sbxIterations->setValue(p.iterations);
+	sbxEvolutionSteps->setValue(p.maxEvolutionSteps);
+	cbxEndOnFull->setChecked(p.endOnFullFitness);
+}
+
+void MainWindow::sendRules(QList<NClassifier> list)
+{
+	QMutexLocker locker(&mutex);
+	int size = gcsList.size();
+	if (size > 1)
+	{
+		GCS* dest = gcsList[Random::rand(size)];
+		dest->sendRules(list);
+	}
+}
+
 void MainWindow::about()
 {
 	QString system;
@@ -257,11 +303,11 @@ void MainWindow::about()
 
 MainWindow::~MainWindow()
 {
-	if (gcs != NULL && gcs->isRunning())
-	{
-		gcs->terminate();
-		gcs->wait();
-		delete gcs;
-		gcs = NULL;
-	}
+//	if (gcs != NULL && gcs->isRunning())
+//	{
+//		gcs->terminate();
+//		gcs->wait();
+//		delete gcs;
+//		gcs = NULL;
+//	}
 }
