@@ -32,7 +32,7 @@
 #define SETTINGSDIALOG_H
 
 #include <QtGui/QDialog>
-#include "ui_SettingsDialog.h"
+#include "../ui_SettingsDialog.h"
 
 class SettingsDialog : public QDialog, private Ui::SettingsDialog
 {

@@ -9,7 +9,7 @@
     <x>0</x>
     <y>0</y>
     <width>651</width>
-    <height>654</height>
+    <height>691</height>
    </rect>
   </property>
   <property name="sizePolicy" >
@@ -311,16 +311,6 @@
              </widget>
             </item>
            </layout>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="cbxAllowUniversalSymbol" >
-            <property name="enabled" >
-             <bool>false</bool>
-            </property>
-            <property name="text" >
-             <string>Use don't care symbol</string>
-            </property>
-           </widget>
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_6" >
@@ -728,27 +718,72 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_4" >
-         <property name="enabled" >
-          <bool>false</bool>
-         </property>
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QGroupBox" name="groupBox_3" >
          <property name="title" >
-          <string>Other</string>
+          <string>Coevolution</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_10" >
-          <item>
-           <widget class="QCheckBox" name="cbxGrammarCorrection" >
-            <property name="enabled" >
-             <bool>false</bool>
-            </property>
+         <layout class="QGridLayout" name="gridLayout_5" >
+          <item row="0" column="0" >
+           <widget class="QLabel" name="lblExchangeProb" >
             <property name="text" >
-             <string>Grammar correction</string>
+             <string>Rules exchange probability:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" >
+           <widget class="QDoubleSpinBox" name="sbxExchangeProb" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize" >
+             <size>
+              <width>70</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximum" >
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep" >
+             <double>0.100000000000000</double>
+            </property>
+            <property name="value" >
+             <double>0.030000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" >
+           <widget class="QLabel" name="lblExchangeAmount" >
+            <property name="text" >
+             <string>Rules exchange amount:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" >
+           <widget class="QSpinBox" name="sbxExchangeAmount" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize" >
+             <size>
+              <width>70</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="maximum" >
+             <number>20</number>
+            </property>
+            <property name="value" >
+             <number>5</number>
             </property>
            </widget>
           </item>
@@ -896,7 +931,6 @@
  </widget>
  <tabstops>
   <tabstop>sbxMaxNonterminals</tabstop>
-  <tabstop>cbxGrammarCorrection</tabstop>
   <tabstop>btnOK</tabstop>
   <tabstop>btnCancel</tabstop>
   <tabstop>btnLoad</tabstop>

@@ -51,10 +51,10 @@ void SettingsDialog::accept()
 	p.maxNonterminalRules = sbxMaxNonterminals->value();
 	p.unusedClassifierFitness = sbxUnusedFitness->value();
 
-	p.allowCorrection = cbxGrammarCorrection->isChecked();
+//	p.allowCorrection = cbxGrammarCorrection->isChecked();
 	p.allowCoveringStart = cbxStartCovering->isChecked();
 	p.allowCoveringFull = cbxFullCovering->isChecked();
-	p.allowCoveringUniversal = cbxAllowUniversalSymbol->isChecked();
+//	p.allowCoveringUniversal = cbxAllowUniversalSymbol->isChecked();
 	p.coveringAggressiveProb = sbxAggressiveCovering->value();
 	p.allowGA = cbxAllowGA->isChecked();
 	GA::SelectionType sel1;
@@ -98,6 +98,8 @@ void SettingsDialog::accept()
 	p.negativeSentenceWeight = sbxNegativeWeight->value();
 	p.classicFunWeight = sbxClassicWeight->value();
 	p.fertilityFunWeight = sbxFertilityWeight->value();
+	p.exchangeProb = sbxExchangeProb->value();
+	p.exchangeAmount = sbxExchangeAmount->value();
 	hide();
 }
 
@@ -110,10 +112,10 @@ void SettingsDialog::reject()
 void SettingsDialog::updateFromParams()
 {
 	Params& p = Params::instance();
-	cbxGrammarCorrection->setChecked(p.allowCorrection);
+//	cbxGrammarCorrection->setChecked(p.allowCorrection);
 	cbxStartCovering->setChecked(p.allowCoveringStart);
 	cbxFullCovering->setChecked(p.allowCoveringFull);
-	cbxAllowUniversalSymbol->setChecked(p.allowCoveringUniversal);
+//	cbxAllowUniversalSymbol->setChecked(p.allowCoveringUniversal);
 	sbxAggressiveCovering->setValue(p.coveringAggressiveProb);
 	cbxAllowGA->setChecked(p.allowGA);
 	switch (p.selectionParent1)
@@ -155,6 +157,8 @@ void SettingsDialog::updateFromParams()
 	sbxClassicWeight->setValue(p.classicFunWeight);
 	sbxFertilityWeight->setValue(p.fertilityFunWeight);
 	sbxUnusedFitness->setValue(p.unusedClassifierFitness);
+	sbxExchangeProb->setValue(p.exchangeProb);
+	sbxExchangeAmount->setValue(p.exchangeAmount);
 }
 
 SettingsDialog::~SettingsDialog()
