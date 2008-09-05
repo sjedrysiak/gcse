@@ -48,7 +48,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 		for (int col = 0; col < size; col++) //set first row
 		{
 			getMatchingClassifiers(TCondition(sentence[col]), g, M);
-			if (M.isEmpty()) //there is no terminal prod for current word
+			if (p.learningMode && M.isEmpty()) //there is no terminal prod for current word
 			{//TODO sprawdzić czy covering terminal jest tylko dla zdań pozytywnych
 				M << coveringTerminal(sentence[col], g);
 				if (p.allowCoveringUniversal)
@@ -76,7 +76,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 				{
 					getMatchingClassifiers(D[i], g, M);
 				}
-				if (M.isEmpty() && sentence.isPositive && !D.isEmpty())
+				if (p.learningMode && M.isEmpty() && sentence.isPositive && !D.isEmpty())
 				{
 					if (Random::rand() < p.coveringAggressiveProb)
 					{

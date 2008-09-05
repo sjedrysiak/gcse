@@ -31,6 +31,9 @@ public:
 		return mInstance;
 	}
 
+	bool learningMode;
+	float exchangeProb;
+	int exchangeAmount;
 	//allow to run grammar correction
 	bool allowCorrection;
 
