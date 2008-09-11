@@ -44,43 +44,58 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 		{
 			cykTable[row].resize(size - row);
 		}
-		QList<Classifier*> M;
 		for (int col = 0; col < size; col++) //set first row
 		{
+			QList<Classifier*> M;
 			getMatchingClassifiers(TCondition(sentence[col]), g, M);
-			if (p.learningMode && M.isEmpty()) //there is no terminal prod for current word
+			//			foreach (Classifier* cl, M)
+			//			{
+			//				qDebug() << cl->toString();
+			//			}
+			if (p.learningMode && M.isEmpty() && sentence.isPositive) //there is no terminal prod for current word
 			{//TODO sprawdzić czy covering terminal jest tylko dla zdań pozytywnych
 				M << coveringTerminal(sentence[col], g);
 				if (p.allowCoveringUniversal)
 				{
 					M << coveringUniversal(sentence[col], g);
 				}
-				if (size == 1 && sentence.isPositive && p.allowCoveringStart)
+				if (size == 1 && /*sentence.isPositive &&*/p.allowCoveringStart)
 				{
 					M << coveringStart(sentence[col], g);
 				}
 			}
+			//			foreach (Classifier* cl, M)
+			//			{
+			//				qDebug() << cl->toString();
+			//			}
 			cykTable[0][col] = M;
-			M.clear();
 		}
 
 		bool covering = false;
-		QList<NCondition> D;
 		for (int row = 1; row < size; row++)
 		{
 			for (int col = 0; col < size - row; col++)
 			{
+				QList<Classifier*> M;
+				QList<NCondition> D;
 				getConditionsForCykCell(cykTable, row, col, D);
-				//			QList<Classifier*> M;
+				//				foreach (NCondition cond, D)
+				//				{
+				//					qDebug() << cond.toString();
+				//				}
 				for (int i = 0, s1 = D.size(); i < s1; i++)
 				{
 					getMatchingClassifiers(D[i], g, M);
 				}
+				//				foreach (Classifier* cl, M)
+				//				{
+				//					qDebug() << cl->toString();
+				//				}
 				if (p.learningMode && M.isEmpty() && sentence.isPositive && !D.isEmpty())
 				{
 					if (Random::rand() < p.coveringAggressiveProb)
 					{
-						M << coveringAggressive(D[0], g);
+						M << coveringAggressive(D[Random::rand(D.size())], g);
 						covering = true;
 					}
 					if (p.allowCoveringFull && row == size - 1 && col == 0)
@@ -95,37 +110,36 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 						break;
 					}
 				}
+				//				foreach (Classifier* cl, M)
+				//				{
+				//					qDebug() << cl->toString();
+				//				}
 				cykTable[row][col] = M;
-				M.clear();
-				D.clear();
 			}
 		}
-		//	for (int i = 0; i < cykTable.size() && i < 1; i++)
-		//	{
-		//		for (int j = 0; j < cykTable[i].size(); j++)
-		//		{
-		//			for (int k = 0; k < cykTable[i][j].size(); k++)
-		//			{
-		//				qDebug() << i << j << ((TClassifier*)cykTable[i][j][k])->operator QString();
-		//			}
-		//		}
-		//	}
-		//	for (int i = 1; i < cykTable.size(); i++)
-		//	{
-		//		for (int j = 0; j < cykTable[i].size(); j++)
-		//		{
-		//			for (int k = 0; k < cykTable[i][j].size(); k++)
-		//			{
-		//				qDebug() << i << j << ((NClassifier*)cykTable[i][j][k])->operator QString();
-		//			}
-		//		}
-		//	}
-		//TODO czy update parametrów za każdym razem czy tylko jeśli się uda sparsować zdanie?
-		updateClParams(cykTable, sentence.isPositive);
+
+		if (p.learningMode)
+		{
+			for (int row = 0, s1 = cykTable.size(); row < s1; row++)
+			{
+				for (int col = 0, s2 = cykTable[row].size(); col < s2; col++)
+				{
+					for (int i = 0, s3 = cykTable[row][col].size(); i < s3; i++)
+					{
+						cykTable[row][col][i]->used(sentence.isPositive);
+					}
+				}
+			}
+		}
+
 		for (int i = 0, s = cykTable[size - 1][0].size(); i < s; i++)
 		{
 			if (cykTable[size - 1][0][i]->action.symbol == g.Start)
 			{
+				if (p.learningMode)
+				{
+					updateClParams(cykTable, sentence.isPositive);
+				}
 				result = true;
 				break;
 			}
@@ -135,72 +149,31 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 	return result;
 }
 
-void CYK::getMatchingClassifiers(const NCondition& condition, Grammar& g, QList<Classifier*>& list)
-{
-	//	qDebug() << QString() + __FUNCTION__ + " start";
-	Classifier* cl;
-	for (int i = 0, size = g.PN.size(); i < size; i++)
-	{
-		if (g.PN[i].condition == condition)
-		{
-			cl = &(g.PN[i]);
-			if (!list.contains(cl))
-			{
-				list << cl;
-			}
-		}
-	}
-	//	qDebug() << QString() + __FUNCTION__ + " end";
-}
-
-void CYK::getMatchingClassifiers(const TCondition& condition, Grammar& g, QList<Classifier*>& list)
-{
-	//	qDebug() << QString() + __FUNCTION__ + " start";
-	Classifier* cl;
-	for (int i = 0, size = g.PT.size(); i < size; i++)
-	{
-		if (g.PT[i].condition == condition)
-		{
-			cl = &(g.PT[i]);
-			if (!list.contains(cl))
-			{
-				list << cl;
-			}
-		}
-	}
-	//	qDebug() << QString() + __FUNCTION__ + " end";
-}
-
-void CYK::getConditionsForCykCell(const CYKTable& cykTable, int row, int col, QList<NCondition>& list)
-{
-	//	qDebug() << QString() + __FUNCTION__ + " start";
-	if (cykTable.size() > row && cykTable[row].size() > col)
-	{
-		for (int r = 0; r < row; r++)
-		{
-			for (int i = 0, size = cykTable[r][col].size(); i < size; i++)//iterate through first cell
-			{
-				Classifier* cl1 = cykTable[r][col][i];
-				for (int j = 0, size2 = cykTable[row - 1 - r][col + 1 + r].size(); j < size2; j++)//iterate through second cell
-				{
-					Classifier* cl2 = cykTable[row - 1 - r][col + 1 + r][j];
-					NCondition cond = NCondition(cl1->action.symbol, cl2->action.symbol);
-					if (!list.contains(cond))
-					{
-						list << cond;
-					}
-				}
-			}
-		}
-	}
-	//	qDebug() << QString() + __FUNCTION__ + " end";
-}
-
 //covering operators
 Classifier* CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
 	//	qDebug() << QString() + __FUNCTION__ + " start";
-	NSymbol newSymbol = g.N[Random::rand(g.N.size())];
+	NSymbol newSymbol;
+	int size = g.N.size();
+	bool ok = false;
+	while (!ok)
+	{
+		ok = true;
+		newSymbol = g.N[Random::rand(size)];
+		if (newSymbol == g.Start)
+		{
+			ok = false;
+			continue;
+		}
+		for (int i = 0, size = g.PT.size(); i < size; i++)
+		{
+			if (newSymbol == g.PT[i].action.symbol)
+			{
+				ok = false;
+				break;
+			}
+		}
+	}
 	TCondition cond(term);
 	Action act(newSymbol);
 	TClassifier cl(cond, act);
@@ -222,9 +195,11 @@ Classifier* CYK::coveringStart(const TSymbol& term, Grammar& g)
 {
 	//	qDebug() << QString() + __FUNCTION__ + " start";
 	TClassifier cl(TCondition(term), Action(g.Start));
-	TClassifier* added = Grammar::addClWithCrowding(cl, g.PT, g.PT.size());
+	g.addClNormal(cl);//TODO testing!!!!!!
+	return &(g.PT.last());
+	//	TClassifier* added = Grammar::addClWithCrowding(cl, g.PT, g.PT.size());
 	//	qDebug() << QString() + __FUNCTION__ + " end";
-	return added;
+	//	return added;
 }
 
 Classifier* CYK::coveringFull(const NCondition& cond, Grammar& g)
@@ -249,16 +224,16 @@ Classifier* CYK::coveringAggressive(const NCondition& cond, Grammar& g)
 void CYK::updateClParams(CYKTable& cykTable, bool isPositive)
 {
 	//	qDebug() << QString() + __FUNCTION__ + " start";
-	for (int row = 0, s1 = cykTable.size(); row < s1; row++)
-	{
-		for (int col = 0, s2 = cykTable[row].size(); col < s2; col++)
-		{
-			for (int i = 0, s3 = cykTable[row][col].size(); i < s3; i++)
-			{
-				cykTable[row][col][i]->used(isPositive);
-			}
-		}
-	}
+	//	for (int row = 0, s1 = cykTable.size(); row < s1; row++)
+	//	{
+	//		for (int col = 0, s2 = cykTable[row].size(); col < s2; col++)
+	//		{
+	//			for (int i = 0, s3 = cykTable[row][col].size(); i < s3; i++)
+	//			{
+	//				cykTable[row][col][i]->used(isPositive);
+	//			}
+	//		}
+	//	}
 
 	int row = cykTable.size() - 1;
 	if (row >= 1)//not one word sentence (Start -> terminal) nor empty sentence
@@ -346,3 +321,29 @@ int CYK::computeAmount(CYKTable& cykTable, const NSymbol& symbol, int row, int c
 	//	qDebug() << QString() + __FUNCTION__ + " end";
 	return amount;
 }
+
+void CYK::getConditionsForCykCell(const CYKTable& cykTable, int row, int col, QList<NCondition>& list)
+{
+	//	qDebug() << QString() + __FUNCTION__ + " start";
+	if (cykTable.size() > row && cykTable[row].size() > col)
+	{
+		for (int r = 0; r < row; r++)
+		{
+			for (int i = 0, size = cykTable[r][col].size(); i < size; i++)//iterate through first cell
+			{
+				Classifier* cl1 = cykTable[r][col][i];
+				for (int j = 0, size2 = cykTable[row - 1 - r][col + 1 + r].size(); j < size2; j++)//iterate through second cell
+				{
+					Classifier* cl2 = cykTable[row - 1 - r][col + 1 + r][j];
+					NCondition cond = NCondition(cl1->action.symbol, cl2->action.symbol);
+					if (!list.contains(cond))
+					{
+						list << cond;
+					}
+				}
+			}
+		}
+	}
+	//	qDebug() << QString() + __FUNCTION__ + " end";
+}
+

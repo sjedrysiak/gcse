@@ -25,6 +25,7 @@
 #include "Params.h"
 #include "Random.h"
 #include "CYK.h"
+#include "GCS.h"
 
 //TODO temporary
 #include <QtDebug>
@@ -65,12 +66,12 @@ void Grammar::initGrammar(int nonterminals, int rules)
 //	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
-void Grammar::induct(const QList<Sentence>& sentences)
+void Grammar::induct(const QList<Sentence>& sentences, GCS& parent)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
 	mNumberOfSentences = sentences.size();
-	mParsedPositive = 0;
 	mNotParsedNegative = 0;
+	mParsedPositive = 0;
 	if (mNumberOfSentences == 0)
 	{
 		return;
@@ -81,10 +82,11 @@ void Grammar::induct(const QList<Sentence>& sentences)
 //	{
 //		operatingGrammar.correction();
 //	}
+	int nextEmit = 20;
+	parent.nextSentence(0);
 	for (int i = 0; i < mNumberOfSentences; i++)
 	{
 		bool result = CYK::parse(sentences[i], *this);
-//		qDebug() << "sentence:" << sentences[i].operator QString() << (result ? "parsed" : "not parsed");
 		if (result == true && sentences[i].isPositive)
 		{
 			mParsedPositive++;
@@ -93,17 +95,26 @@ void Grammar::induct(const QList<Sentence>& sentences)
 		{
 			mNotParsedNegative++;
 		}
+		if (!Params::instance().learningMode && i == nextEmit)
+		{
+			parent.nextSentence(i);
+			nextEmit += 20;
+		}
 	}
+	parent.nextSentence(mNumberOfSentences);
 //	copyClParameters(operatingGrammar);
-	computeMaxClPointsDifference();
-	computeMinClPointsDifference();
-	for (int i = 0, size = PN.size(); i < size; i++)
+	if (Params::instance().learningMode)
 	{
-		PN[i].computeFitness(mMinClPointsDifference, mMaxClPointsDifference);
-	}
-	for (int i = 0, size = PT.size(); i < size; i++)
-	{
-		PT[i].computeFitness(mMinClPointsDifference, mMaxClPointsDifference);
+		computeMaxClPointsDifference();
+		computeMinClPointsDifference();
+		for (int i = 0, size = PN.size(); i < size; i++)
+		{
+			PN[i].computeFitness(mMinClPointsDifference, mMaxClPointsDifference);
+		}
+		for (int i = 0, size = PT.size(); i < size; i++)
+		{
+			PT[i].computeFitness(mMinClPointsDifference, mMaxClPointsDifference);
+		}
 	}
 //	qDebug() << QString() + __FUNCTION__ + " end";
 }
@@ -204,7 +215,7 @@ NClassifier* Grammar::addClWithCrowding(const NClassifier& newCl, QList<NClassif
 TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassifier>& set, int maxSize)
 {
 //	qDebug() << QString() + __FUNCTION__ + " start";
-	Params& p = Params::instance();
+//	Params& p = Params::instance();
 	int setSize = set.size();
 	if (set.isEmpty() || (setSize < maxSize && !set.contains(newCl)))
 	{
@@ -217,33 +228,45 @@ TClassifier* Grammar::addClWithCrowding(const TClassifier& newCl, QList<TClassif
 	{
 		return &set[idx];
 	}
-	QSet<TClassifier*> K;
-	for (int i = 0; i < p.crowdFactor; i++)
-	{
-		TClassifier* worst = &set[Random::rand(setSize)];
-		for (int c = 1; c < p.crowdSize; c++)
-		{
-			TClassifier* temp = &set[Random::rand(setSize)];
-			if (temp->fitness < worst->fitness)
-			{
-				worst = temp;
-			}
-		}
-		K << worst;
-	}
+////////////////////////
 
-	TClassifier* mostSimilar = *(K.begin());
-	QSet<TClassifier*>::iterator iter = K.begin();
-	for (iter++; iter != K.end(); iter++)
+	for (int i = 0; i < setSize; i++)
 	{
-		if ((*iter)->howSimilar(newCl) > mostSimilar->howSimilar(newCl))
+		if (newCl.condition == set[i].condition)
 		{
-			mostSimilar = *iter;
+			set[i] = newCl;
+			return &set[i];
 		}
 	}
-	*mostSimilar = newCl;
+	return NULL;
+////////////////////////
+//	QSet<TClassifier*> K;
+//	for (int i = 0; i < p.crowdFactor; i++)
+//	{
+//		TClassifier* worst = &set[Random::rand(setSize)];
+//		for (int c = 1; c < p.crowdSize; c++)
+//		{
+//			TClassifier* temp = &set[Random::rand(setSize)];
+//			if (temp->fitness < worst->fitness)
+//			{
+//				worst = temp;
+//			}
+//		}
+//		K << worst;
+//	}
+//
+//	TClassifier* mostSimilar = *(K.begin());
+//	QSet<TClassifier*>::iterator iter = K.begin();
+//	for (iter++; iter != K.end(); iter++)
+//	{
+//		if ((*iter)->howSimilar(newCl) > mostSimilar->howSimilar(newCl))
+//		{
+//			mostSimilar = *iter;
+//		}
+//	}
+//	*mostSimilar = newCl;
 //	qDebug() << QString() + __FUNCTION__ + " end";
-	return mostSimilar;
+//	return mostSimilar;
 }
 
 int Grammar::computeMaxClPointsDifference()

@@ -46,7 +46,7 @@ public:
 		return ::rand() / (RAND_MAX + 1.0);
 	}
 	/**
-	 * initialize random generator by calling srand()
+	 * initialize random generator
 	 */
 	static void srand()
 	{

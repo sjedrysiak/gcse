@@ -25,9 +25,9 @@
 #include "Classifier.h"
 #include <QVector>
 #include <QList>
+#include "Grammar.h"
 
 class Sentence;
-class Grammar;
 
 typedef QVector<QVector<QList<Classifier*> > > CYKTable;
 
@@ -49,5 +49,42 @@ private:
     static void updateClParams(CYKTable& cykTable, bool isPositive);
     static int computeAmount(CYKTable& cykTable, const NSymbol& symbol, int row, int col, bool left, bool isPositive);
 };
+
+inline void CYK::getMatchingClassifiers(const NCondition& condition, Grammar& g, QList<Classifier*>& list)
+{
+	//	qDebug() << QString() + __FUNCTION__ + " start";
+	Classifier* cl;
+	for (int i = 0, size = g.PN.size(); i < size; i++)
+	{
+		if (g.PN[i].condition == condition)
+		{
+			cl = &(g.PN[i]);
+			if (!list.contains(cl))
+			{
+				list << cl;
+			}
+		}
+	}
+	//	qDebug() << QString() + __FUNCTION__ + " end";
+}
+
+inline void CYK::getMatchingClassifiers(const TCondition& condition, Grammar& g, QList<Classifier*>& list)
+{
+	//	qDebug() << QString() + __FUNCTION__ + " start";
+	Classifier* cl;
+	for (int i = 0, size = g.PT.size(); i < size; i++)
+	{
+		if (g.PT[i].condition == condition)
+		{
+			cl = &(g.PT[i]);
+			if (!list.contains(cl))
+			{
+				list << cl;
+			}
+		}
+	}
+	//	qDebug() << QString() + __FUNCTION__ + " end";
+}
+
 
 #endif /*CYK_H_*/

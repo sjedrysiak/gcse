@@ -11,27 +11,35 @@ class MainWindow;
 
 class GCS : public QThread
 {
+	Q_OBJECT
 public:
     GCS(const Grammar& grammar, const QList<Sentence> list, MainWindow& parent);
     void run();
-    Grammar getGrammar()
+    Grammar getBestGrammar()
     {
-    	return outGrammar;
+    	return bestGrammar;
     }
     void sendRules(QList<NClassifier> list);
     virtual ~GCS();
+	int threadNumber;
+    static int counter;
+signals:
+	void stepChanged(int value);
+	void iterChanged(int value);
+	void parsedSentenceChanged(int value);
 protected:
     void exchangeRules();
 	void takeRules();
-	int threadNumber;
     Grammar initGrammar;
-    Grammar outGrammar;
+    Grammar tempGrammar;
+    Grammar bestGrammar;
     QList<Sentence> mSentences;
     MainWindow& parent;
     QList<NClassifier> exchangeBuffer;
     bool bufferBusy;
-    static int counter;
     QMutex mutex;
+public slots:
+	void nextSentence(int value);
 };
 
 #endif /*GCS_H_*/
