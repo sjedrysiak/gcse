@@ -4,6 +4,7 @@ Params Params::mInstance;
 
 Params::Params()
 {
+	splitLearningSet = true;
 	learningMode = true;
 	exchangeProb = 0.03;
 	exchangeAmount = 5;

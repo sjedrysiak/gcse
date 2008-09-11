@@ -31,6 +31,7 @@ public:
 		return mInstance;
 	}
 
+	bool splitLearningSet;
 	bool learningMode;
 	float exchangeProb;
 	int exchangeAmount;

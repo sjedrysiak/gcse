@@ -28,6 +28,7 @@
 class Sentence;
 class CYK;
 class GA;
+class GCS;
 
 class Grammar
 {
@@ -43,7 +44,7 @@ public:
 		initGrammar();
 	}
 	void initGrammar(int nonterminals = 0, int rules = 0);
-	void induct(const QList<Sentence>& sentences);
+	void induct(const QList<Sentence>& sentences, GCS& parent);
 	void resetClParams();
 	void correction();
 	float computeFitness()
@@ -60,6 +61,10 @@ public:
 	float fitness() const
 	{
 		return mFitness;
+	}
+	void clearFitness()
+	{
+		mFitness = 0;
 	}
 	//	void copyClParameters(const Grammar& other);
 

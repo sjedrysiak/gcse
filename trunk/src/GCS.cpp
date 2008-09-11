@@ -9,7 +9,7 @@
 #include <QDateTime>
 #include "../gui/MainWindow.h"
 
-int GCS::counter = 0;
+int GCS::counter = 1;
 
 GCS::GCS(const Grammar& grammar, const QList<Sentence> list, MainWindow& parent) :
 	QThread(), initGrammar(grammar), mSentences(list), parent(parent)
@@ -33,38 +33,67 @@ void GCS::run()
 	file.open(QFile::WriteOnly);
 	QTextStream stream(&file);
 	float sum = 0;
+	float maxFitness = 0.0;
 	int avgIter = 0;
 	int successIters = 0;
-	for (int iter = 0; iter < p.iterations; iter++)
+	int iters, maxSteps;
+	if (p.learningMode)
 	{
-		outGrammar = initGrammar;
+		iters = p.iterations;
+		maxSteps = p.maxEvolutionSteps;
+	}
+	else
+	{
+		iters = 1;
+		maxSteps = 1;
+	}
+	for (int iter = 0; iter < iters; iter++)
+	{
+		emit iterChanged(iter);
+		tempGrammar = initGrammar;
+		tempGrammar.clearFitness();
 		stream << "\niteration_" << iter + 1;
 		int step = 0;
-		stream << "," + QString::number(outGrammar.fitness());
-		while (step < p.maxEvolutionSteps && (!p.endOnFullFitness || outGrammar.fitness() < 1.0))
+		int nextEmit = 20;
+		emit stepChanged(step);
+//		stream << "," + QString::number(tempGrammar.fitness());
+		while (step < maxSteps && (!p.endOnFullFitness || tempGrammar.fitness() < 1.0))
 		{
-			outGrammar.induct(mSentences);
-			outGrammar.computeFitness();
-			stream << "," + QString::number(outGrammar.fitness());
-			if (p.allowGA && (outGrammar.fitness() < 1.0 || !p.endOnFullFitness))
+			tempGrammar.induct(mSentences, *this);
+			tempGrammar.computeFitness();
+			stream << "\n" + QString::number(tempGrammar.fitness());
+			if (tempGrammar.fitness() > maxFitness)
 			{
-				GA::evolve(outGrammar);
+				maxFitness = tempGrammar.fitness();
+				bestGrammar = tempGrammar;
 			}
-			if (p.threads > 1 && (outGrammar.fitness() < 1.0 || !p.endOnFullFitness))
+			if (p.learningMode && p.allowGA && (tempGrammar.fitness() < 1.0 || !p.endOnFullFitness))
+			{
+				GA::evolve(tempGrammar);
+			}
+			if (p.learningMode && p.threads > 1 && (tempGrammar.fitness() < 1.0 || !p.endOnFullFitness))
 			{
 				exchangeRules();
 			}
 			step++;
+			if (step == nextEmit)
+			{
+				emit stepChanged(step);
+				nextEmit += 20;
+			}
 		}
-		if (outGrammar.fitness() == 1.0)
+		emit stepChanged(p.maxEvolutionSteps);
+		if (tempGrammar.fitness() == 1.0)
 		{
 			successIters++;
 			avgIter += step-1;
 		}
-		sum += outGrammar.fitness();
+		sum += tempGrammar.fitness();
 	}
-	stream << "\n\naverage fitness: " << QString::number(100.0 * sum / p.iterations, 'f', 1) << "%";
-	stream << "\nsuccess in " << successIters << "/" << p.iterations << " iters\naverage steps to 100%: " << (float)avgIter / successIters << "/" << p.maxEvolutionSteps;
+	stream << "\n\nBest grammar with fitness: " << bestGrammar.fitness() << "\n" << bestGrammar.toString();
+	emit iterChanged(p.iterations);
+	stream << "\n\naverage fitness: " << QString::number(100.0 * sum / iters, 'f', 1) << "%, max fintess: " << maxFitness;
+	stream << "\nsuccess in " << successIters << "/" << iters << " iters\naverage steps to 100%: " << (float)avgIter / successIters << "/" << maxSteps;
 	file.close();
 	//	qDebug() << QString() + __FUNCTION__ + " end";
 }
@@ -74,7 +103,7 @@ void GCS::exchangeRules()
 	takeRules();
 	if (Random::rand() < Params::instance().exchangeProb)
 	{
-		QList<NClassifier> list(outGrammar.PN);
+		QList<NClassifier> list(tempGrammar.PN);
 		qSort(list.begin(), list.end(), qGreater<NClassifier> ());
 		for (int i = 0, size = list.size() - Params::instance().exchangeAmount; i < size; i++)
 		{
@@ -102,14 +131,18 @@ void GCS::takeRules()
 	{
 		for (int i = 0, size = exchangeBuffer.size(); i < size; i++)
 		{
-			outGrammar.addClWithCrowding(exchangeBuffer[i], outGrammar.PN, Params::instance().maxNonterminalRules);
+			tempGrammar.addClWithCrowding(exchangeBuffer[i], tempGrammar.PN, Params::instance().maxNonterminalRules);
 		}
 		exchangeBuffer.clear();
 		bufferBusy = false;
 	}
 }
 
+void GCS::nextSentence(int value)
+{
+	emit parsedSentenceChanged(value);
+}
+
 GCS::~GCS()
 {
-	QMutexLocker locker(&mutex);
 }

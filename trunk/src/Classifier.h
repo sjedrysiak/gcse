@@ -52,6 +52,7 @@ public:
 	{
 		positiveSentence ? mp += points : md += points;
 	}
+	virtual QString toString() const = 0;
 
 	Action action;
 	/**
@@ -90,7 +91,7 @@ public:
 	{
 	}
 	int howSimilar(const NClassifier& other) const;
-	QString toString() const
+	virtual QString toString() const
 	{
 		return action.toString() + "=>" + condition.toString() + " (" + QString::number(fitness) + ")";
 	}
@@ -111,7 +112,7 @@ public:
 		resetParams();
 	}
 	int howSimilar(const TClassifier& other) const;
-	QString toString() const
+	virtual QString toString() const
 	{
 		return action.toString() + "=>" + condition.toString() + " (" + QString::number(fitness) + ")";
 	}
