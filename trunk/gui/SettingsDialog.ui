@@ -349,8 +349,26 @@
            </layout>
           </item>
          </layout>
-         <zorder>cbxAllowUniversalSymbol</zorder>
          <zorder></zorder>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_4" >
+         <property name="title" >
+          <string>Learning set strategy</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10" >
+          <item>
+           <widget class="QCheckBox" name="cbxSplitLearningSet" >
+            <property name="text" >
+             <string>Split between threads</string>
+            </property>
+            <property name="checked" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>

@@ -100,6 +100,7 @@ void SettingsDialog::accept()
 	p.fertilityFunWeight = sbxFertilityWeight->value();
 	p.exchangeProb = sbxExchangeProb->value();
 	p.exchangeAmount = sbxExchangeAmount->value();
+	p.splitLearningSet = cbxSplitLearningSet->isChecked();
 	hide();
 }
 
@@ -159,6 +160,7 @@ void SettingsDialog::updateFromParams()
 	sbxUnusedFitness->setValue(p.unusedClassifierFitness);
 	sbxExchangeProb->setValue(p.exchangeProb);
 	sbxExchangeAmount->setValue(p.exchangeAmount);
+	cbxSplitLearningSet->setChecked(p.splitLearningSet);
 }
 
 SettingsDialog::~SettingsDialog()

@@ -45,69 +45,147 @@
        <attribute name="title" >
         <string>Sentences</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2" >
-        <item>
-         <layout class="QGridLayout" name="gridLayout_4" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="lblFilePath" >
-            <property name="text" >
-             <string>File path:</string>
-            </property>
-            <property name="buddy" >
-             <cstring>edtFilePath</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" >
-           <widget class="QLineEdit" name="edtFilePath" >
-            <property name="sizePolicy" >
-             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize" >
-             <size>
-              <width>200</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text" >
-             <string>toy</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2" >
-           <widget class="QToolButton" name="btnBrowse" >
-            <property name="text" >
-             <string>...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" >
-           <widget class="QPushButton" name="btnLoadSentences" >
-            <property name="text" >
-             <string>Load</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" >
-           <spacer name="verticalSpacer_3" >
-            <property name="orientation" >
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0" >
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+       <layout class="QGridLayout" name="gridLayout_7" >
+        <item row="0" column="0" >
+         <widget class="QGroupBox" name="groupBox_3" >
+          <property name="title" >
+           <string>Learning set</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9" >
+           <item row="0" column="0" >
+            <layout class="QGridLayout" name="gridLayout_4" >
+             <item row="0" column="0" >
+              <widget class="QLabel" name="lblFilePath" >
+               <property name="text" >
+                <string>File path:</string>
+               </property>
+               <property name="buddy" >
+                <cstring>edtFilePath</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1" >
+              <widget class="QLineEdit" name="edtFilePath" >
+               <property name="sizePolicy" >
+                <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize" >
+                <size>
+                 <width>200</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text" >
+                <string>/home/sylver/Documents/workspace/gcse/zbiory/tomita_3.txt</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2" >
+              <widget class="QToolButton" name="btnBrowse" >
+               <property name="text" >
+                <string>...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" >
+              <widget class="QPushButton" name="btnLoadSentences" >
+               <property name="text" >
+                <string>Load</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1" >
+              <spacer name="verticalSpacer_3" >
+               <property name="orientation" >
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0" >
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item row="0" column="1" >
+            <widget class="QListWidget" name="listSentences" />
+           </item>
+          </layout>
+         </widget>
         </item>
-        <item>
-         <widget class="QListWidget" name="listSentences" />
+        <item row="2" column="0" >
+         <widget class="QGroupBox" name="groupBox_4" >
+          <property name="title" >
+           <string>Testing set</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_10" >
+           <item row="0" column="0" >
+            <layout class="QGridLayout" name="gridLayout_8" >
+             <item row="0" column="0" >
+              <widget class="QLabel" name="lblFilePathTest" >
+               <property name="text" >
+                <string>File path:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1" >
+              <widget class="QLineEdit" name="edtFilePathTest" >
+               <property name="sizePolicy" >
+                <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize" >
+                <size>
+                 <width>200</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text" >
+                <string>/home/sylver/Documents/workspace/gcse/zbiory/t3 opt 15 max</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2" >
+              <widget class="QToolButton" name="btnBrowseTest" >
+               <property name="text" >
+                <string>...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" >
+              <widget class="QPushButton" name="btnLoadTest" >
+               <property name="text" >
+                <string>Load</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1" >
+              <spacer name="verticalSpacer_4" >
+               <property name="orientation" >
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0" >
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item row="0" column="1" >
+            <widget class="QListWidget" name="listSentencesTest" />
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -373,7 +451,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1" >
+           <item row="5" column="1" >
             <widget class="QPushButton" name="btnRun" >
              <property name="text" >
               <string>Run</string>
@@ -419,6 +497,18 @@
            </item>
            <item row="0" column="1" >
             <widget class="QSpinBox" name="sbxThreads" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize" >
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="minimum" >
               <number>1</number>
              </property>
@@ -430,34 +520,35 @@
              </property>
             </widget>
            </item>
+           <item row="4" column="0" >
+            <widget class="QCheckBox" name="cbxRunTest" >
+             <property name="text" >
+              <string>Run test after learning</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
-        <item row="0" column="1" >
-         <spacer name="horizontalSpacer" >
-          <property name="orientation" >
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0" >
-           <size>
-            <width>519</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="1" column="0" >
-         <spacer name="verticalSpacer_2" >
-          <property name="orientation" >
-           <enum>Qt::Vertical</enum>
+         <widget class="QScrollArea" name="scrollArea" >
+          <property name="widgetResizable" >
+           <bool>true</bool>
           </property>
-          <property name="sizeHint" stdset="0" >
-           <size>
-            <width>20</width>
-            <height>364</height>
-           </size>
+          <property name="alignment" >
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
           </property>
-         </spacer>
+          <widget class="QWidget" name="progressBarsArea" >
+           <property name="geometry" >
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>774</width>
+             <height>239</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>

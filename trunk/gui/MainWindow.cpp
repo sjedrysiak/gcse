@@ -34,6 +34,7 @@
 #include <QTextStream>
 #include "../src/Params.h"
 #include <QMutexLocker>
+#include <QtDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent)
@@ -42,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	setupActions();
 	initValues();
 	mSettingsDialog = new SettingsDialog(this);
+	barsLayout = new QVBoxLayout(progressBarsArea);
+	progressBarsArea->setLayout(barsLayout);
 }
 
 void MainWindow::setupActions()
@@ -50,10 +53,11 @@ void MainWindow::setupActions()
 	connect(action_About, SIGNAL(triggered(bool)), this, SLOT(about()));
 	connect(action_Run, SIGNAL(triggered(bool)), this, SLOT(runGCS()));
 	connect(action_Settings, SIGNAL(triggered(bool)), this, SLOT(showSettingsDialog()));
-//	connect(&gcs, SIGNAL(terminated()), this, SLOT(gcsFinished()));
+	//	connect(&gcs, SIGNAL(terminated()), this, SLOT(gcsFinished()));
 	connect(btnInitGrammar, SIGNAL(clicked()), this, SLOT(initGrammar()));
 	connect(btnRun, SIGNAL(clicked()), this, SLOT(runGCS()));
-	connect(btnLoadSentences, SIGNAL(clicked()), this, SLOT(readSentences()));
+	connect(btnLoadSentences, SIGNAL(clicked()), this, SLOT(loadLearningSet()));
+	connect(btnLoadTest, SIGNAL(clicked()), this, SLOT(loadTestingSet()));
 	connect(sbxNonterminals, SIGNAL(valueChanged(int)), this, SLOT(changeNonterminalsAmount(int)));
 	connect(sbxRules, SIGNAL(valueChanged(int)), this, SLOT(changeStartRulesAmount(int)));
 	connect(sbxThreads, SIGNAL(valueChanged(int)), this, SLOT(changeThreadsAmount(int)));
@@ -63,17 +67,45 @@ void MainWindow::setupActions()
 	connect(btnAddSymbol, SIGNAL(clicked()), this, SLOT(addNonterminal()));
 	connect(btnAddRule, SIGNAL(clicked()), this, SLOT(addRule()));
 	connect(btnClearGrammar, SIGNAL(clicked()), this, SLOT(clearGrammar()));
-	connect(btnBrowse, SIGNAL(clicked()), this, SLOT(sentencesFileBrowse()));
+	connect(btnBrowse, SIGNAL(clicked()), this, SLOT(learningSetFileBrowse()));
+	connect(btnBrowseTest, SIGNAL(clicked()), this, SLOT(testingSetFileBrowse()));
 }
 
 void MainWindow::runGCS()
 {
 	action_Run->setEnabled(false);
-	btnRun->setEnabled(false);
-	GCS* gcs;
-	for (int i = 0; i < Params::instance().threads; i++)
+	groupBox_2->setEnabled(false);
+	Params& p = Params::instance();
+	QList<QList<Sentence> > learningSets;
+
+	if (p.splitLearningSet)
 	{
-		gcs = new GCS(mGrammar, mSentences, *this);
+		for (int i = 0; i < p.threads; i++)
+		{
+			learningSets << QList<Sentence> ();
+		}
+		for (int i = 0, size = mLearningSetPositive.size(); i < size; i++)
+		{
+			learningSets[i % p.threads] << mLearningSetPositive[i];
+		}
+		for (int i = 0, size = mLearningSetNegative.size(); i < size; i++)
+		{
+			learningSets[i % p.threads] << mLearningSetNegative[i];
+		}
+	}
+	GCS* gcs;
+	for (int i = 0; i < p.threads; i++)
+	{
+		if (p.splitLearningSet)
+		{
+			gcs = new GCS(mGrammar, learningSets[i], *this);
+			prepareBars(gcs, learningSets[i].size());
+		}
+		else
+		{
+			gcs = new GCS(mGrammar, mLearningSetAll, *this);
+			prepareBars(gcs, mLearningSetAll.size());
+		}
 		connect(gcs, SIGNAL(finished()), this, SLOT(gcsFinished()));
 		gcs->start();
 //		qDebug() << "gcs" << i << "started" << gcs;
@@ -81,16 +113,93 @@ void MainWindow::runGCS()
 	}
 }
 
+void MainWindow::prepareBars(GCS* thread, int sentences)
+{
+	barsLayout->addWidget(new QLabel("Thread " + QString::number(thread->threadNumber) + ":"));
+//	if (sentences > 100)
+//	{
+//		QProgressBar* sentBar = new QProgressBar(progressBarsArea);
+//		sentBar->setMaximum(sentences);
+//		sentBar->setValue(0);
+//		sentBar->setAlignment(Qt::AlignHCenter);
+//		sentBar->setFormat("Sentences parsed: %v/%m");
+//		connect(thread, SIGNAL(parsedSentenceChanged(int)), sentBar, SLOT(setValue(int)));
+//		barsLayout->addWidget(sentBar);
+//	}
+
+	QProgressBar* stepsBar = new QProgressBar(progressBarsArea);
+	stepsBar->setMaximum(sbxEvolutionSteps->value());
+	stepsBar->setValue(0);
+	stepsBar->setAlignment(Qt::AlignHCenter);
+	stepsBar->setFormat("Steps done: %v/%m");
+	connect(thread, SIGNAL(stepChanged(int)), stepsBar, SLOT(setValue(int)));
+	barsLayout->addWidget(stepsBar);
+
+	QProgressBar* itersBar = new QProgressBar(progressBarsArea);
+	itersBar->setMaximum(sbxIterations->value());
+	itersBar->setValue(0);
+	itersBar->setAlignment(Qt::AlignHCenter);
+	itersBar->setFormat("Iterations done: %v/%m");
+	connect(thread, SIGNAL(iterChanged(int)), itersBar, SLOT(setValue(int)));
+	barsLayout->addWidget(itersBar);
+}
+
+void MainWindow::runTest()
+{
+	Params::instance().learningMode = false;
+	gcsList << new GCS(mGrammarForTest, mTestingSet, *this);
+	connect(gcsList[0], SIGNAL(finished()), this, SLOT(testFinished()));
+
+	QProgressBar* sentBar = new QProgressBar(progressBarsArea);
+	sentBar->setMaximum(mTestingSet.size());
+	sentBar->setValue(0);
+	sentBar->setAlignment(Qt::AlignHCenter);
+	sentBar->setFormat("Sentences parsed: %v/%m");
+	connect(gcsList[0], SIGNAL(parsedSentenceChanged(int)), sentBar, SLOT(setValue(int)));
+	barsLayout->addWidget(new QLabel("Test progress:"));
+	barsLayout->addWidget(sentBar);
+
+	gcsList[0]->start();
+//	qDebug() << "test started";
+}
+
+void MainWindow::testFinished()
+{
+	delete gcsList[0];
+	gcsList.clear();
+	Params::instance().learningMode = true;
+	action_Run->setEnabled(true);
+	groupBox_2->setEnabled(true);
+}
+
 void MainWindow::gcsFinished()
 {
 //	qDebug() << "gcs finished...";
 	QMutexLocker locker(&mutex);
+	Params& p = Params::instance();
 	if (gcsList.size() == 1)
 	{
+		//		mGrammarForTest = gcsList[0]->getBestGrammar();
+		mOutGrammars << gcsList[0]->getBestGrammar();
 		delete gcsList[0];
 		gcsList.clear();
-		action_Run->setEnabled(true);
-		btnRun->setEnabled(true);
+		if (p.splitLearningSet)
+		{
+			mergeGrammars();
+		}
+		else
+		{
+			mGrammarForTest = mOutGrammars[0];
+		}
+		if (cbxRunTest->isChecked())
+		{
+			runTest();
+		}
+		else
+		{
+			action_Run->setEnabled(true);
+			groupBox_2->setEnabled(true);
+		}
 	}
 	else
 	{
@@ -98,12 +207,93 @@ void MainWindow::gcsFinished()
 		{
 			if (gcsList[i]->isFinished())
 			{
+				mOutGrammars << gcsList[i]->getBestGrammar();
 				delete gcsList[i];
 				gcsList.removeAt(i);
 				break;
 			}
 		}
 	}
+}
+
+void MainWindow::mergeGrammars()
+{
+//	qDebug() << "merging started";
+	if (mOutGrammars.isEmpty())
+	{
+		return;
+	}
+	mGrammarForTest = mOutGrammars[0];
+	for (int i = 1, size = mOutGrammars.size(); i < size; i++)
+	{
+		for (int j = 0, size2 = mOutGrammars[i].PT.size(); j < size2; j++)
+		{
+			for (int k = 0, size3 = mGrammarForTest.PT.size(); k < size3; k++)
+			{
+				if (mOutGrammars[i].PT[j].condition == mGrammarForTest.PT[k].condition && !(mOutGrammars[i].PT[j].action == mGrammarForTest.PT[k].action) && !(mOutGrammars[i].PT[j].action == mOutGrammars[i].Start) && !(mGrammarForTest.PT[k].action == mGrammarForTest.Start))//we wrzucanej gramatyce jest pasujący TCl o innym nsymbolu
+				{
+					NSymbol oldSymbol = mOutGrammars[i].PT[j].action.symbol;
+					NSymbol newSymbol = mGrammarForTest.PT[k].action.symbol;
+					mOutGrammars[i].PT[j].action.symbol = mGrammarForTest.PT[k].action.symbol;
+					for (int l = 0, size4 = mOutGrammars[i].PN.size(); l < size4; l++)
+					{
+						NClassifier& cl = mOutGrammars[i].PN[l];
+						if (cl.action.symbol == oldSymbol)
+						{
+							cl.action.symbol = newSymbol;
+						}
+						if (cl.condition.firstSymbol == oldSymbol)
+						{
+							cl.condition.firstSymbol = newSymbol;
+						}
+						if (cl.condition.secondSymbol == oldSymbol)
+						{
+							cl.condition.secondSymbol = newSymbol;
+						}
+					}
+				}
+			}
+		}
+		for (int j = 0, size2 = mOutGrammars[i].PT.size(); j < size2; j++)
+		{
+			mGrammarForTest.addClNormal(mOutGrammars[i].PT[j]);
+		}
+		//sprawdzić tak samo ncl'e
+		for (int j = 0, size2 = mOutGrammars[i].PN.size(); j < size2; j++)
+		{
+			for (int k = 0, size3 = mGrammarForTest.PN.size(); k < size3; k++)
+			{
+				if (mOutGrammars[i].PN[j].condition == mGrammarForTest.PN[k].condition && !(mOutGrammars[i].PN[j].action == mGrammarForTest.PN[k].action) && !(mOutGrammars[i].PN[j].action == mOutGrammars[i].Start) && !(mGrammarForTest.PN[k].action == mGrammarForTest.Start))//we wrzucanej gramatyce jest pasujący NCl o innym nsymbolu
+				{
+					NSymbol oldSymbol = mOutGrammars[i].PN[j].action.symbol;
+					NSymbol newSymbol = mGrammarForTest.PN[k].action.symbol;
+					mOutGrammars[i].PN[j].action.symbol = mGrammarForTest.PN[k].action.symbol;
+					for (int l = 0, size4 = mOutGrammars[i].PN.size(); l < size4; l++)
+					{
+						NClassifier& cl = mOutGrammars[i].PN[l];
+						if (cl.action.symbol == oldSymbol)
+						{
+							cl.action.symbol = newSymbol;
+						}
+						if (cl.condition.firstSymbol == oldSymbol)
+						{
+							cl.condition.firstSymbol = newSymbol;
+						}
+						if (cl.condition.secondSymbol == oldSymbol)
+						{
+							cl.condition.secondSymbol = newSymbol;
+						}
+					}
+				}
+			}
+		}
+		for (int j = 0, size2 = mOutGrammars[i].PN.size(); j < size2; j++)
+		{
+			mGrammarForTest.addClNormal(mOutGrammars[i].PN[j]);
+		}
+	}
+	mOutGrammars.clear();
+	qDebug() << "merging ended\n" << mGrammarForTest.toString();
 }
 
 void MainWindow::showSettingsDialog()
@@ -127,11 +317,66 @@ void MainWindow::initGrammar()
 	}
 }
 
-void MainWindow::readSentences()
+void MainWindow::loadLearningSet()
 {
-//	qDebug() << QString() + __FUNCTION__ + " start";
-	mSentences.clear();
+	//	qDebug() << QString() + __FUNCTION__ + " start";
+	mLearningSetPositive.clear();
+	mLearningSetNegative.clear();
 	QFile file(edtFilePath->text());
+	if (file.open(QFile::ReadOnly))
+	{
+		QTextStream lines(&file);
+		if (!lines.atEnd())
+		{
+			lines.readLine();//first line is useless
+		}
+		while (!lines.atEnd())
+		{
+			QString tmp = lines.readLine();
+			if (tmp.size() > 4)
+			{
+				QTextStream line(&tmp);
+				Sentence snt;
+				int positive;
+				line >> positive;
+				line.skipWhiteSpace();
+				int trash;
+				line >> trash;//only for read second number from line (number useless at this moment)
+				line.skipWhiteSpace();
+				snt = line.readAll();
+				if (positive == 0)
+				{
+					snt.isPositive = false;
+					mLearningSetNegative << snt;
+				}
+				else
+				{
+					snt.isPositive = true;
+					mLearningSetPositive << snt;
+				}
+				mLearningSetAll << snt;
+			}
+		}
+		file.close();
+	}
+	listSentences->clear();
+	for (int i = 0, size = mLearningSetPositive.size(); i < size; i++)
+	{
+		listSentences->addItem(QString::number(i + 1) + ": " + mLearningSetPositive[i].toString());
+	}
+	for (int i = 0, size = mLearningSetNegative.size(); i < size; i++)
+	{
+		listSentences->addItem(QString::number(i + 1) + ": " + mLearningSetNegative[i].toString());
+	}
+	//TODO obsługa błędów z plikiem
+	//	qDebug() << QString() + __FUNCTION__ + " end";
+}
+
+void MainWindow::loadTestingSet()
+{
+	//	qDebug() << QString() + __FUNCTION__ + " start";
+	mTestingSet.clear();
+	QFile file(edtFilePathTest->text());
 	if (file.open(QFile::ReadOnly))
 	{
 		QTextStream lines(&file);
@@ -161,18 +406,18 @@ void MainWindow::readSentences()
 				{
 					snt.isPositive = true;
 				}
-				mSentences << snt;
+				mTestingSet << snt;
 			}
 		}
 		file.close();
 	}
-	listSentences->clear();
-	for (int i = 0, size = mSentences.size(); i < size; i++)
+	listSentencesTest->clear();
+	for (int i = 0, size = mTestingSet.size(); i < size; i++)
 	{
-		listSentences->addItem(mSentences[i].toString());
+		listSentencesTest->addItem(QString::number(i + 1) + ": " + mTestingSet[i].toString());
 	}
 	//TODO obsługa błędów z plikiem
-//	qDebug() << QString() + __FUNCTION__ + " end";
+	//	qDebug() << QString() + __FUNCTION__ + " end";
 }
 
 void MainWindow::changeNonterminalsAmount(int value)
@@ -249,10 +494,16 @@ void MainWindow::reloadCombos()
 	}
 }
 
-void MainWindow::sentencesFileBrowse()
+void MainWindow::learningSetFileBrowse()
 {
-	QString file = QFileDialog::getOpenFileName(this, tr("Open file with sentences"), ".", tr("Text files (*.txt);;All files (*)"));
+	QString file = QFileDialog::getOpenFileName(this, tr("Open file with sentences"), ".", tr("All files (*)"));
 	edtFilePath->setText(file);
+}
+
+void MainWindow::testingSetFileBrowse()
+{
+	QString file = QFileDialog::getOpenFileName(this, tr("Open file with sentences"), ".", tr("All files (*)"));
+	edtFilePathTest->setText(file);
 }
 
 void MainWindow::clearGrammar()
@@ -272,6 +523,8 @@ void MainWindow::initValues()
 	sbxIterations->setValue(p.iterations);
 	sbxEvolutionSteps->setValue(p.maxEvolutionSteps);
 	cbxEndOnFull->setChecked(p.endOnFullFitness);
+	//	stepProgressBar->setMaximum(p.maxEvolutionSteps);
+	//	iterProgressBar->setMaximum(p.iterations);
 }
 
 void MainWindow::sendRules(QList<NClassifier> list)
@@ -296,18 +549,18 @@ void MainWindow::about()
 	system = "Windows";
 #endif
 	QMessageBox::about(this, tr("About GCSE"), tr("GCSE 0.1 (Grammar-based Classifier System Ensemble)\n"
-	                                              "Visit <<wstawić link do strony>>\n"
-	                                              "Program working on platform %1.\n"
-	                                              "© 2008 Sylwester Jędrysiak").arg(system));
+		"Visit <<wstawić link do strony>>\n"
+		"Program working on platform %1.\n"
+		"© 2008 Sylwester Jędrysiak").arg(system));
 }
 
 MainWindow::~MainWindow()
 {
-//	if (gcs != NULL && gcs->isRunning())
-//	{
-//		gcs->terminate();
-//		gcs->wait();
-//		delete gcs;
-//		gcs = NULL;
-//	}
+	//	if (gcs != NULL && gcs->isRunning())
+	//	{
+	//		gcs->terminate();
+	//		gcs->wait();
+	//		delete gcs;
+	//		gcs = NULL;
+	//	}
 }
