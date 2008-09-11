@@ -31,7 +31,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
+#include <QProgressBar>
 #include "../ui_MainWindow.h"
 #include "SettingsDialog.h"
 #include "../src/GCS.h"
@@ -47,10 +48,13 @@ public:
 protected slots:
 	void about();
 	void runGCS();
+	void runTest();
 	void gcsFinished();
+	void testFinished();
 	void showSettingsDialog();
 	void initGrammar();
-    void readSentences();
+    void loadLearningSet();
+    void loadTestingSet();
     void changeNonterminalsAmount(int value);
     void changeStartRulesAmount(int value);
     void changeThreadsAmount(int value);
@@ -60,15 +64,26 @@ protected slots:
     void addNonterminal();
     void addRule();
     void clearGrammar();
-    void sentencesFileBrowse();
+    void learningSetFileBrowse();
+    void testingSetFileBrowse();
 private:
+	void mergeGrammars();
 	void reloadCombos();
 	void setupActions();
     void initValues();
+    void prepareBars(GCS* thread, int sentences);
 	QList<GCS*> gcsList;
+	QList<QProgressBar*> barsList;
+	QVBoxLayout* barsLayout;
 	SettingsDialog* mSettingsDialog;
-	QList<Sentence> mSentences;
+	QList<Sentence> mLearningSetAll;
+	QList<Sentence> mLearningSetPositive;
+	QList<Sentence> mLearningSetNegative;
+	QList<Sentence> mTestingSet;
+	QList<Grammar> mOutGrammars;
 	Grammar mGrammar;
+	Grammar mGrammarForTest;
+	bool isTestGrammarValid;
 	QMutex mutex;
 };
 
