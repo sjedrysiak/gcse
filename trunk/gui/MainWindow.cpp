@@ -99,12 +99,12 @@ void MainWindow::runGCS()
 		if (p.splitLearningSet)
 		{
 			gcs = new GCS(mGrammar, learningSets[i], *this);
-			prepareBars(gcs, learningSets[i].size());
+			prepareBars(gcs);
 		}
 		else
 		{
 			gcs = new GCS(mGrammar, mLearningSetAll, *this);
-			prepareBars(gcs, mLearningSetAll.size());
+			prepareBars(gcs);
 		}
 		connect(gcs, SIGNAL(finished()), this, SLOT(gcsFinished()));
 		gcs->start();
@@ -113,7 +113,7 @@ void MainWindow::runGCS()
 	}
 }
 
-void MainWindow::prepareBars(GCS* thread, int sentences)
+void MainWindow::prepareBars(GCS* thread)
 {
 	barsLayout->addWidget(new QLabel("Thread " + QString::number(thread->threadNumber) + ":"));
 //	if (sentences > 100)
@@ -147,26 +147,25 @@ void MainWindow::prepareBars(GCS* thread, int sentences)
 void MainWindow::runTest()
 {
 	Params::instance().learningMode = false;
-	gcsList << new GCS(mGrammarForTest, mTestingSet, *this);
-	connect(gcsList[0], SIGNAL(finished()), this, SLOT(testFinished()));
+	gcsTest = new GCS(mGrammarForTest, mTestingSet, *this);
+	connect(gcsTest, SIGNAL(finished()), this, SLOT(testFinished()));
 
 	QProgressBar* sentBar = new QProgressBar(progressBarsArea);
 	sentBar->setMaximum(mTestingSet.size());
 	sentBar->setValue(0);
 	sentBar->setAlignment(Qt::AlignHCenter);
 	sentBar->setFormat("Sentences parsed: %v/%m");
-	connect(gcsList[0], SIGNAL(parsedSentenceChanged(int)), sentBar, SLOT(setValue(int)));
+	connect(gcsTest, SIGNAL(parsedSentenceChanged(int)), sentBar, SLOT(setValue(int)));
 	barsLayout->addWidget(new QLabel("Test progress:"));
 	barsLayout->addWidget(sentBar);
 
-	gcsList[0]->start();
+	gcsTest->start();
 //	qDebug() << "test started";
 }
 
 void MainWindow::testFinished()
 {
-	delete gcsList[0];
-	gcsList.clear();
+	delete gcsTest;
 	Params::instance().learningMode = true;
 	action_Run->setEnabled(true);
 	groupBox_2->setEnabled(true);
@@ -190,6 +189,7 @@ void MainWindow::gcsFinished()
 		else
 		{
 			mGrammarForTest = mOutGrammars[0];
+			mOutGrammars.clear();
 		}
 		if (cbxRunTest->isChecked())
 		{
@@ -534,24 +534,23 @@ void MainWindow::sendRules(QList<NClassifier> list)
 	if (size > 1)
 	{
 		GCS* dest = gcsList[Random::rand(size)];
-		dest->sendRules(list);
+		dest->putRules(list);
 	}
 }
 
 void MainWindow::about()
 {
-	QString system;
-#ifdef Q_WS_X11
-	system = "Linux";
-#endif
-
-#ifdef Q_WS_WIN
-	system = "Windows";
-#endif
+//	QString system;
+//#ifdef Q_WS_X11
+//	system = "Linux";
+//#endif
+//
+//#ifdef Q_WS_WIN
+//	system = "Windows";
+//#endif
 	QMessageBox::about(this, tr("About GCSE"), tr("GCSE 0.1 (Grammar-based Classifier System Ensemble)\n"
-		"Visit <<wstawić link do strony>>\n"
-		"Program working on platform %1.\n"
-		"© 2008 Sylwester Jędrysiak").arg(system));
+		"Visit http://olgierd.unold.staff.iiar.pwr.wroc.pl/ewg/\n"
+		"© 2008 Sylwester Jędrysiak"));
 }
 
 MainWindow::~MainWindow()
