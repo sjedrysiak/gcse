@@ -19,7 +19,7 @@ public:
     {
     	return bestGrammar;
     }
-    void sendRules(QList<NClassifier> list);
+    void putRules(const QList<NClassifier>& list);
     virtual ~GCS();
 	int threadNumber;
     static int counter;

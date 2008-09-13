@@ -38,7 +38,7 @@ public:
 	NSymbol Start;
 	NSymbol Universal;
 
-	Grammar(const NSymbol& start = "_S_", const NSymbol& universal = "_U_") :
+	Grammar(const NSymbol& start = "$", const NSymbol& universal = "#") :
 		Start(start), Universal(universal)
 	{
 		initGrammar();
@@ -130,6 +130,7 @@ public:
 	QList<TSymbol> T;
 	QList<NClassifier> PN;
 	QList<TClassifier> PT;
+	bool coveringStarted;
 private:
 	int maxClPointsDifference() const
 	{

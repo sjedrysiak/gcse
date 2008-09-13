@@ -48,10 +48,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 		{
 			QList<Classifier*> M;
 			getMatchingClassifiers(TCondition(sentence[col]), g, M);
-			//			foreach (Classifier* cl, M)
-			//			{
-			//				qDebug() << cl->toString();
-			//			}
+			//foreach (Classifier* cl, M){qDebug() << cl->toString();}
 			if (p.learningMode && M.isEmpty() && sentence.isPositive) //there is no terminal prod for current word
 			{//TODO sprawdzić czy covering terminal jest tylko dla zdań pozytywnych
 				M << coveringTerminal(sentence[col], g);
@@ -64,14 +61,12 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 					M << coveringStart(sentence[col], g);
 				}
 			}
-			//			foreach (Classifier* cl, M)
-			//			{
-			//				qDebug() << cl->toString();
-			//			}
+			//foreach (Classifier* cl, M){qDebug() << cl->toString();}
 			cykTable[0][col] = M;
 		}
 
 		bool covering = false;
+		g.coveringStarted = false;
 		for (int row = 1; row < size; row++)
 		{
 			for (int col = 0; col < size - row; col++)
@@ -79,28 +74,24 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 				QList<Classifier*> M;
 				QList<NCondition> D;
 				getConditionsForCykCell(cykTable, row, col, D);
-				//				foreach (NCondition cond, D)
-				//				{
-				//					qDebug() << cond.toString();
-				//				}
+				//foreach (NCondition cond, D){qDebug() << cond.toString();}
 				for (int i = 0, s1 = D.size(); i < s1; i++)
 				{
 					getMatchingClassifiers(D[i], g, M);
 				}
-				//				foreach (Classifier* cl, M)
-				//				{
-				//					qDebug() << cl->toString();
-				//				}
+				//foreach (Classifier* cl, M){qDebug() << cl->toString();}
 				if (p.learningMode && M.isEmpty() && sentence.isPositive && !D.isEmpty())
 				{
 					if (Random::rand() < p.coveringAggressiveProb)
 					{
 						M << coveringAggressive(D[Random::rand(D.size())], g);
+//						g.coveringStarted = true;
 						covering = true;
 					}
 					if (p.allowCoveringFull && row == size - 1 && col == 0)
 					{
-						M << coveringFull(D[0], g);
+						M << coveringFull(D.first(), g);
+//						g.coveringStarted = true;
 						covering = true;
 					}
 					if (covering == true)//restart parsing after covering operator with crowding
@@ -110,10 +101,7 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 						break;
 					}
 				}
-				//				foreach (Classifier* cl, M)
-				//				{
-				//					qDebug() << cl->toString();
-				//				}
+				//foreach (Classifier* cl, M){qDebug() << cl->toString();}
 				cykTable[row][col] = M;
 			}
 		}
@@ -132,14 +120,14 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 			}
 		}
 
+		if (p.learningMode && !cykTable[size - 1][0].isEmpty())
+		{
+			updateClParams(cykTable, sentence.isPositive);
+		}
 		for (int i = 0, s = cykTable[size - 1][0].size(); i < s; i++)
 		{
 			if (cykTable[size - 1][0][i]->action.symbol == g.Start)
 			{
-				if (p.learningMode)
-				{
-					updateClParams(cykTable, sentence.isPositive);
-				}
 				result = true;
 				break;
 			}
@@ -224,17 +212,6 @@ Classifier* CYK::coveringAggressive(const NCondition& cond, Grammar& g)
 void CYK::updateClParams(CYKTable& cykTable, bool isPositive)
 {
 	//	qDebug() << QString() + __FUNCTION__ + " start";
-	//	for (int row = 0, s1 = cykTable.size(); row < s1; row++)
-	//	{
-	//		for (int col = 0, s2 = cykTable[row].size(); col < s2; col++)
-	//		{
-	//			for (int i = 0, s3 = cykTable[row][col].size(); i < s3; i++)
-	//			{
-	//				cykTable[row][col][i]->used(isPositive);
-	//			}
-	//		}
-	//	}
-
 	int row = cykTable.size() - 1;
 	if (row >= 1)//not one word sentence (Start -> terminal) nor empty sentence
 	{
@@ -242,7 +219,6 @@ void CYK::updateClParams(CYKTable& cykTable, bool isPositive)
 		QList<Classifier*> list = cykTable[row][col];
 		for (int i = 0, size = list.size(); i < size; i++)
 		{
-			//TODO update wszystkich czy tylko Start?
 			NClassifier* cl = static_cast<NClassifier*> (list[i]);
 			int amount = (computeAmount(cykTable, cl->condition.firstSymbol, row, col, true, isPositive) + computeAmount(cykTable, cl->condition.secondSymbol, row, col, false, isPositive)) * Params::instance().renouncedAmountFactor;
 			cl->increasePoints(isPositive, amount);
