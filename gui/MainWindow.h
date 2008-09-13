@@ -71,8 +71,9 @@ private:
 	void reloadCombos();
 	void setupActions();
     void initValues();
-    void prepareBars(GCS* thread, int sentences);
+    void prepareBars(GCS* thread);
 	QList<GCS*> gcsList;
+	GCS* gcsTest;
 	QList<QProgressBar*> barsList;
 	QVBoxLayout* barsLayout;
 	SettingsDialog* mSettingsDialog;
