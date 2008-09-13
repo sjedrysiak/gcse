@@ -4,32 +4,32 @@ Params Params::mInstance;
 
 Params::Params()
 {
-	splitLearningSet = true;
+	splitLearningSet = false;
 	learningMode = true;
-	exchangeProb = 0.03;
-	exchangeAmount = 5;
+	exchangeProb = 0.0;
+	exchangeAmount = 0;
 	allowCorrection = false;
 	allowCoveringStart = true;
 	allowCoveringFull = true;
 	allowCoveringUniversal = false;
-	coveringAggressiveProb = 0.03;
+	coveringAggressiveProb = 0.0;
 
 	allowGA = true;
-	selectionParent1 = GA::RANDOM;
-	selectionParent2 = GA::RANDOM;
+	selectionParent1 = GA::ROULETTE;
+	selectionParent2 = GA::ROULETTE;
 	crossoverProb = 0.2;
 	mutationProb = 0.8;
-	inversionProb = 0.3;
-	eliteSize = 3;
+	inversionProb = 0.0;
+	eliteSize = 0;
 	tournamentSize = 3;
 	crowdFactor = 18;
 	crowdSize = 3;
 
-	baseAmount = 2;
+	baseAmount = 1;
 	renouncedAmountFactor = 0.5;
-	maxNonterminalRules = 33;
+	maxNonterminalRules = 35;
 	startNonterminalRules = 30;
-	nonterminalSymbolsAmount = 19;
+	nonterminalSymbolsAmount = 20;
 
 	threads = 1;
 	iterations = 50;
@@ -37,8 +37,8 @@ Params::Params()
 	endOnFullFitness = true;
 
 	positiveSentenceWeight = 1;
-	negativeSentenceWeight = 1;
+	negativeSentenceWeight = 2;
 	classicFunWeight = 1;
 	fertilityFunWeight = 0;
-	unusedClassifierFitness = 0.0;
+	unusedClassifierFitness = 0.5;
 }

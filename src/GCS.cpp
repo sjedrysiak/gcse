@@ -34,7 +34,7 @@ void GCS::run()
 	QTextStream stream(&file);
 	float sum = 0;
 	float maxFitness = 0.0;
-	int avgIter = 0;
+	int avgSteps = 0;
 	int successIters = 0;
 	int iters, maxSteps;
 	if (p.learningMode)
@@ -67,7 +67,7 @@ void GCS::run()
 				maxFitness = tempGrammar.fitness();
 				bestGrammar = tempGrammar;
 			}
-			if (p.learningMode && p.allowGA && (tempGrammar.fitness() < 1.0 || !p.endOnFullFitness))
+			if (p.learningMode && p.allowGA && (tempGrammar.fitness() < 1.0 || !p.endOnFullFitness) && !tempGrammar.coveringStarted)
 			{
 				GA::evolve(tempGrammar);
 			}
@@ -82,18 +82,22 @@ void GCS::run()
 				nextEmit += 20;
 			}
 		}
+		if (step > 20)
+		{
+			qDebug() << tempGrammar.toString();
+		}
 		emit stepChanged(p.maxEvolutionSteps);
 		if (tempGrammar.fitness() == 1.0)
 		{
 			successIters++;
-			avgIter += step-1;
+			avgSteps += step;
 		}
 		sum += tempGrammar.fitness();
 	}
 	stream << "\n\nBest grammar with fitness: " << bestGrammar.fitness() << "\n" << bestGrammar.toString();
 	emit iterChanged(p.iterations);
 	stream << "\n\naverage fitness: " << QString::number(100.0 * sum / iters, 'f', 1) << "%, max fintess: " << maxFitness;
-	stream << "\nsuccess in " << successIters << "/" << iters << " iters\naverage steps to 100%: " << (float)avgIter / successIters << "/" << maxSteps;
+	stream << "\nsuccess in " << successIters << "/" << iters << " iters\naverage steps to 100%: " << (float)avgSteps / successIters << "/" << maxSteps;
 	file.close();
 	//	qDebug() << QString() + __FUNCTION__ + " end";
 }
@@ -101,7 +105,7 @@ void GCS::run()
 void GCS::exchangeRules()
 {
 	takeRules();
-	if (Random::rand() < Params::instance().exchangeProb)
+	if (Random::rand() < Params::instance().exchangeProb && Params::instance().exchangeAmount > 0)
 	{
 		QList<NClassifier> list(tempGrammar.PN);
 		qSort(list.begin(), list.end(), qGreater<NClassifier> ());
@@ -113,7 +117,7 @@ void GCS::exchangeRules()
 	}
 }
 
-void GCS::sendRules(QList<NClassifier> list)
+void GCS::putRules(const QList<NClassifier>& list)
 {
 //	qDebug() << "sendRules";
 	QMutexLocker locker(&mutex);

@@ -82,17 +82,17 @@ void GA::evolve(Grammar& g)
 	}
 
 	//Elite population
-	QList<NClassifier> elite = g.PN;
-	QList<NClassifier> temp;
-	qSort(elite);
-	for (int i = p.eliteSize; i > 0; i--)
+	QList<NClassifier> elite;
+	QList<NClassifier> temp = g.PN;
+	qSort(temp);
+	for (int i = 0; i < p.eliteSize; ++i)
 	{
-		temp << elite.takeLast();
+		elite << temp.takeLast();
 	}
 
 	g.addClWithCrowding(cl1, temp, temp.size());
 	g.addClWithCrowding(cl2, temp, temp.size());
-	g.PN = elite + temp;
+	g.PN = temp + elite;
 }
 
 //selection operators
@@ -169,6 +169,7 @@ void GA::crossover(NClassifier& first, NClassifier& second)
 	}
 	first.action = Action(second.action.symbol);
 	second.action = Action(copyFirst.action.symbol);
+	first.fitness = second.fitness = (first.fitness + second.fitness) / 2;
 }
 
 void GA::mutation(NClassifier& cl, const QList<NSymbol>& symbols)
