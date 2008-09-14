@@ -141,27 +141,27 @@ bool CYK::parse(const Sentence& sentence, Grammar& g)
 Classifier* CYK::coveringTerminal(const TSymbol& term, Grammar& g)
 {
 	//	qDebug() << QString() + __FUNCTION__ + " start";
-	NSymbol newSymbol;
-	int size = g.N.size();
-	bool ok = false;
-	while (!ok)
-	{
-		ok = true;
-		newSymbol = g.N[Random::rand(size)];
-		if (newSymbol == g.Start)
-		{
-			ok = false;
-			continue;
-		}
-		for (int i = 0, size = g.PT.size(); i < size; i++)
-		{
-			if (newSymbol == g.PT[i].action.symbol)
-			{
-				ok = false;
-				break;
-			}
-		}
-	}
+	NSymbol newSymbol(term.toUpper());
+//	int size = g.N.size();
+//	bool ok = false;
+//	while (!ok)
+//	{
+//		ok = true;
+//		newSymbol = g.N[Random::rand(size)];
+//		if (newSymbol == g.Start)
+//		{
+//			ok = false;
+//			continue;
+//		}
+//		for (int i = 0, size = g.PT.size(); i < size; i++)
+//		{
+//			if (newSymbol == g.PT[i].action.symbol)
+//			{
+//				ok = false;
+//				break;
+//			}
+//		}
+//	}
 	TCondition cond(term);
 	Action act(newSymbol);
 	TClassifier cl(cond, act);

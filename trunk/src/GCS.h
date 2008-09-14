@@ -13,6 +13,13 @@ class GCS : public QThread
 {
 	Q_OBJECT
 public:
+	enum RuleExchangeStrategy
+	{
+		RANDOM,
+		BEST,
+		FROM_TERMINAL,
+		FROM_START
+	};
     GCS(const Grammar& grammar, const QList<Sentence> list, MainWindow& parent);
     void run();
     Grammar getBestGrammar()
@@ -29,6 +36,7 @@ signals:
 	void parsedSentenceChanged(int value);
 protected:
     void exchangeRules();
+    void createRuleSet(QList<NClassifier>& list);
 	void takeRules();
     Grammar initGrammar;
     Grammar tempGrammar;

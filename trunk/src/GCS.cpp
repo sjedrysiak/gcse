@@ -107,13 +107,90 @@ void GCS::exchangeRules()
 	takeRules();
 	if (Random::rand() < Params::instance().exchangeProb && Params::instance().exchangeAmount > 0)
 	{
-		QList<NClassifier> list(tempGrammar.PN);
-		qSort(list.begin(), list.end(), qGreater<NClassifier> ());
-		for (int i = 0, size = list.size() - Params::instance().exchangeAmount; i < size; i++)
-		{
-			list.removeLast();
-		}
+		QList<NClassifier> list;
+		createRuleSet(list);
 		parent.sendRules(list);
+	}
+}
+
+void GCS::createRuleSet(QList<NClassifier>& list)
+{
+	switch(Params::instance().exchStrategy)
+	{
+		case RANDOM:
+			for (int i = 0, size = tempGrammar.PN.size(); i < Params::instance().exchangeAmount; ++i)
+			{
+				list << tempGrammar.PN[Random::rand(size)];
+			}
+			break;
+		case BEST:
+			qSort(tempGrammar.PN);
+			for (int i = tempGrammar.PN.size()-1, j = 0; j < Params::instance().exchangeAmount; --i, ++j)
+			{
+				list << tempGrammar.PN[i];
+			}
+			break;
+		case FROM_TERMINAL:
+			if (!tempGrammar.PT.isEmpty())
+			{
+				qSort(tempGrammar.PN);
+				NSymbol s;
+				s = tempGrammar.PT[Random::rand(tempGrammar.PT.size())].action.symbol;
+				for (int i = tempGrammar.PN.size()-1; i >=0; --i)
+				{
+					NClassifier cl = tempGrammar.PN[i];
+					if (cl.condition.firstSymbol == s || cl.condition.secondSymbol == s)
+					{
+						list << cl;
+						break;
+					}
+				}
+				if (!list.isEmpty())
+				{
+					for (int i = 1; i < Params::instance().exchangeAmount; ++i)
+					{
+						NClassifier childCl = list[Random::rand(list.size())];
+						for (int j = tempGrammar.PN.size()-1; j >= 0; --j)
+						{
+							NClassifier cl = tempGrammar.PN[j];
+							if (!list.contains(cl) && (cl.condition.firstSymbol == childCl.action.symbol || cl.condition.secondSymbol == childCl.action.symbol))
+							{
+								list << cl;
+								break;
+							}
+						}
+					}
+				}
+			}
+			break;
+		case FROM_START:
+			qSort(tempGrammar.PN);
+			for (int i = tempGrammar.PN.size()-1; i >=0; --i)
+			{
+				NClassifier cl = tempGrammar.PN[i];
+				if (cl.action.symbol == tempGrammar.Start)
+				{
+					list << cl;
+					break;
+				}
+			}
+			if (!list.isEmpty())
+			{
+				for (int i = 1; i < Params::instance().exchangeAmount; ++i)
+				{
+					NClassifier parentCl = list[Random::rand(list.size())];
+					for (int j = tempGrammar.PN.size()-1; j >= 0; --j)
+					{
+						NClassifier cl = tempGrammar.PN[j];
+						if (!list.contains(cl) && (cl.action.symbol == parentCl.condition.firstSymbol || cl.action.symbol == parentCl.condition.secondSymbol))
+						{
+							list << cl;
+							break;
+						}
+					}
+				}
+			}
+			break;
 	}
 }
 

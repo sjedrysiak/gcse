@@ -8,6 +8,8 @@ Params::Params()
 	learningMode = true;
 	exchangeProb = 0.0;
 	exchangeAmount = 0;
+	exchStrategy = GCS::FROM_START;
+
 	allowCorrection = false;
 	allowCoveringStart = true;
 	allowCoveringFull = true;
