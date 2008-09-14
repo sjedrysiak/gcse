@@ -100,6 +100,24 @@ void SettingsDialog::accept()
 	p.fertilityFunWeight = sbxFertilityWeight->value();
 	p.exchangeProb = sbxExchangeProb->value();
 	p.exchangeAmount = sbxExchangeAmount->value();
+	GCS::RuleExchangeStrategy exchStr;
+	if (rbnExchRandom->isChecked())
+	{
+		exchStr = GCS::RANDOM;
+	}
+	else if (rbnExchBest->isChecked())
+	{
+		exchStr = GCS::BEST;
+	}
+	else if (rbnExchFromTerm->isChecked())
+	{
+		exchStr = GCS::FROM_TERMINAL;
+	}
+	else
+	{
+		exchStr = GCS::FROM_START;
+	}
+	p.exchStrategy = exchStr;
 	p.splitLearningSet = cbxSplitLearningSet->isChecked();
 	hide();
 }
