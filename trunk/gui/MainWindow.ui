@@ -661,6 +661,36 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>edtFilePath</tabstop>
+  <tabstop>btnBrowse</tabstop>
+  <tabstop>btnLoadSentences</tabstop>
+  <tabstop>edtFilePathTest</tabstop>
+  <tabstop>btnBrowseTest</tabstop>
+  <tabstop>btnLoadTest</tabstop>
+  <tabstop>listSentences</tabstop>
+  <tabstop>listSentencesTest</tabstop>
+  <tabstop>tabs</tabstop>
+  <tabstop>sbxNonterminals</tabstop>
+  <tabstop>sbxRules</tabstop>
+  <tabstop>btnInitGrammar</tabstop>
+  <tabstop>btnClearGrammar</tabstop>
+  <tabstop>edtSymbol</tabstop>
+  <tabstop>btnAddSymbol</tabstop>
+  <tabstop>cbxCondition</tabstop>
+  <tabstop>cbxAction1</tabstop>
+  <tabstop>cbxAction2</tabstop>
+  <tabstop>btnAddRule</tabstop>
+  <tabstop>listNonterminals</tabstop>
+  <tabstop>listRules</tabstop>
+  <tabstop>sbxThreads</tabstop>
+  <tabstop>sbxIterations</tabstop>
+  <tabstop>sbxEvolutionSteps</tabstop>
+  <tabstop>cbxEndOnFull</tabstop>
+  <tabstop>cbxRunTest</tabstop>
+  <tabstop>btnRun</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc" />
  </resources>

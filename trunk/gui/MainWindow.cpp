@@ -226,67 +226,67 @@ void MainWindow::mergeGrammars()
 	mGrammarForTest = mOutGrammars[0];
 	for (int i = 1, size = mOutGrammars.size(); i < size; i++)
 	{
-		for (int j = 0, size2 = mOutGrammars[i].PT.size(); j < size2; j++)
-		{
-			for (int k = 0, size3 = mGrammarForTest.PT.size(); k < size3; k++)
-			{
-				if (mOutGrammars[i].PT[j].condition == mGrammarForTest.PT[k].condition && !(mOutGrammars[i].PT[j].action == mGrammarForTest.PT[k].action) && !(mOutGrammars[i].PT[j].action == mOutGrammars[i].Start) && !(mGrammarForTest.PT[k].action == mGrammarForTest.Start))//we wrzucanej gramatyce jest pasujący TCl o innym nsymbolu
-				{
-					NSymbol oldSymbol = mOutGrammars[i].PT[j].action.symbol;
-					NSymbol newSymbol = mGrammarForTest.PT[k].action.symbol;
-					mOutGrammars[i].PT[j].action.symbol = mGrammarForTest.PT[k].action.symbol;
-					for (int l = 0, size4 = mOutGrammars[i].PN.size(); l < size4; l++)
-					{
-						NClassifier& cl = mOutGrammars[i].PN[l];
-						if (cl.action.symbol == oldSymbol)
-						{
-							cl.action.symbol = newSymbol;
-						}
-						if (cl.condition.firstSymbol == oldSymbol)
-						{
-							cl.condition.firstSymbol = newSymbol;
-						}
-						if (cl.condition.secondSymbol == oldSymbol)
-						{
-							cl.condition.secondSymbol = newSymbol;
-						}
-					}
-				}
-			}
-		}
+//		for (int j = 0, size2 = mOutGrammars[i].PT.size(); j < size2; j++)
+//		{
+//			for (int k = 0, size3 = mGrammarForTest.PT.size(); k < size3; k++)
+//			{
+//				if (mOutGrammars[i].PT[j].condition == mGrammarForTest.PT[k].condition && !(mOutGrammars[i].PT[j].action == mGrammarForTest.PT[k].action) && !(mOutGrammars[i].PT[j].action == mOutGrammars[i].Start) && !(mGrammarForTest.PT[k].action == mGrammarForTest.Start))//we wrzucanej gramatyce jest pasujący TCl o innym nsymbolu
+//				{
+//					NSymbol oldSymbol = mOutGrammars[i].PT[j].action.symbol;
+//					NSymbol newSymbol = mGrammarForTest.PT[k].action.symbol;
+//					mOutGrammars[i].PT[j].action.symbol = mGrammarForTest.PT[k].action.symbol;
+//					for (int l = 0, size4 = mOutGrammars[i].PN.size(); l < size4; l++)
+//					{
+//						NClassifier& cl = mOutGrammars[i].PN[l];
+//						if (cl.action.symbol == oldSymbol)
+//						{
+//							cl.action.symbol = newSymbol;
+//						}
+//						if (cl.condition.firstSymbol == oldSymbol)
+//						{
+//							cl.condition.firstSymbol = newSymbol;
+//						}
+//						if (cl.condition.secondSymbol == oldSymbol)
+//						{
+//							cl.condition.secondSymbol = newSymbol;
+//						}
+//					}
+//				}
+//			}
+//		}
 		for (int j = 0, size2 = mOutGrammars[i].PT.size(); j < size2; j++)
 		{
 			mGrammarForTest.addClNormal(mOutGrammars[i].PT[j]);
 		}
 		//sprawdzić tak samo ncl'e
-		for (int j = 0, size2 = mOutGrammars[i].PN.size(); j < size2; j++)
-		{
-			for (int k = 0, size3 = mGrammarForTest.PN.size(); k < size3; k++)
-			{
-				if (mOutGrammars[i].PN[j].condition == mGrammarForTest.PN[k].condition && !(mOutGrammars[i].PN[j].action == mGrammarForTest.PN[k].action) && !(mOutGrammars[i].PN[j].action == mOutGrammars[i].Start) && !(mGrammarForTest.PN[k].action == mGrammarForTest.Start))//we wrzucanej gramatyce jest pasujący NCl o innym nsymbolu
-				{
-					NSymbol oldSymbol = mOutGrammars[i].PN[j].action.symbol;
-					NSymbol newSymbol = mGrammarForTest.PN[k].action.symbol;
-					mOutGrammars[i].PN[j].action.symbol = mGrammarForTest.PN[k].action.symbol;
-					for (int l = 0, size4 = mOutGrammars[i].PN.size(); l < size4; l++)
-					{
-						NClassifier& cl = mOutGrammars[i].PN[l];
-						if (cl.action.symbol == oldSymbol)
-						{
-							cl.action.symbol = newSymbol;
-						}
-						if (cl.condition.firstSymbol == oldSymbol)
-						{
-							cl.condition.firstSymbol = newSymbol;
-						}
-						if (cl.condition.secondSymbol == oldSymbol)
-						{
-							cl.condition.secondSymbol = newSymbol;
-						}
-					}
-				}
-			}
-		}
+//		for (int j = 0, size2 = mOutGrammars[i].PN.size(); j < size2; j++)
+//		{
+//			for (int k = 0, size3 = mGrammarForTest.PN.size(); k < size3; k++)
+//			{
+//				if (mOutGrammars[i].PN[j].condition == mGrammarForTest.PN[k].condition && !(mOutGrammars[i].PN[j].action == mGrammarForTest.PN[k].action) && !(mOutGrammars[i].PN[j].action == mOutGrammars[i].Start) && !(mGrammarForTest.PN[k].action == mGrammarForTest.Start))//we wrzucanej gramatyce jest pasujący NCl o innym nsymbolu
+//				{
+//					NSymbol oldSymbol = mOutGrammars[i].PN[j].action.symbol;
+//					NSymbol newSymbol = mGrammarForTest.PN[k].action.symbol;
+//					mOutGrammars[i].PN[j].action.symbol = mGrammarForTest.PN[k].action.symbol;
+//					for (int l = 0, size4 = mOutGrammars[i].PN.size(); l < size4; l++)
+//					{
+//						NClassifier& cl = mOutGrammars[i].PN[l];
+//						if (cl.action.symbol == oldSymbol)
+//						{
+//							cl.action.symbol = newSymbol;
+//						}
+//						if (cl.condition.firstSymbol == oldSymbol)
+//						{
+//							cl.condition.firstSymbol = newSymbol;
+//						}
+//						if (cl.condition.secondSymbol == oldSymbol)
+//						{
+//							cl.condition.secondSymbol = newSymbol;
+//						}
+//					}
+//				}
+//			}
+//		}
 		for (int j = 0, size2 = mOutGrammars[i].PN.size(); j < size2; j++)
 		{
 			mGrammarForTest.addClNormal(mOutGrammars[i].PN[j]);
