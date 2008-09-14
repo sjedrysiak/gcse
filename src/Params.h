@@ -22,6 +22,7 @@
 #define PARAMS_H_
 
 #include "GA.h"
+#include "GCS.h"
 
 class Params
 {
@@ -35,6 +36,7 @@ public:
 	bool learningMode;
 	float exchangeProb;
 	int exchangeAmount;
+	GCS::RuleExchangeStrategy exchStrategy;
 	//allow to run grammar correction
 	bool allowCorrection;
 
