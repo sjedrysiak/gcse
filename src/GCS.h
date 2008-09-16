@@ -15,7 +15,6 @@ class GCS : public QThread
 public:
 	enum RuleExchangeStrategy
 	{
-		RANDOM,
 		BEST,
 		FROM_TERMINAL,
 		FROM_START
