@@ -101,11 +101,7 @@ void SettingsDialog::accept()
 	p.exchangeProb = sbxExchangeProb->value();
 	p.exchangeAmount = sbxExchangeAmount->value();
 	GCS::RuleExchangeStrategy exchStr;
-	if (rbnExchRandom->isChecked())
-	{
-		exchStr = GCS::RANDOM;
-	}
-	else if (rbnExchBest->isChecked())
+	if (rbnExchBest->isChecked())
 	{
 		exchStr = GCS::BEST;
 	}
@@ -178,6 +174,18 @@ void SettingsDialog::updateFromParams()
 	sbxUnusedFitness->setValue(p.unusedClassifierFitness);
 	sbxExchangeProb->setValue(p.exchangeProb);
 	sbxExchangeAmount->setValue(p.exchangeAmount);
+	switch (p.exchStrategy)
+	{
+		case GCS::BEST:
+			rbnExchBest->setChecked(true);
+			break;
+		case GCS::FROM_TERMINAL:
+			rbnExchFromTerm->setChecked(true);
+			break;
+		default:
+			rbnExchFromStart->setChecked(true);
+			break;
+	}
 	cbxSplitLearningSet->setChecked(p.splitLearningSet);
 }
 
