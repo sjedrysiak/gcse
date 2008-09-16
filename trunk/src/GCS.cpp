@@ -117,12 +117,6 @@ void GCS::createRuleSet(QList<NClassifier>& list)
 {
 	switch(Params::instance().exchStrategy)
 	{
-		case RANDOM:
-			for (int i = 0, size = tempGrammar.PN.size(); i < Params::instance().exchangeAmount; ++i)
-			{
-				list << tempGrammar.PN[Random::rand(size)];
-			}
-			break;
 		case BEST:
 			qSort(tempGrammar.PN);
 			for (int i = tempGrammar.PN.size()-1, j = 0; j < Params::instance().exchangeAmount; --i, ++j)
