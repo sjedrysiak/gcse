@@ -1,0 +1,1 @@
+gcse based on gcs by Olgierd Unold http://olgierd.unold.staff.iiar.pwr.wroc.pl/ewg/
